@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chemie 3de jaar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+:root{--paper:#F6F8FA;--surface:#FFFFFF;--ink:#13293D;--muted:#557085;--line:#D5DEE7;--glass:#1F6FA8;--tile:#13293D;--tile-ink:#FFFFFF;
+  --f-display:"Unbounded","Trebuchet MS",system-ui,sans-serif;--f-body:"Atkinson Hyperlegible",system-ui,"Segoe UI",sans-serif;color-scheme:light}
+@media (prefers-color-scheme: dark){:root{--paper:#0E1A24;--surface:#14232F;--ink:#E3ECF4;--muted:#93AABD;--line:#2A3E4F;--glass:#6AB3E6;--tile:#E3ECF4;--tile-ink:#0E1A24;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:32px 20px 48px}
+header{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:28px}
+.big{width:96px;height:96px;flex:none;background:var(--tile);color:var(--tile-ink);border-radius:8px;display:grid;place-items:center;font-family:var(--f-display);font-size:2.2rem;font-weight:700}
+h1{font-family:var(--f-display);font-size:clamp(1.7rem,5vw,2.6rem);margin:0;line-height:1.15}
+.sub{color:var(--muted);margin:.3rem 0 0}
+h2{font-family:var(--f-display);font-weight:500;font-size:1.15rem;margin:28px 0 4px}
+.hint{color:var(--muted);margin:0 0 12px;font-size:.95rem}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+a.tile{display:block;position:relative;min-height:150px;padding:14px 16px;border:2px solid var(--ink);border-radius:8px;background:var(--surface);color:var(--ink);text-decoration:none}
+a.tile:hover,a.tile:focus-visible{border-color:var(--glass);outline:none}
+a.tile:focus-visible{box-shadow:0 0 0 3px var(--glass)}
+.z{font-weight:700;font-size:.8rem}
+.s{font-family:var(--f-display);font-size:2rem;font-weight:700;display:block;margin:6px 0 4px}
+.n{font-weight:700;display:block;line-height:1.25}
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);margin-top:40px;padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="big" aria-hidden="true">Ch</div>
+    <div>
+      <h1>Chemie 3de jaar</h1>
+      <p class="sub">Leerstof en oefeningen per thema. Kies je lessenpakket en je thema. P. Vandenheede</p>
+    </div>
+  </header>
+
+  <h2>Chemie 2 lesuren per week</h2>
+  <p class="hint">Voor leerlingen die natuurwetenschappen volgen.</p>
+  <div class="row">
+    <a class="tile" href="2uur/thema1.html"><span class="z">Thema 1</span><span class="s">Sr</span><span class="n">Stoffen rondom ons</span></a>
+    <a class="tile" href="2uur/thema2.html"><span class="z">Thema 2</span><span class="s">Cr</span><span class="n">Chemische reacties</span></a>
+    <a class="tile" href="2uur/thema3.html"><span class="z">Thema 3</span><span class="s">At</span><span class="n">Bouw en eigenschappen van atomen</span></a>
+    <a class="tile" href="2uur/thema4.html"><span class="z">Thema 4</span><span class="s">Cb</span><span class="n">Chemische bindingen</span></a>
+  </div>
+
+  <h2>Chemie 1 lesuur per week</h2>
+  <p class="hint">Voor alle andere klassen.</p>
+  <div class="row">
+    <a class="tile" href="1uur/thema1.html"><span class="z">Thema 1</span><span class="s">Sr</span><span class="n">Stoffen rondom ons</span></a>
+    <a class="tile" href="1uur/thema2.html"><span class="z">Thema 2</span><span class="s">Cr</span><span class="n">Chemische reacties</span></a>
+    <a class="tile" href="1uur/thema3.html"><span class="z">Thema 3</span><span class="s">At</span><span class="n">Bouw en eigenschappen van atomen</span></a>
+    <a class="tile" href="1uur/thema4.html"><span class="z">Thema 4</span><span class="s">Cb</span><span class="n">Chemische bindingen</span></a>
+  </div>
+
+  <footer>Je vooruitgang wordt enkel in je eigen browser bewaard.</footer>
+</div>
+</body>
+</html>

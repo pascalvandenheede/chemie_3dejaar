@@ -1,0 +1,1453 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chemische bindingen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: periodic-table tiles as chapter navigation; reading column on clean lab paper; exercises sit on graph-paper "werkbladen". */
+:root{
+  --paper:#F6F8FA; --surface:#FFFFFF; --ink:#13293D; --muted:#557085; --line:#D5DEE7; --grid:#E6EDF3;
+  --glass:#1F6FA8; --glass-soft:#E3EFF8; --ghs:#D3222A; --ok:#1E7F4F; --ok-soft:#E1F3EA; --bad:#B42318; --bad-soft:#FCE8E6;
+  --warn:#8A5A00; --warn-soft:#FFF3D6; --tile:#13293D; --tile-ink:#FFFFFF;
+  --f-display:"Unbounded","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1A24; --surface:#14232F; --ink:#E3ECF4; --muted:#93AABD; --line:#2A3E4F; --grid:#1B2C3A;
+  --glass:#6AB3E6; --glass-soft:#16324A; --ghs:#FF5A5F; --ok:#5BD69A; --ok-soft:#123327; --bad:#FF8A80; --bad-soft:#3A1A1A;
+  --warn:#F4C46B; --warn-soft:#33290F; --tile:#E3ECF4; --tile-ink:#0E1A24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1A24; --surface:#14232F; --ink:#E3ECF4; --muted:#93AABD; --line:#2A3E4F; --grid:#1B2C3A;
+  --glass:#6AB3E6; --glass-soft:#16324A; --ghs:#FF5A5F; --ok:#5BD69A; --ok-soft:#123327; --bad:#FF8A80; --bad-soft:#3A1A1A;
+  --warn:#F4C46B; --warn-soft:#33290F; --tile:#E3ECF4; --tile-ink:#0E1A24; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0}
+h2{font-size:1.55rem;font-weight:700;margin-block:2.2rem .8rem}
+h3{font-size:1.08rem;font-weight:500;margin-block:1.6rem .5rem}
+p{margin:.5rem 0}
+.lead{font-size:1.12rem;max-width:62ch}
+.col{max-width:68ch}
+a{color:var(--glass)}
+sub{font-size:.72em;line-height:0}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--glass);outline-offset:2px}
+
+/* Header */
+header.top{padding-block:28px 10px}
+.hero{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.bigtile{width:118px;height:118px;flex:none;background:var(--tile);color:var(--tile-ink);border-radius:8px;position:relative;font-family:var(--f-display)}
+.bigtile .z{position:absolute;top:8px;left:10px;font-size:.85rem}
+.bigtile .sym{position:absolute;inset:0;display:grid;place-items:center;font-size:2.9rem;font-weight:700}
+.bigtile .nm{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:.62rem;letter-spacing:.04em}
+.hero h1{font-size:clamp(1.8rem,5vw,2.9rem);font-weight:700}
+.hero .sub{color:var(--muted);margin-top:.3rem}
+
+/* Tile navigation */
+nav.tiles{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding-block:10px}
+.tilerow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.tbtn{flex:none;width:86px;height:86px;border:2px solid var(--ink);border-radius:7px;background:var(--surface);cursor:pointer;position:relative;text-align:left;padding:0;font-family:var(--f-display)}
+.tbtn .z{position:absolute;top:5px;left:7px;font-size:.68rem;font-family:var(--f-body);font-weight:700}
+.tbtn .s{position:absolute;top:18px;left:0;right:0;text-align:center;font-size:1.6rem;font-weight:700}
+.tbtn .n{position:absolute;bottom:6px;left:2px;right:2px;text-align:center;font-size:.62rem;font-family:var(--f-body);line-height:1.15}
+.tbtn .dot{position:absolute;top:6px;right:7px;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.tbtn .dot.done{background:var(--ok)}
+.tbtn[aria-selected="true"]{background:var(--tile);color:var(--tile-ink);border-color:var(--tile)}
+.tbtn:hover{border-color:var(--glass)}
+.tbtn.vm{border-style:dashed}
+@media (max-width:560px){.tbtn{width:64px;height:64px}.tbtn .s{top:13px;font-size:1.2rem}.tbtn .n{font-size:.52rem;bottom:4px}.tbtn .z{font-size:.6rem;top:3px;left:5px}.tbtn .dot{top:4px;right:5px;width:7px;height:7px}body{font-size:16px}}
+
+main{padding-block:8px 60px}
+.panel[hidden]{display:none}
+
+/* Concepts */
+.def{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:4px 18px;margin:1rem 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.def dt{font-weight:700;color:var(--glass)}
+.def dd{margin:0 0 6px}
+@media (max-width:560px){.def{grid-template-columns:1fr}.def dd{margin-bottom:10px}}
+.kw{font-weight:700;color:var(--glass)}
+.note{background:var(--warn-soft);color:var(--ink);border-radius:var(--r);padding:12px 16px;margin:1rem 0;max-width:68ch}
+.note b.tag{color:var(--warn);margin-right:.4rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.two>*{min-width:0}
+.tablewrap{overflow-x:auto;margin:1rem 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted);font-size:.85rem}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+ul.clean{padding-left:1.1rem;margin:.4rem 0}
+ul.clean li{margin:.2rem 0}
+
+/* Worksheet (exercise) */
+.ws{--cell:22px;background-color:var(--surface);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:var(--cell) var(--cell);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 20px;margin:1.4rem 0}
+.ws>header{display:flex;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:.4rem}
+.ws>header .score{margin-left:auto}
+.ws h3{margin:0;font-size:1rem}
+.ws .tag{font-size:.8rem;color:var(--muted);font-weight:700}
+.ws .ask{background:var(--surface);display:inline;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.score{font-weight:700;font-variant-numeric:tabular-nums;color:var(--glass)}
+.btn{border:2px solid var(--ink);background:var(--surface);border-radius:999px;padding:5px 14px;cursor:pointer;font-weight:700;font-size:.92rem}
+.btn:hover{border-color:var(--glass);color:var(--glass)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--glass);border-color:var(--glass);color:var(--paper)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.opt{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.93rem}
+.opt:hover{border-color:var(--glass)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.opt:disabled{cursor:default}
+.items{display:grid;gap:8px;margin-top:10px}
+.item{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.item .lbl{flex:1 1 220px;min-width:0;font-weight:700}
+.item .opts{display:flex;gap:6px;flex-wrap:wrap}
+.fb{flex-basis:100%;font-size:.9rem;margin:0}
+.fb.good{color:var(--ok)} .fb.badf{color:var(--bad)}
+.mc .q{font-weight:700;font-size:1.05rem;margin:.4rem 0 .6rem;background:var(--surface)}
+.mc .opts{display:grid;gap:7px}
+.mc .opt{text-align:left;padding:9px 13px}
+.mc .why{background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:.93rem}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 10px}
+.progress>i{display:block;height:100%;background:var(--glass);width:0;transition:width .3s}
+input[type=text],input[type=number],select{background:var(--surface);border:1.5px solid var(--line);border-radius:7px;padding:5px 9px;max-width:100%}
+input.ok,select.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.no,select.no{border-color:var(--bad);background:var(--bad-soft)}
+.mini{font-size:.86rem;color:var(--muted)}
+.pill{display:inline-block;border-radius:999px;padding:1px 10px;font-size:.82rem;font-weight:700}
+.pill.v{background:var(--glass-soft);color:var(--glass)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* Etiket */
+.etiket{background:#FFF27A;color:#111;border:3px solid #111;border-radius:4px;padding:10px 12px;max-width:440px;font-size:.82rem;line-height:1.35;position:relative}
+.etiket .hot{cursor:pointer;border-radius:4px;outline:2px dashed transparent;outline-offset:2px}
+.etiket .hot:hover,.etiket .hot.sel{outline-color:#1F6FA8}
+.etiket .hot.found{outline:2px solid #1E7F4F}
+.etiket .nm{font-family:var(--f-display);font-size:1.5rem;font-weight:700}
+.etiket .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.etiket svg{width:70px;height:70px}
+.etiket .foot{display:flex;justify-content:space-between;border-top:1px solid #111;margin-top:6px;padding-top:4px;font-weight:700}
+
+/* Pictograms & gear */
+.ghsgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:1rem 0}
+.ghsgrid figure{margin:0;text-align:center;font-size:.88rem}
+.ghsgrid svg{width:86px;height:86px}
+.gear{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:1rem 0}
+.gear button{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;font-size:.88rem;font-weight:700}
+.gear button:hover,.gear button.sel{border-color:var(--glass)}
+.gear svg{width:70px;height:70px;display:block;margin:0 auto 4px}
+.gearinfo{min-height:3.2em;background:var(--glass-soft);border-radius:8px;padding:10px 14px}
+svg .glass{fill:var(--glass-soft);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+svg .ln{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+svg .liq{fill:var(--glass);opacity:.45;stroke:none}
+svg .solid{fill:var(--ink);stroke:none}
+
+/* Graph */
+.graph svg{width:100%;max-width:560px;height:auto;display:block}
+.graph .axis{stroke:var(--ink);stroke-width:2;fill:none}
+.graph text{fill:var(--ink);font-size:12px;font-family:var(--f-body)}
+.readout{font-weight:700;min-height:1.6em}
+.slider{width:100%;max-width:520px}
+.states{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:10px}
+.state{display:flex;justify-content:space-between;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:.92rem}
+.state b{font-size:.8rem;border-radius:999px;padding:0 8px}
+.st-vast{background:#D9DEE4;color:#2A3A48}
+.st-vloeibaar{background:#CFE6F7;color:#0E4C78}
+.st-gas{background:#FCEFB7;color:#6B5200}
+.therm{font-family:var(--f-display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+
+/* Particle boxes */
+.boxes{display:flex;gap:14px;flex-wrap:wrap}
+.pbox{width:220px;max-width:100%;aspect-ratio:1;background:var(--surface);border:2px solid var(--ink);border-top:none;border-radius:0 0 10px 10px}
+.pbox svg{width:100%;height:100%}
+
+/* Schema */
+.schema{display:grid;gap:6px;justify-items:center;text-align:center;margin-top:10px}
+.schema .node{background:var(--surface);border:1.5px solid var(--ink);border-radius:6px;padding:4px 12px;font-weight:700}
+.schema .arrow{color:var(--muted);font-size:.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.schema .split{display:flex;gap:30px;justify-content:center;flex-wrap:wrap}
+.schema .branch{display:grid;gap:6px;justify-items:center}
+
+/* Molecule viewer */
+.molrow{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.mol{display:flex;flex-wrap:wrap;gap:2px;max-width:150px;padding:6px;border:1.5px dashed var(--line);border-radius:12px;background:var(--surface)}
+.atom{width:20px;height:20px;border-radius:50%;border:1px solid #8A99A8;display:inline-block}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.88rem}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.countgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.countgrid label{display:flex;flex-direction:column;gap:3px;font-size:.88rem;font-weight:700;background:var(--surface);padding:6px 8px;border-radius:7px;border:1px solid var(--line)}
+
+/* Flashcards */
+.card{background:var(--surface);border:2px solid var(--ink);border-radius:12px;min-height:150px;display:grid;place-items:center;text-align:center;padding:20px;cursor:pointer;max-width:520px}
+.card .t{font-family:var(--f-display);font-size:1.3rem}
+.card .d{font-size:1.02rem}
+
+/* HP lookup */
+.hpres{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-top:10px;min-height:2.8em}
+.codebadge{display:inline-block;background:var(--tile);color:var(--tile-ink);border-radius:5px;padding:0 7px;font-weight:700;margin-right:6px;font-variant-numeric:tabular-nums}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem;margin:.6rem 0 0}
+.toc a{text-decoration:none;border-bottom:1px solid var(--line)}
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-block:18px 30px}
+</style>
+<style>
+/* Thema 2 extras: reaction stage, balancer, energy diagrams */
+.eq{font-family:var(--f-display);font-size:clamp(1.05rem,3.2vw,1.45rem);line-height:1.9;margin:.6rem 0}
+.eq .arrow,.eq .plus{margin:0 .4em}
+.eq .pill{font-size:.85rem}
+.eq .arrow{font-size:1.3em;color:var(--muted)}
+.eq .plus{color:var(--muted)}
+.stage svg{width:100%;max-width:620px;height:auto;display:block}
+.stage .lab{fill:var(--ink);font-family:var(--f-body);font-size:13px}
+.stage circle.at{transition:transform 1.4s cubic-bezier(.6,0,.3,1)}
+@media (prefers-reduced-motion: reduce){.stage circle.at{transition:none}}
+.tally{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-top:10px}
+.tally div{background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:5px 9px;font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;gap:6px;font-size:.93rem}
+.tally div.ok{border-color:var(--ok);background:var(--ok-soft)}
+.tally div.no{border-color:var(--bad);background:var(--bad-soft)}
+.bal{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 8px;margin:12px 0}
+.sp{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-width:96px}
+.sp .f{font-family:var(--f-display);font-size:1.15rem}
+.step{display:flex;align-items:center;gap:4px}
+.step button{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--surface);font-weight:700;cursor:pointer;line-height:1}
+.step button:hover{border-color:var(--glass);color:var(--glass)}
+.step output{min-width:1.6em;text-align:center;font-family:var(--f-display);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.sp .pile{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:150px}
+.sp .pile .mol{padding:3px;gap:1px;max-width:none}
+.sp .pile .atom{width:12px;height:12px}
+.balsep{align-self:center;font-family:var(--f-display);font-size:1.4rem;color:var(--muted)}
+.edia svg{width:100%;max-width:440px;height:auto;display:block}
+.edia text{fill:var(--ink);font-family:var(--f-body);font-size:12px}
+.edia .axis{stroke:var(--ink);stroke-width:2;fill:none}
+.edia .lvl{fill:var(--ok-soft);stroke:var(--ok);stroke-width:2}
+.edia .lvltxt{font-size:11px;fill:var(--ok)}
+.edia .ln{stroke:var(--ok);stroke-width:2.5;fill:none}
+.edia .note{font-size:12px}
+.pickdia{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:640px}
+.pickdia button{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px;cursor:pointer}
+.pickdia button:hover{border-color:var(--glass)}
+.pickdia button.right{border-color:var(--ok);background:var(--ok-soft)}
+.pickdia button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.sentence{font-size:1.05rem;line-height:2.1;background:var(--surface);border-radius:8px;padding:6px 10px}
+.sentence .w{cursor:pointer;border-radius:4px;padding:1px 2px}
+.sentence .w:hover{background:var(--glass-soft)}
+.sentence .w.on{background:var(--glass);color:var(--paper)}
+.sentence .w.miss{outline:2px dashed var(--bad)}
+.sentence .w.ok{background:var(--ok);color:var(--paper)}
+.sentence .w.no{background:var(--bad);color:var(--paper)}
+.scale{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.vessel{width:150px;text-align:center}
+.vessel svg{width:150px;height:150px}
+.vessel .reading{font-family:var(--f-display);font-size:1.4rem;font-variant-numeric:tabular-nums}
+.focusgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:1rem 0}
+.focusgrid article{background:var(--tile);color:var(--tile-ink);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.focusgrid article p{margin:0;font-size:.95rem}
+.focusgrid .eqs{font-family:var(--f-display);font-size:1.02rem;border-top:1px solid currentColor;padding-top:8px;opacity:.95}
+.steps{counter-reset:s;list-style:none;padding:0;max-width:68ch}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2.2em 1fr;gap:10px;margin:.5rem 0}
+.steps li::before{content:counter(s);width:2em;height:2em;border-radius:50%;background:var(--tile);color:var(--tile-ink);display:grid;place-items:center;font-weight:700;font-family:var(--f-display);font-size:.9rem}
+</style>
+<style>
+/* Thema 3 extras: atoombouwer, PSE, zoom */
+.nuclide{display:inline-grid;grid-template-columns:auto auto;grid-template-rows:auto auto;align-items:center;font-family:var(--f-display);line-height:1;column-gap:2px}
+.nuclide .A{grid-column:1;grid-row:1;font-size:.55em;text-align:right}
+.nuclide .Z{grid-column:1;grid-row:2;font-size:.55em;text-align:right}
+.nuclide .X{grid-column:2;grid-row:1/3;font-size:1em}
+.builder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:700px){.builder{grid-template-columns:1fr}}
+.ctrls{display:grid;gap:8px}
+.ctrl{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px}
+.ctrl b{min-width:7.5em}
+.bohr svg{width:100%;max-width:320px;height:auto;display:block;margin:0 auto}
+.bohr .ring{fill:none;stroke:var(--muted);stroke-width:1.3}
+.bohr .ringlbl{fill:var(--muted);font-size:11px;font-family:var(--f-body)}
+.bohr .e{fill:var(--glass)}
+.bohr .e.val{fill:var(--ok)}
+.bohr .core{fill:#C62828}
+.bohr .coretxt{fill:#fff;font-weight:700;font-family:var(--f-body)}
+.bohr .ring.click{cursor:pointer;stroke-width:10;stroke:transparent}
+.bigsym{font-size:2.6rem}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:.95rem;margin-top:8px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.pse{overflow-x:auto;padding-bottom:6px}
+.pse .grid{display:grid;grid-template-columns:repeat(18,minmax(38px,1fr));gap:2px;min-width:720px}
+.pse .el{aspect-ratio:1;border:1px solid var(--line);border-radius:4px;background:var(--surface);cursor:pointer;padding:2px 3px;display:flex;flex-direction:column;justify-content:space-between;font-size:.62rem;line-height:1;text-align:left;color:var(--ink)}
+.pse .el .s{font-family:var(--f-display);font-size:.95rem;text-align:center}
+.pse .el.met{background:var(--glass-soft)}
+.pse .el.nmet{background:var(--ok-soft)}
+.pse .el.edel{background:var(--warn-soft)}
+.pse .el:hover{outline:2px solid var(--glass);z-index:1}
+.pse .el.sel{outline:3px solid var(--ink);z-index:2}
+.pse .el.hit{outline:3px solid var(--ok)}
+.pse .el.miss{outline:3px solid var(--bad)}
+.pse .hdr{font-size:.66rem;color:var(--muted);text-align:center;align-self:end;padding-bottom:2px}
+.pse .gap{height:10px;grid-column:1/-1}
+.pse .el.staircase-r{border-right:3px solid var(--ink)}
+.pse .el.staircase-t{border-top:3px solid var(--ink)}
+.legend3{display:flex;flex-wrap:wrap;gap:12px;font-size:.88rem;margin:.5rem 0}
+.legend3 i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line);vertical-align:-2px;margin-right:5px}
+.psehint{display:none}@media (max-width:760px){.psehint{display:block}}
+.pseinfo{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;min-height:5em}
+.zoom svg{width:100%;max-width:560px;height:auto;display:block;background:#0E1A24;border-radius:10px}
+.zoom .zl{fill:#E3ECF4;font-family:var(--f-body)}
+.zoomread{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;margin:8px 0}
+.zoomread .big{font-family:var(--f-display);font-size:1.5rem}
+.lewis{display:inline-grid;grid-template-columns:18px auto 18px;grid-template-rows:14px auto 14px;align-items:center;justify-items:center;font-family:var(--f-display);font-size:1.5rem;line-height:1;padding:4px}
+.lewis .t{grid-column:2;grid-row:1}.lewis .b{grid-column:2;grid-row:3}.lewis .l{grid-column:1;grid-row:2}.lewis .r{grid-column:3;grid-row:2}.lewis .c{grid-column:2;grid-row:2;padding:0 2px}
+.lewis .dot{width:6px;height:6px;border-radius:50%;background:var(--ink);display:block}
+.lewis .hbar{width:22px;height:2.5px;background:var(--ink);display:block}
+.lewis .vbar{width:2.5px;height:22px;background:var(--ink);display:block}
+.lewisopts{display:flex;flex-wrap:wrap;gap:10px}
+.lewisopts button{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;color:var(--ink)}
+.lewisopts button.right{border-color:var(--ok);background:var(--ok-soft)}
+.lewisopts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.work{background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:.95rem;line-height:1.75}
+.work .k{color:var(--muted);font-weight:700}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:1rem 0;font-weight:700}
+.flow .box{background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:6px 12px}
+.flow .arr{display:grid;text-align:center;font-size:.85rem;color:var(--muted);line-height:1.2}
+.pick2{display:flex;flex-wrap:wrap;gap:6px}
+.pick2 button.on{background:var(--glass);color:var(--paper);border-color:var(--glass)}
+</style>
+<style>
+/* Thema 4 extras */
+.ionstage{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center}
+@media (max-width:640px){.ionstage{grid-template-columns:1fr}.ionstage .mid{transform:rotate(90deg)}}
+.ionstage .mid{font-family:var(--f-display);font-size:1.6rem;color:var(--muted);text-align:center}
+.ionstage .cap{text-align:center;font-weight:700;margin-top:4px}
+.bohr4 svg{width:100%;max-width:260px;height:auto;display:block;margin:0 auto}
+.bohr4 .ring{fill:none;stroke:var(--muted);stroke-width:1.3}
+.bohr4 .ringlbl{fill:var(--muted);font-size:11px;font-family:var(--f-body)}
+.bohr4 .e{fill:var(--glass)}
+.bohr4 .e.val{fill:var(--ok)}
+.bohr4 .e.gone{fill:none;stroke:var(--bad);stroke-width:1.5;stroke-dasharray:2 2}
+.bohr4 .e.new{fill:var(--ghs)}
+.bohr4 .core{fill:#C62828}
+.bohr4 .coretxt{fill:#fff;font-weight:700;font-family:var(--f-body)}
+.status{display:inline-block;border-radius:999px;padding:2px 12px;font-weight:700;font-size:.9rem}
+.status.good{background:var(--ok-soft);color:var(--ok)}
+.status.wait{background:var(--warn-soft);color:var(--warn)}
+.ionpile{display:flex;flex-wrap:wrap;gap:6px;min-height:46px;align-items:center;justify-content:center;padding:6px;background:var(--surface);border:1.5px dashed var(--line);border-radius:10px}
+.ion{display:inline-grid;place-items:center;min-width:42px;height:42px;padding:0 6px;border-radius:21px;font-family:var(--f-display);font-size:.95rem;color:#fff}
+.ion.cat{background:#2E6DB4}
+.ion.an{background:#2E8B57}
+.chargebar{font-family:var(--f-display);font-size:1.15rem;font-variant-numeric:tabular-nums}
+.lew svg{max-width:100%;height:auto;display:block}
+.lew text{fill:var(--ink);font-family:var(--f-body);font-size:20px}
+.lew .bd{stroke:var(--ink);stroke-width:2.2}
+.lew .lp{stroke:var(--ink);stroke-width:2.2}
+.lewopts{display:flex;flex-wrap:wrap;gap:10px}
+.lewopts button{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px 10px;cursor:pointer}
+.lewopts button:hover{border-color:var(--glass)}
+.lewopts button.right{border-color:var(--ok);background:var(--ok-soft)}
+.lewopts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.ionlewis{font-family:var(--f-display);font-size:1.3rem;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+.ionlewis sup{font-size:.6em}
+.lat svg{width:100%;max-width:640px;height:auto;display:block}
+.lat text{font-family:var(--f-body);font-weight:700}
+.lat .lbl{fill:var(--ink);font-size:13px}
+.lat g.row{transition:transform .9s ease}
+@media (prefers-reduced-motion: reduce){.lat g.row{transition:none}}
+.tree{display:grid;gap:8px;max-width:640px}
+.tree .stepq{font-weight:700}
+.tree .done{color:var(--muted);font-size:.92rem}
+.ogrow{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.ogrow label{display:flex;gap:6px;align-items:center;font-weight:700}
+.encols{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;min-height:150px;padding:8px;background:var(--surface);border-radius:10px;border:1px solid var(--line)}
+.encols .c{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.8rem;width:38px}
+.encols .bar{width:26px;border-radius:4px 4px 0 0}
+.encols b{font-family:var(--f-display);font-size:.9rem}
+.mineral{background:var(--tile);color:var(--tile-ink);border-radius:10px;padding:14px 16px}
+.mineral h4{margin:0 0 6px;font-family:var(--f-display);font-size:1.05rem;font-weight:500}
+.mineral p{margin:0;font-size:.95rem}
+</style>
+<style>
+.anim{--stage:#0C1525;--stage-ink:#E6EDF7;--stage-muted:#8C9AB1;--accent:var(--glass)}
+
+/* Layout: één kolom — keuze bindingstype, moleculekeuze, donker 'projectiescherm', stappen + uitleg, vergelijkingstabel */
+.an-wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.an-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px 20px;flex-wrap:wrap-reverse}
+.an-top>div{min-width:0;flex:1 1 300px}
+.an-author{margin-left:auto;font-family:var(--f-display);font-weight:600;font-size:15px;color:var(--muted);white-space:nowrap;padding-top:4px}
+.an-lead{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.an-modes{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--glass-soft);padding:6px;border-radius:14px}
+.an-mode{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--muted);border-radius:10px;padding:10px 12px;text-align:left;line-height:1.25}
+.an-mode b{display:block;font-family:var(--f-display);font-size:16px;font-weight:800;color:var(--ink)}
+.an-mode span{font-size:13.5px}
+.an-mode[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(10,20,40,.12)}
+.an-mode[aria-pressed="true"] b{color:var(--glass)}
+.an-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.an-tab{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 14px;display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
+.an-tab b{font-family:var(--f-display);font-size:15px;font-weight:800}
+.an-tab span{font-size:12.5px;color:var(--muted)}
+.an-tab[aria-pressed="true"]{background:var(--glass);border-color:var(--glass);color:var(--paper)}
+.an-tab[aria-pressed="true"] span{color:var(--paper);opacity:.85}
+.an-tab:focus-visible,.an-btn:focus-visible,.an-step:focus-visible,.an-mode:focus-visible,input:focus-visible{outline:3px solid var(--glass);outline-offset:2px}
+.an-stage{position:relative;background:var(--stage);border-radius:16px;overflow:hidden;margin:0}
+.an-stage svg{display:block;width:100%;height:auto;max-width:100%}
+.an-tag{position:absolute;top:12px;left:14px;color:var(--stage-ink);font-family:var(--f-display);font-weight:600;font-size:15px}
+.an-tag small{color:var(--stage-muted);font-family:var(--f-body);font-weight:400;font-size:13px;margin-left:6px}
+.an-legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:0 14px 12px;color:var(--stage-muted);font-size:13px}
+.an-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.an-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.an-btn{font:inherit;font-weight:700;cursor:pointer;border-radius:10px;padding:8px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.an-btn.an-primary{background:var(--glass);border-color:var(--glass);color:var(--paper);min-width:116px}
+.an-scrub{flex:1 1 200px;min-width:0;accent-color:var(--glass)}
+.an-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:560px){.an-steps{grid-template-columns:repeat(2,1fr)}}
+.an-step{font:inherit;text-align:left;cursor:pointer;background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;line-height:1.3}
+.an-step b{display:block;font-family:var(--f-display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.an-step[aria-current="step"]{border-color:var(--glass);color:var(--ink);box-shadow:inset 0 0 0 1px var(--glass)}
+.an-step[aria-current="step"] b{color:var(--glass)}
+.an-caption{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-height:150px}
+.an-caption h2{font-size:18px!important;font-family:var(--f-display);font-weight:800;font-size:21px;margin:0 0 6px}
+.an-caption p{margin:0;max-width:68ch}
+.an-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.an-chip{font-size:14px;border-radius:999px;padding:3px 12px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.an-chip strong{font-family:var(--f-display)}
+.an-note{color:var(--muted);font-size:13.5px;margin:0}
+.an-compare h2{font-family:var(--f-display);font-weight:800;font-size:24px;margin:18px 0 10px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.anim table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+.anim th,.anim td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+.anim tr:last-child .anim th,.anim tr:last-child .anim td{border-bottom:0}
+.anim thead .anim th{font-family:var(--f-display);font-size:16px;background:var(--glass-soft)}
+.anim tbody .anim th{font-weight:700;color:var(--muted);width:24%}
+</style>
+</head>
+<body style="position:relative">
+<a href="../index.html" style="position:absolute;top:8px;left:16px;font:700 .85rem/1 system-ui,sans-serif;color:var(--glass,#1F6FA8);text-decoration:none;z-index:30">← Alle thema's</a>
+<header class="top wrap">
+  <div class="hero">
+    <div class="bigtile" aria-hidden="true"><span class="z">3de jaar</span><span class="sym">4</span><span class="nm">THEMA</span></div>
+    <div>
+      <h1>Chemische bindingen</h1>
+      <p class="sub">Chemie 3de jaar · Thema 4. Vorm ionen, bekijk bindingen in beeld en bepaal het oxidatiegetal.</p>
+    </div>
+  </div>
+</header>
+
+<nav class="tiles" aria-label="Hoofdstukken">
+  <div class="wrap tilerow" role="tablist">
+    <button class="tbtn" role="tab" data-tab="ionen" aria-selected="true"><span class="z">1</span><span class="dot"></span><span class="s">Io</span><span class="n">Ionen</span></button>
+    <button class="tbtn" role="tab" data-tab="ionverb"><span class="z">2</span><span class="dot"></span><span class="s">Iv</span><span class="n">Ionverbinding</span></button>
+    <button class="tbtn" role="tab" data-tab="atoomverb"><span class="z">3</span><span class="dot"></span><span class="s">Av</span><span class="n">Atoomverbinding</span></button>
+    <button class="tbtn vm" role="tab" data-tab="animatie"><span class="z">A</span><span class="dot"></span><span class="s">▶</span><span class="n">Bindingen in beeld</span></button>
+    <button class="tbtn" role="tab" data-tab="metalen"><span class="z">4</span><span class="dot"></span><span class="s">Mb</span><span class="n">Binding bij metalen</span></button>
+    <button class="tbtn vm" role="tab" data-tab="focus"><span class="z">F</span><span class="dot"></span><span class="s">Kr</span><span class="n">Kristallen</span></button>
+    <button class="tbtn" role="tab" data-tab="og"><span class="z">5</span><span class="dot"></span><span class="s">Og</span><span class="n">Oxidatiegetal</span></button>
+    <button class="tbtn" role="tab" data-tab="test"><span class="z">T</span><span class="dot"></span><span class="s">Tj</span><span class="n">Test jezelf</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ 1 IONEN ============ -->
+<section class="panel" id="p-ionen" role="tabpanel">
+  <h2>1 Vorming van ionen</h2>
+  <p class="lead">Atomen komen in de natuur bijna nooit voor als losse deeltjes. Chemische bindingen houden ze bij elkaar. Uit de plaats in het PSE kun je afleiden hoe een stof is opgebouwd.</p>
+  <nav class="toc"><a href="#i11">1.1 Edelgasconfiguratie</a><a href="#i12">1.2 Positieve ionen</a><a href="#i13">1.3 Negatieve ionen</a><a href="#i14">1.4 EN-waarde</a></nav>
+
+  <h3 id="i11">1.1 Edelgasconfiguratie</h3>
+  <p class="col">Alleen de edelgassen (groep 0) komen altijd als losse atomen voor. Ze zijn chemisch inert, want hun elektronenconfiguratie is zeer stabiel: 8 valentie-elektronen (helium 2). Dat is de <span class="kw">edelgasconfiguratie</span>: de buitenste schil is volledig bezet. Alle andere elementen streven naar een edelgasconfiguratie en gaan daarom bindingen aan.</p>
+
+  <h3 id="i12">1.2 Vorming van positieve ionen</h3>
+  <p class="col"><b>Metalen (M)</b> hebben weinig valentie-elektronen. Ze <b>geven</b> 1 of meer elektronen <b>af</b>. Het aantal protonen blijft gelijk, dus ontstaan <span class="kw">positieve ionen</span> of <span class="kw">kationen</span>. Metalen zijn <span class="kw">elektropositieve elementen</span>.</p>
+  <div class="eq">M − x e<sup>−</sup> <span class="arrow">⟶</span> M<sup>x+</sup> <span class="mini" style="font-family:var(--f-body)">bv. Na − 1 e<sup>−</sup> ⟶ Na<sup>+</sup> en Al − 3 e<sup>−</sup> ⟶ Al<sup>3+</sup></span></div>
+
+  <h3 id="i13">1.3 Vorming van negatieve ionen</h3>
+  <p class="col"><b>Niet-metalen (nM)</b> hebben veel valentie-elektronen. Ze <b>nemen</b> elektronen <b>op</b>. Zo ontstaan <span class="kw">negatieve ionen</span> of <span class="kw">anionen</span>. Niet-metalen zijn <span class="kw">elektronegatieve elementen</span>.</p>
+  <div class="eq">nM + y e<sup>−</sup> <span class="arrow">⟶</span> nM<sup>y−</sup> <span class="mini" style="font-family:var(--f-body)">bv. Cl + 1 e<sup>−</sup> ⟶ Cl<sup>−</sup> en O + 2 e<sup>−</sup> ⟶ O<sup>2−</sup></span></div>
+  <p class="col">De lading schrijf je rechts bovenaan het symbool: eerst het cijfer, dan het teken. Bij lading 1 schrijf je alleen het teken. <span class="kw">Ionvorming</span> is het proces waarbij atomen elektronen uitwisselen om een edelgasconfiguratie te krijgen. Een elektron weegt bijna niets, dus de massa van het ion is gelijk aan die van het atoom.</p>
+  <div class="ws" id="ex-ionmaker"></div>
+  <div class="ws" id="ex-iontable"></div>
+  <div class="ws" id="ex-ionmc"></div>
+
+  <h3 id="i14">1.4 Elektronegatieve waarde</h3>
+  <p class="col">De <span class="kw">elektronegatieve waarde</span> of <span class="kw">EN-waarde</span> geeft aan hoe sterk een element elektronen naar zich toe trekt. Je vindt ze rechts onderaan elk symbool in het PSE. Hoe hoger de EN-waarde, hoe sterker het niet-metaalkarakter. Fluor heeft de grootste EN-waarde (4,0), francium de kleinste (0,7). Edelgassen hebben geen EN-waarde.</p>
+  <ul class="clean col"><li>In een periode neemt de EN-waarde <b>toe</b> van links naar rechts.</li><li>In een groep neemt de EN-waarde <b>af</b> van boven naar onder.</li></ul>
+  <div class="ws" id="ex-en"></div>
+  <div class="ws" id="ex-tf1"></div>
+</section>
+
+<!-- ============ 2 IONVERBINDING ============ -->
+<section class="panel" id="p-ionverb" role="tabpanel" hidden>
+  <h2>2 Ionverbinding</h2>
+  <p class="lead">Een elektron kan niet op zichzelf bestaan. Daarom wisselen metalen en niet-metalen elektronen uit.</p>
+  <h3>2.1 Ionbinding</h3>
+  <dl class="def">
+    <dt>Ionbinding</dt><dd>De aantrekkingskracht tussen een positief metaalion en een negatief niet-metaalion, na elektronenoverdracht tussen een metaal en een niet-metaal.</dd>
+    <dt>Ionverbinding</dt><dd>Een stof opgebouwd uit positieve en negatieve ionen.</dd>
+    <dt>Formule-eenheid</dt><dd>Eerst het symbool van het metaal, dan dat van het niet-metaal. De indices zijn de kleinste gehele getallen die de verhouding kationen : anionen weergeven. Er worden evenveel elektronen afgegeven als opgenomen, dus de totale lading is 0. Bv. NaCl, Li<sub>2</sub>S, MgF<sub>2</sub>, Al<sub>2</sub>S<sub>3</sub>.</dd>
+  </dl>
+  <p class="col"><button class="btn" type="button" onclick="openAnim('ion')">Bekijk de animatie: zo ontstaat een ionbinding</button></p>
+  <div class="ws" id="ex-formula"></div>
+  <p class="col">De <span class="kw">lewisstructuur</span> van een ionverbinding stel je op in 3 stappen:</p>
+  <ol class="steps"><li><span>Schrijf het elektronenstipmodel van elk element.</span></li><li><span>Metalen geven valentie-elektronen af, niet-metalen nemen ze op tot een edelgasconfiguratie. Duid de elektronenoverdracht aan met een pijl.</span></li><li><span>Stel elk elektronenpaar voor met een streepje en schrijf de lading naast de ionen.</span></li></ol>
+  <div class="ws" id="ex-ionlewis"></div>
+  <div class="ws" id="ex-fu"></div>
+
+  <h3>2.2 Ionrooster</h3>
+  <p class="col">Tussen tegengesteld geladen ionen werken aantrekkingskrachten in alle richtingen. De ionen ordenen zich in een regelmatig patroon: een <span class="kw">ionrooster</span>. Elk positief ion wordt omgeven door negatieve ionen en omgekeerd. In NaCl wordt elk Na<sup>+</sup>-ion omgeven door zes Cl<sup>−</sup>-ionen.</p>
+  <ul class="clean col">
+    <li>De aantrekkingskracht is in alle richtingen groot: ionverbindingen zijn <b>vast</b> bij kamertemperatuur en kristallijn (NaCl: smeltpunt 801 °C, kookpunt 1413 °C).</li>
+    <li>Ionverbindingen zijn <b>niet vervormbaar</b>. Oefen je een kracht uit, dan komen gelijke ladingen tegenover elkaar. Die stoten elkaar af en er ontstaat een breukvlak.</li>
+    <li>Ionverbindingen <b>lossen op</b> in water: watermoleculen maken de ionen los uit het rooster.</li>
+    <li>Opgelost in water of in vloeibare toestand <b>geleiden</b> ze de elektrische stroom: er zijn beweegbare geladen deeltjes.</li>
+  </ul>
+  <div class="ws" id="ex-tf2"></div>
+</section>
+
+<!-- ============ 3 ATOOMVERBINDING ============ -->
+<section class="panel" id="p-atoomverb" role="tabpanel" hidden>
+  <h2>3 Atoomverbinding of covalente verbinding</h2>
+  <p class="lead">Stoffen die alleen uit niet-metalen bestaan, bereiken ook een edelgasconfiguratie: ze stellen elektronen gemeenschappelijk.</p>
+  <h3>3.1 Atoombinding of covalente binding</h3>
+  <dl class="def">
+    <dt>Atoombinding</dt><dd>Een binding tussen 2 niet-metaalatomen. Beide atomen stellen hun ongepaarde elektronen gemeenschappelijk.</dd>
+    <dt>Bindingselektronen</dt><dd>De gemeenschappelijke elektronen. Ze horen tot de buitenste schil van beide atomen.</dd>
+    <dt>Enkelvoudige, dubbele, drievoudige binding</dt><dd>Elk atoom stelt 1, 2 of 3 elektronen gemeenschappelijk. Bv. Cl–Cl, O=O en N≡N.</dd>
+    <dt>Atoomverbinding</dt><dd>Een stof opgebouwd uit atomen die via atoombindingen aan elkaar gebonden zijn. Je spreekt van een <b>molecule</b>.</dd>
+  </dl>
+  <p class="col">Lewisstructuur van een atoomverbinding in 3 stappen:</p>
+  <ol class="steps"><li><span>Schrijf het elektronenstipmodel van elk element.</span></li><li><span>Stel de ongepaarde elektronen gemeenschappelijk door ze te omcirkelen.</span></li><li><span>Stel elk gebonden elektronenpaar voor met een streepje.</span></li></ol>
+  <div class="note"><b class="tag">Tip</b>Het aantal bindingen dat een atoom vormt = het aantal elektronen dat het tekort heeft: H 1, halogenen (F, Cl, Br, I) 1, O en S 2, N en P 3, C en Si 4.</div>
+  <p class="col"><button class="btn" type="button" onclick="openAnim('cov')">Bekijk de animatie: zo ontstaat een covalente binding</button></p>
+  <div class="ws" id="ex-lewview"></div>
+  <div class="ws" id="ex-lewpick"></div>
+  <div class="ws" id="ex-lewcount"></div>
+
+  <h3>3.2 Moleculerooster en atoomrooster</h3>
+  <ul class="clean col">
+    <li>De krachten <b>tussen</b> de moleculen bepalen de aggregatietoestand. Zijn ze klein, dan is de stof een gas. Zijn ze groter, dan is ze vloeibaar of vast. In vaste toestand vormen de moleculen een <span class="kw">moleculerooster</span>, bv. ijs.</li>
+    <li>Oefen je druk uit op een moleculerooster, dan verbreek je de krachten tussen de moleculen. De atoombindingen zelf blijven.</li>
+    <li>Moleculen geleiden de elektrische stroom niet: er zijn geen vrije geladen deeltjes.</li>
+    <li>In een <span class="kw">atoomrooster</span> zijn dezelfde atomen in een groot, stevig rooster aan elkaar gebonden. Grafiet (vlakke lagen die over elkaar glijden: zacht) en diamant (alle C-atomen even sterk gebonden: het hardste natuurlijke materiaal) bestaan allebei uit koolstof.</li>
+  </ul>
+  <div class="ws" id="ex-btype"></div>
+  <div class="ws" id="ex-tf3"></div>
+</section>
+
+<!-- ============ ANIMATIE ============ -->
+<section class="panel" id="p-animatie" role="tabpanel" hidden>
+  <h2>Bindingen in beeld</h2>
+  <p class="lead">Atomen binden om een stabiele edelgasconfiguratie te bereiken. Metalen en niet-metalen doen dat door elektronen <em>over te dragen</em>, niet-metalen onderling door elektronen te <em>delen</em>. Volg de elektronen stap voor stap.</p>
+<div class="an-wrap anim">
+  
+
+  <div class="an-modes" id="an-modes">
+    <button class="an-mode" type="button" data-m="ion"><b>Ionbinding</b><span>metaal + niet-metaal</span></button>
+    <button class="an-mode" type="button" data-m="cov"><b>Covalente binding</b><span>niet-metaal + niet-metaal</span></button>
+  </div>
+
+  <div class="an-tabs" id="an-tabs" aria-label="Kies een stof"></div>
+
+  <figure class="an-stage">
+    <div class="an-tag" id="an-tag"></div>
+    <svg id="an-svg" viewBox="-400 -215 800 430" role="img" aria-label="Animatie van een chemische binding">
+      <defs id="an-defs"></defs>
+      <g id="an-gRoot"><g id="an-gLat"></g><g id="an-gLens"></g><g id="an-gShell"></g><g id="an-gLine"></g><g id="an-gNuc"></g><g id="an-gEl"></g><g id="an-gLab"></g></g>
+    </svg>
+    <div class="an-legend" id="an-legend"></div>
+  </figure>
+
+  <div class="an-controls">
+    <button class="an-btn an-primary" id="an-play" type="button">Pauzeer</button>
+    <button class="an-btn" id="an-restart" type="button">Opnieuw</button>
+    <input class="an-scrub" id="an-scrub" type="range" min="0" max="1000" value="0" aria-label="Tijdlijn van de animatie">
+  </div>
+
+  <div class="an-steps" id="an-steps"></div>
+
+  <section class="an-caption" aria-live="polite">
+    <h2 id="an-capTitle"></h2>
+    <p id="an-capText"></p>
+    <div class="an-chips" id="an-chips"></div>
+  </section>
+
+  <p class="an-note" id="an-note"></p>
+
+  <section class="an-compare">
+    <h3>Ionbinding of covalente binding?</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>Ionbinding</th><th>Covalente binding</th></tr></thead>
+        <tbody>
+          <tr><th>Tussen</th><td>een metaal en een niet-metaal</td><td>niet-metalen onderling</td></tr>
+          <tr><th>Elektronen</th><td>worden overgedragen: het metaal staat af, het niet-metaal neemt op</td><td>worden gedeeld in gemeenschappelijke elektronenparen</td></tr>
+          <tr><th>Deeltjes</th><td>positieve en negatieve ionen</td><td>moleculen</td></tr>
+          <tr><th>Wat houdt ze samen?</th><td>aantrekking tussen tegengestelde ladingen (+ en −)</td><td>het gemeenschappelijk elektronenpaar tussen twee kernen</td></tr>
+          <tr><th>Bouw</th><td>ionrooster (kristal)</td><td>afzonderlijke moleculen</td></tr>
+          <tr><th>Notatie</th><td>verhoudingsformule, bv. NaCl, MgCl₂</td><td>molecuulformule en Lewisstructuur, bv. H–O–H</td></tr>
+          <tr><th>Voorbeelden</th><td>keukenzout NaCl, MgO, Na₂O</td><td>H₂, H₂O, O₂, N₂, HCl</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+  <div class="ws" id="ex-animq"></div>
+</section>
+
+<!-- ============ 4 METALEN ============ -->
+<section class="panel" id="p-metalen" role="tabpanel" hidden>
+  <h2>4 Binding bij metalen</h2>
+  <p class="lead">Metalen geven elektronen af om tot een edelgasconfiguratie te komen. Ze willen geen elektronen opnemen.</p>
+  <dl class="def">
+    <dt>Metaalbinding</dt><dd>De binding tussen positieve metaalionen en vrij bewegende elektronen, nadat metaalatomen hun valentie-elektronen afgeven. Ionen en elektronen trekken elkaar aan.</dd>
+    <dt>Metaalrooster</dt><dd>Een regelmatige schikking van de positieve metaalionen, bv. het metaalrooster van ijzer.</dd>
+  </dl>
+  <ul class="clean col">
+    <li>De aantrekking tussen vrije elektronen en positieve ionen is groot: metalen zijn <b>vast</b> bij kamertemperatuur (behalve kwik).</li>
+    <li>De vrij bewegende elektronen zorgen voor <b>elektrische geleiding</b> en <b>warmtegeleiding</b>.</li>
+    <li>Metalen zijn <b>vervormbaar</b>: de elektronen houden de ionen bij elkaar, zodat lagen kunnen verschuiven zonder dat het rooster breekt.</li>
+  </ul>
+  <div class="ws" id="ex-lattice"></div>
+  <div class="ws" id="ex-free"></div>
+  <div class="ws" id="ex-props"></div>
+  <div class="ws" id="ex-tf4"></div>
+</section>
+
+<!-- ============ FOCUS ============ -->
+<section class="panel" id="p-focus" role="tabpanel" hidden>
+  <h2>Focus: de pracht van roosterstructuren</h2>
+  <p class="lead">Komen de bestanddelen van een stof voor in een roosterstructuur, dan heb je een kristallijne stof. Die sterke ordening geeft gladde breukvlakken die het licht prachtig breken en weerkaatsen.</p>
+  <div class="focusgrid" id="minerals"></div>
+  <div class="ws" id="ex-focus"></div>
+</section>
+
+<!-- ============ 5 OG ============ -->
+<section class="panel" id="p-og" role="tabpanel" hidden>
+  <h2>5 Het oxidatiegetal</h2>
+  <p class="lead">Het <span class="kw">oxidatiegetal (OG)</span> is de denkbeeldige lading die een atoom krijgt als alle bindingen met atomen van een ander element ionbindingen zouden zijn. Je schrijft het als een Romeins cijfer met een plus- of minteken, bv. +II of −I.</p>
+  <h3>Beslissingsboom</h3>
+  <div class="two">
+    <div class="col">
+      <p><b>Enkelvoudige stof</b> (He, O<sub>2</sub>, Al, S<sub>8</sub> …): OG = 0, welke binding er ook is.</p>
+      <p><b>Ionverbinding</b>: het OG van een atoom in een mono-atomisch ion = de ionlading. Controle: de som van de OG's is 0.</p>
+      <p><b>Atoomverbinding</b>: de bindingselektronen worden schijnbaar toegekend aan het atoom met de grootste EN-waarde. Dat atoom krijgt een negatief OG, het andere een positief. Controle: de som is 0.</p>
+    </div>
+    <div class="tablewrap"><table>
+      <tr><th>groep</th><th>Ia</th><th>IIa</th><th>IIIa</th><th>VIa</th><th>VIIa</th></tr>
+      <tr><td>valentie-e<sup>−</sup></td><td>1</td><td>2</td><td>3</td><td>6</td><td>7</td></tr>
+      <tr><td>edelgasconfig.</td><td>1 afgeven</td><td>2 afgeven</td><td>3 afgeven</td><td>2 opnemen</td><td>1 opnemen</td></tr>
+      <tr><td>OG (in ionverbinding)</td><td>+I</td><td>+II</td><td>+III</td><td>−II</td><td>−I</td></tr>
+    </table></div>
+  </div>
+  <p class="col mini">Voorbeelden: MgF<sub>2</sub>: OG(Mg) = +II, OG(F) = −I, controle (+II) + 2 · (−I) = 0. CO<sub>2</sub>: EN(O) = 3,5 > EN(C) = 2,5, dus OG(C) = +IV en OG(O) = −II.</p>
+  <div class="ws" id="ex-tree"></div>
+  <div class="ws" id="ex-ogpse"></div>
+  <div class="ws" id="ex-tf5"></div>
+</section>
+
+<!-- ============ TEST ============ -->
+<section class="panel" id="p-test" role="tabpanel" hidden>
+  <h2>Test jezelf</h2>
+  <p class="lead">Een toets van 15 vragen, telkens willekeurig gekozen uit het hele thema. Doe hem zo vaak je wilt.</p>
+  <div class="ws" id="ex-final"></div>
+  <h3>Flitskaarten: nieuwe begrippen</h3>
+  <p class="mini">Lees het begrip, zeg de betekenis luidop en draai dan de kaart om.</p>
+  <div id="flash"></div>
+</section>
+
+</main>
+<footer class="wrap">Gebaseerd op de cursus Chemie, Thema 4 “Chemische bindingen”. Je vooruitgang wordt enkel in deze browser bewaard.</footer>
+<script>
+const ATOMCOL = {C:"#1d1d1f",H:"#f4f4f4",O:"#d62828",N:"#2f6fdb",S:"#f2c80f",P:"#7b4fc9",Cl:"#3aa53a",F:"#3aa53a",Br:"#3aa53a",I:"#3aa53a",He:"#9fd8ea",Ne:"#9fd8ea",Ar:"#9fd8ea"};
+const METAL = "#7d8790";
+function atomColor(s){return ATOMCOL[s]||METAL;}
+
+/* ===== Helpers ===== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs||{})){if(k==="class")e.className=v;else if(k==="html")e.innerHTML=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?"":v);}for(const k of kids.flat()){if(k==null||k===false)continue;e.append(k instanceof Node?k:document.createTextNode(k));}return e;}
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=(a,n)=>shuffle(a).slice(0,n);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const fmt=s=>String(s).replace(/([A-Za-z\)])(\d+)/g,'$1<sub>$2</sub>');
+const KEY="chemie-t4-v1";
+let state={done:{},tab:"ionen"};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&typeof s==="object")state=Object.assign(state,s);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function markDone(id){state.done[id]=true;save();updateDots();}
+function updateDots(){$$(".tbtn").forEach(b=>{const p=$("#p-"+b.dataset.tab);const ids=$$(".ws",p).map(w=>w.id);const done=ids.length&&ids.every(i=>state.done[i]);b.querySelector(".dot").classList.toggle("done",!!done);b.querySelector(".dot").title=done?"Alle oefeningen gemaakt":"";});}
+function wsHead(box,title,tag){box.innerHTML="";const sc=h("span",{class:"score"});box.append(h("header",{},h("h3",{},title),h("span",{class:"tag"},tag||"Oefening"),sc));return sc;}
+const norm=s=>String(s).trim().toLowerCase().replace(/\s+/g," ").replace(/[‐–—]/g,"-");
+
+/* ===== Tabs ===== */
+function showTab(name,push){if(!$("#p-"+name))name="ionen";$$(".panel").forEach(p=>p.hidden=p.id!=="p-"+name);$$(".tbtn").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name?"true":"false"));state.tab=name;save();if(push){try{history.replaceState(null,"","#"+name);}catch(e){location.hash=name;}window.scrollTo({top:0});}}
+$$(".tbtn").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab,true)));
+$$(".toc a").forEach(a=>a.addEventListener("click",ev=>{ev.preventDefault();const t=$(a.getAttribute("href"));if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}));
+
+/* ===== Generic: sorteeroefening (per item een keuze) ===== */
+function sortEx(id,cfg){
+  const box=$("#"+id);if(!box)return;
+  function build(){
+    const sc=wsHead(box,cfg.title,cfg.tag);
+    if(cfg.intro)box.append(h("p",{class:"mini"},h("span",{class:"ask"},cfg.intro)));
+    const list=h("div",{class:"items"});box.append(list);
+    let answered=0,first=0;const items=cfg.keep?cfg.items:shuffle(cfg.items);
+    const upd=()=>{sc.textContent=answered===items.length?`${first}/${items.length} in één keer juist`:`${answered}/${items.length}`;};
+    items.forEach(it=>{
+      const acc=[].concat(it.a);let tries=0;
+      const fb=h("p",{class:"fb"});const opts=h("div",{class:"opts"});
+      if(cfg.select){const sel=h("select",{"aria-label":"kies"},h("option",{value:""},"kies …"),(it.options||cfg.options).map(o=>h("option",{value:o},o)));sel.addEventListener("change",()=>{if(!sel.value)return;tries++;if(acc.includes(sel.value)){sel.className="ok";sel.disabled=true;fb.className="fb good";fb.innerHTML=(tries===1?"Juist! ":"Ja, nu klopt het. ")+(it.why||"");answered++;if(tries===1)first++;upd();if(answered===items.length)markDone(id);}else{sel.className="no";fb.className="fb badf";fb.innerHTML=it.hint||"Niet juist. Probeer opnieuw.";}});opts.append(sel);}
+      else (it.options||cfg.options).forEach(o=>{const b=h("button",{class:"opt",type:"button"},o);b.addEventListener("click",()=>{tries++;if(acc.includes(o)){b.classList.add("right");$$("button",opts).forEach(x=>x.disabled=true);fb.className="fb good";fb.innerHTML=(tries===1?"Juist! ":"Ja, nu klopt het. ")+(it.why||"");answered++;if(tries===1)first++;upd();if(answered===items.length){markDone(id);}}else{b.classList.add("wrong");b.disabled=true;fb.className="fb badf";fb.innerHTML=it.hint||"Niet juist. Probeer opnieuw.";}});opts.append(b);});
+      list.append(h("div",{class:"item"},h("span",{class:"lbl",html:it.t}),opts,fb));
+    });
+    upd();
+    box.append(h("div",{class:"btnrow"},h("button",{class:"btn",type:"button",onclick:build},"Opnieuw (andere volgorde)")));
+  }
+  build();
+}
+
+/* ===== Generic: meerkeuzereeks ===== */
+function mcEx(id,cfg){
+  const box=$("#"+id);if(!box)return;
+  function start(){
+    const sc=wsHead(box,cfg.title,cfg.tag);
+    if(cfg.intro)box.append(h("p",{class:"mini"},h("span",{class:"ask"},cfg.intro)));
+    const qs=(typeof cfg.questions==="function"?cfg.questions():(cfg.n?pick(cfg.questions,cfg.n):shuffle(cfg.questions)));
+    const bar=h("div",{class:"progress"},h("i"));const area=h("div",{class:"mc"});box.append(bar,area);
+    let i=0,score=0;const wrongs=[];
+    function show(){
+      bar.firstChild.style.width=(i/qs.length*100)+"%";sc.textContent=`vraag ${Math.min(i+1,qs.length)}/${qs.length} · score ${score}`;
+      area.innerHTML="";
+      if(i>=qs.length){
+        markDone(id);
+        const pct=Math.round(score/qs.length*100);
+        area.append(h("p",{class:"q"},`Klaar! Je score: ${score}/${qs.length} (${pct}%).`),h("p",{},pct>=80?"Sterk gedaan. Je beheerst dit onderdeel.":pct>=50?"Goed op weg. Bekijk de vragen die fout liepen nog eens.":"Lees de leerstof nog eens rustig na en probeer opnieuw."));
+        if(wrongs.length){area.append(h("p",{class:"mini"},"Om te herhalen:"),h("ul",{class:"clean"},wrongs.map(w=>h("li",{html:w}))));}
+        area.append(h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:start},"Nieuwe reeks")));
+        return;
+      }
+      const q=qs[i];const opts=q.keep?q.opts:shuffle(q.opts);
+      if(q.svg)area.append(h("div",{html:q.svg,style:"width:110px;height:110px;margin-bottom:6px"}));
+      if(q.graph)area.append(h("div",{class:"graph",html:q.graph}));
+      area.append(h("p",{class:"q",html:q.q}));
+      const og=h("div",{class:"opts"});const why=h("div",{class:"why",hidden:true});
+      const next=h("button",{class:"btn primary",type:"button",hidden:true,onclick:()=>{i++;show();}},i===qs.length-1?"Toon resultaat":"Volgende vraag");
+      opts.forEach(o=>{const b=h("button",{class:"opt",type:"button",html:o});b.addEventListener("click",()=>{const ok=o===q.a;$$("button",og).forEach(x=>{x.disabled=true;if(x.innerHTML===b.innerHTML&&!ok)x.classList.add("wrong");});$$("button",og).forEach(x=>{if(x.dataset.v===q.a)x.classList.add("right");});if(ok)score++;else wrongs.push(q.q+" → "+q.a);why.hidden=false;why.innerHTML=(ok?"<b>Juist.</b> ":"<b>Niet juist.</b> Het juiste antwoord is: "+q.a+". ")+(q.why||"");sc.textContent=`vraag ${i+1}/${qs.length} · score ${score}`;next.hidden=false;next.focus();});b.dataset.v=o;og.append(b);});
+      area.append(og,why,h("div",{class:"btnrow"},next));
+    }
+    show();
+  }
+  start();
+}
+
+
+function parseFormula(str){
+  str=str.replace(/\s+/g," ").trim();let coef=1;const m=str.match(/^(\d+)\s*(.*)$/);if(m){coef=+m[1];str=m[2];}
+  let i=0;function group(){const c={};while(i<str.length&&str[i]!==")"){let part={};if(str[i]==="("){i++;part=group();i++;}else{const mm=str.slice(i).match(/^[A-Z][a-z]?/);if(!mm)throw new Error("bad");part={[mm[0]]:1};i+=mm[0].length;}const d=str.slice(i).match(/^\d+/);let k=1;if(d){k=+d[0];i+=d[0].length;}for(const e in part)c[e]=(c[e]||0)+part[e]*k;}return c;}
+  const counts=group();if(i!==str.length)throw new Error("bad");return{coef,counts,f:str};
+}
+
+/* ===== Thema 2 helpers ===== */
+function parseEq(s){const [L,R]=s.split("->");const side=x=>x.split(" + ").map(t=>{t=t.trim();const m=t.match(/^(\d+)\s+(.+)$/);return{c:m?+m[1]:1,f:m?m[2]:t};});return{L:side(L),R:side(R)};}
+const eqStr=(E,coefs)=>{let k=0;const part=a=>a.map(sp=>{const c=coefs?coefs[k++]:sp.c;return (c>1?c+" ":"")+fmt(sp.f);}).join(' <span class="plus">+</span> ');return part(E.L)+' <span class="arrow">⟶</span> '+part(E.R);};
+function tallySide(side,coefs){const t={};side.forEach((sp,i)=>{const c=parseFormula(sp.f).counts;for(const e in c)t[e]=(t[e]||0)+c[e]*coefs[i];});return t;}
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+
+/* Elementen: Z|symbool|naam|Ar (1 decimaal, zoals in het cursus-PSE; [x] = meest stabiele isotoop) */
+const ELRAW=`1|H|waterstof|1,0;2|He|helium|4,0;3|Li|lithium|6,9;4|Be|beryllium|9,0;5|B|boor|10,8;6|C|koolstof|12,0;7|N|stikstof|14,0;8|O|zuurstof|16,0;9|F|fluor|19,0;10|Ne|neon|20,2;11|Na|natrium|23,0;12|Mg|magnesium|24,3;13|Al|aluminium|27,0;14|Si|silicium|28,1;15|P|fosfor|31,0;16|S|zwavel|32,1;17|Cl|chloor|35,5;18|Ar|argon|39,9;19|K|kalium|39,1;20|Ca|calcium|40,1;21|Sc|scandium|45,0;22|Ti|titanium|47,9;23|V|vanadium|50,9;24|Cr|chroom|52,0;25|Mn|mangaan|54,9;26|Fe|ijzer|55,8;27|Co|kobalt|58,9;28|Ni|nikkel|58,7;29|Cu|koper|63,5;30|Zn|zink|65,4;31|Ga|gallium|69,7;32|Ge|germanium|72,6;33|As|arseen|74,9;34|Se|seleen|79,0;35|Br|broom|79,9;36|Kr|krypton|83,8;37|Rb|rubidium|85,5;38|Sr|strontium|87,6;39|Y|yttrium|88,9;40|Zr|zirkonium|91,2;41|Nb|niobium|92,9;42|Mo|molybdeen|95,9;43|Tc|technetium|[98];44|Ru|ruthenium|101,1;45|Rh|rhodium|102,9;46|Pd|palladium|106,4;47|Ag|zilver|107,9;48|Cd|cadmium|112,4;49|In|indium|114,8;50|Sn|tin|118,7;51|Sb|antimoon|121,8;52|Te|tellurium|127,6;53|I|jood|126,9;54|Xe|xenon|131,3;55|Cs|cesium|132,9;56|Ba|barium|137,3;57|La|lanthaan|138,9;58|Ce|cerium|140,1;59|Pr|praseodymium|140,9;60|Nd|neodymium|144,2;61|Pm|promethium|[145];62|Sm|samarium|150,4;63|Eu|europium|152,0;64|Gd|gadolinium|157,3;65|Tb|terbium|158,9;66|Dy|dysprosium|162,5;67|Ho|holmium|164,9;68|Er|erbium|167,3;69|Tm|thulium|168,9;70|Yb|ytterbium|173,0;71|Lu|lutetium|175,0;72|Hf|hafnium|178,5;73|Ta|tantaal|180,9;74|W|wolfraam|183,9;75|Re|renium|186,2;76|Os|osmium|190,2;77|Ir|iridium|192,2;78|Pt|platina|195,1;79|Au|goud|197,0;80|Hg|kwik|200,6;81|Tl|thallium|204,4;82|Pb|lood|207,2;83|Bi|bismut|209,0;84|Po|polonium|[209];85|At|astaat|[210];86|Rn|radon|[222];87|Fr|francium|[223];88|Ra|radium|[226];89|Ac|actinium|[227];90|Th|thorium|232,0;91|Pa|protactinium|231,0;92|U|uraan|238,0;93|Np|neptunium|[237];94|Pu|plutonium|[244];95|Am|americium|[243];96|Cm|curium|[247];97|Bk|berkelium|[247];98|Cf|californium|[251];99|Es|einsteinium|[252];100|Fm|fermium|[257];101|Md|mendelevium|[258];102|No|nobelium|[259];103|Lr|lawrencium|[262];104|Rf|rutherfordium|;105|Db|dubnium|;106|Sg|seaborgium|;107|Bh|bohrium|;108|Hs|hassium|;109|Mt|meitnerium|;110|Ds|darmstadtium|;111|Rg|röntgenium|;112|Cn|copernicium|;113|Nh|nihonium|;114|Fl|flerovium|;115|Mc|moscovium|;116|Lv|livermorium|;117|Ts|tennessine|;118|Og|oganesson|`;
+const NONMET=new Set(["H","B","C","N","O","F","Si","P","S","Cl","As","Se","Br","Te","I","At"]);
+const NOBLE=new Set(["He","Ne","Ar","Kr","Xe","Rn","Og"]);
+const ROMAN={1:"Ia",2:"IIa",3:"IIIb",4:"IVb",5:"Vb",6:"VIb",7:"VIIb",8:"VIIIb",9:"VIIIb",10:"VIIIb",11:"Ib",12:"IIb",13:"IIIa",14:"IVa",15:"Va",16:"VIa",17:"VIIa",18:"0"};
+const GNAME={1:"alkalimetalen",2:"aardalkalimetalen",13:"boorgroep",14:"koolstofgroep",15:"stikstofgroep",16:"zuurstofgroep",17:"halogenen",18:"edelgassen"};
+const EL=[];const BYSYM={};
+ELRAW.split(";").forEach(r=>{const [z,s,n,a]=r.split("|");const Z=+z;let ar=null,arTxt=a||"";if(a&&a[0]!=="[")ar=parseFloat(a.replace(",","."));
+  let period,group,row,col;
+  if(Z<=2){period=1;group=Z===1?1:18;}else if(Z<=10){period=2;group=Z<=4?Z-2:Z+8;}else if(Z<=18){period=3;group=Z<=12?Z-10:Z;}else if(Z<=36){period=4;group=Z-18;}else if(Z<=54){period=5;group=Z-36;}
+  else if(Z<=86){period=6;group=Z<=57?Z-54:Z<=71?null:Z-68;}else{period=7;group=Z<=89?Z-86:Z<=103?null:Z-100;}
+  if(group){row=period;col=group;}else{row=period===6?9:10;col=Z-(period===6?58:90)+4;}
+  const cls=NOBLE.has(s)?"edel":NONMET.has(s)?"nmet":"met";
+  const e={Z,s,n,ar,arTxt,period,group,row,col,cls};EL.push(e);BYSYM[s]=e;});
+const AR=s=>BYSYM[s].ar;
+function config(Z){const out=[];let left=Z;const mx=[2,8,8];for(let i=0;i<3&&left>0;i++){const k=Math.min(mx[i],left);out.push(k);left-=k;}return out;} // geldig voor Z ≤ 18
+const SHELL="KLMNOPQ";
+const cfgTxt=c=>c.map((k,i)=>SHELL[i]+": "+k).join("  ");
+function valence(e){if(e.Z<=18){const c=config(e.Z);return c[c.length-1];}if(e.group===18)return 8;if(e.group&&e.group<=2)return e.group;if(e.group>=13)return e.group-10;return null;}
+const fmtAr=x=>x.toFixed(1).replace(".",",");
+const dc=(x,d=1)=>x.toFixed(d).replace(".",",");
+function sci(x,d=2){if(x===0)return"0";const ex=Math.floor(Math.log10(Math.abs(x)));let m=x/Math.pow(10,ex);let mm=+m.toFixed(d);let e2=ex;if(Math.abs(mm)>=10){mm=+(mm/10).toFixed(d);e2++;}if(e2===0)return mm.toFixed(d).replace(".",",");return mm.toFixed(d).replace(".",",")+" · 10<sup>"+e2+"</sup>";}
+function parseSci(s){s=String(s).trim().replace(/\s+/g,"").replace(/−/g,"-").replace(/,/g,".");if(!s)return NaN;let m=s.match(/^([-+]?\d*\.?\d+)(?:(?:[x×*·.]?10\^?([-+]?\d+))|(?:e([-+]?\d+)))?$/i);if(m){const v=parseFloat(m[1]);const ex=m[2]!=null?+m[2]:m[3]!=null?+m[3]:0;return v*Math.pow(10,ex);}m=s.match(/^10\^([-+]?\d+)$/);if(m)return Math.pow(10,+m[1]);return NaN;}
+const close=(a,b,rel=0.02)=>Math.abs(a-b)<=Math.abs(b)*rel+1e-12;
+const NA=6.022e23,U=1.66e-27;
+function Mr(f){const c=parseFormula(f).counts;let t=0;for(const e in c)t+=c[e]*AR(e);return +t.toFixed(1);}
+function MrSteps(f){const c=parseFormula(f).counts;const els=Object.keys(c);return `M<sub>r</sub>(${fmt(f)}) = ${els.map(e=>c[e]+" · A<sub>r</sub>("+e+")").join(" + ")} = ${els.map(e=>c[e]+" · "+fmtAr(AR(e))).join(" + ")} = <b>${dc(Mr(f))}</b>`;}
+
+const nucl=(A,Z,X)=>`<span class="nuclide"><span class="A">${A??""}</span><span class="Z">${Z??""}</span><span class="X">${X}</span></span>`;
+function lewisHtml(sym,v,isK){
+  const slot=["t","r","b","l"];const n=[0,0,0,0];
+  if(isK){n[0]=v;}else{for(let j=0;j<v;j++)n[j%4]++;}
+  const part=(p,k)=>{if(!k)return`<span class="${p}"></span>`;if(k===1)return`<span class="${p}"><i class="dot"></i></span>`;return`<span class="${p}"><i class="${p==="t"||p==="b"?"hbar":"vbar"}"></i></span>`;};
+  return `<span class="lewis" aria-label="lewisnotatie ${sym}">${slot.map((p,i)=>part(p,n[i])).join("")}<span class="c">${sym}</span></span>`;
+}
+function lewisCustom(sym,n){const slot=["t","r","b","l"];return `<span class="lewis">${slot.map((p,i)=>!n[i]?`<span class="${p}"></span>`:n[i]===1?`<span class="${p}"><i class="dot"></i></span>`:`<span class="${p}"><i class="${p==="t"||p==="b"?"hbar":"vbar"}"></i></span>`).join("")}<span class="c">${sym}</span></span>`;}
+
+/* ===================== HELPERS THEMA 4 ===================== */
+const EN={H:2.1,Li:1.0,Be:1.5,B:2.0,C:2.5,N:3.0,O:3.5,F:4.0,Na:0.9,Mg:1.2,Al:1.5,Si:1.8,P:2.1,S:2.5,Cl:3.0,K:0.8,Ca:1.0,Br:2.8,I:2.5,Rb:0.8,Sr:1.0,Cs:0.7,Ba:0.9,Fr:0.7};
+const enTxt=s=>EN[s].toFixed(1).replace(".",",");
+function cfg4(n){const out=[];let left=n;const mx=[2,8,8,8];for(let i=0;i<4&&left>0;i++){const k=Math.min(mx[i],left);out.push(k);left-=k;}return out;}
+const cfg4Txt=c=>c.map((k,i)=>"KLMN"[i]+": "+k).join("  ");
+const ROMN=n=>n===0?"0":(n>0?"+":"−")+["","I","II","III","IV","V","VI","VII","VIII"][Math.abs(n)];
+const chg=q=>q===0?"":(Math.abs(q)===1?"":Math.abs(q))+(q>0?"+":"−");
+const SUP={0:'⁰',1:'¹',2:'²',3:'³','+':'⁺','−':'⁻'};const chgU=q=>q===0?'':[...chg(q)].map(c=>SUP[c]||c).join('');
+const ionHtml=(s,q)=>`${s}<sup>${chg(q)}</sup>`;
+const fnum=x=>String(+(+x).toFixed(3)).replace(".",",");
+function numInput(id,w="7em",ph=""){return h("input",{type:"text",inputmode:"decimal",id,autocomplete:"off",style:`width:${w}`,placeholder:ph});}
+/* Bohr met tot 4 schillen; marks: extra info voor afgegeven/opgenomen elektronen */
+function bohr4(Z,counts,opts={}){
+  const R=[34,56,78,100];const shells=Math.max(1,opts.shells||counts.length);
+  let s=`<svg viewBox="0 0 240 240" role="img" aria-label="schillenmodel ${cfg4Txt(counts)}">`;
+  for(let i=0;i<shells;i++)s+=`<circle class="ring" cx="120" cy="120" r="${R[i]}"/><text class="ringlbl" x="${120+R[i]*0.72+3}" y="${120+R[i]*0.72+10}">${"KLMN"[i]}</text>`;
+  s+=`<circle class="core" cx="120" cy="120" r="19"/><text class="coretxt" x="120" y="125" text-anchor="middle" font-size="13">${Z}+</text>`;
+  for(let i=0;i<shells;i++){const list=[];const last=i===counts.length-1;
+    const k=counts[i]||0;for(let j=0;j<k;j++)list.push(opts.added&&opts.added[0]===i&&j>=k-opts.added[1]?"new":(opts.valence!==false&&last?"val":""));
+    if(opts.gone&&opts.gone[0]===i)for(let j=0;j<opts.gone[1];j++)list.push("gone");
+    const pos=[[0,-1],[1,0],[0,1],[-1,0]];const slots=[[],[],[],[]];
+    list.forEach((c,j)=>{const p=i===0?0:j%4;slots[p].push(c);});
+    slots.forEach((sl,p)=>{sl.forEach((c,q)=>{const off=sl.length===2?(q?7:-7):0;const [dx,dy]=pos[p];const ang=Math.atan2(dy,dx)+off/R[i];s+=`<circle class="e ${c}" cx="${(120+R[i]*Math.cos(ang)).toFixed(1)}" cy="${(120+R[i]*Math.sin(ang)).toFixed(1)}" r="5"/>`;});});}
+  return s+"</svg>";
+}
+const IONEL=["Li","Be","Na","Mg","Al","K","Ca","N","O","F","P","S","Cl"];
+function ionOf(s){const E=BYSYM[s];const c=cfg4(E.Z);const v=c[c.length-1];if(E.cls==="met")return{q:v,give:v};return{q:-(8-v),take:8-v};}
+
+/* ===================== 1 IONEN ===================== */
+(function ionmaker(){
+  const box=$("#ex-ionmaker");wsHead(box,"Ionenmaker","Interactief");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Kies een element. Geef elektronen af of neem elektronen op tot de buitenste schil een edelgasconfiguratie heeft.")));
+  const sel=h("select",{id:"im-el","aria-label":"element"},IONEL.map(s=>h("option",{value:s},`${BYSYM[s].n} (${s}, Z = ${BYSYM[s].Z})`)));
+  const left=h("div",{class:"bohr4"}),right=h("div",{class:"bohr4"});const capL=h("div",{class:"cap"}),capR=h("div",{class:"cap"});
+  const info=h("div");let E,e,done=new Set();
+  function upd(){const Z=E.Z;const c=cfg4(e);const q=Z-e;const ca=cfg4(Z);
+    left.innerHTML=bohr4(Z,ca);capL.innerHTML=`${E.s}-atoom<br><span class="mini">${cfg4Txt(ca)}</span>`;
+    let opts={};if(e<Z){const lost=Z-e;opts={gone:[ca.length-1,Math.min(lost,ca[ca.length-1])],shells:ca.length};}else if(e>Z){opts={added:[c.length-1,e-Z]};}
+    right.innerHTML=bohr4(Z,c,opts);
+    const buiten=c[c.length-1];const noble=(c.length===1&&buiten===2)||(c.length>1&&buiten===8);
+    capR.innerHTML=`${q===0?E.s+"-atoom":ionHtml(E.s,q)+(q>0?" (kation)":" (anion)")}<br><span class="mini">${cfg4Txt(c)}</span>`;
+    const eq=q===0?"":q>0?`${E.s} − ${q} e<sup>−</sup> ⟶ ${ionHtml(E.s,q)}`:`${E.s} + ${-q} e<sup>−</sup> ⟶ ${ionHtml(E.s,q)}`;
+    info.innerHTML=`<p><span class="status ${noble?"good":"wait"}">${noble?"edelgasconfiguratie bereikt":"nog geen edelgasconfiguratie"}</span></p><dl class="facts"><dt>aantal p<sup>+</sup></dt><dd>${Z}</dd><dt>aantal e<sup>−</sup></dt><dd>${e}</dd><dt>lading</dt><dd>${q===0?"0":chg(q)}</dd>${eq?`<dt>in symbolen</dt><dd>${eq}</dd>`:""}</dl>${noble&&q!==0?`<p class="fb good">${E.cls==="met"?"Een metaal geeft elektronen af: er ontstaat een positief ion.":"Een niet-metaal neemt elektronen op: er ontstaat een negatief ion."}</p>`:""}${noble&&q!==0&&(E.cls==="met"?q<0:q>0)?`<p class="fb badf">Dit kan wiskundig, maar in de praktijk ${E.cls==="met"?"geeft een metaal elektronen af":"neemt een niet-metaal elektronen op"}: dat vraagt veel minder elektronen.</p>`:""}`;
+    if(noble&&q!==0){done.add(E.s);if(done.size>=3)markDone("ex-ionmaker");}}
+  const reset=()=>{E=BYSYM[sel.value];e=E.Z;upd();};sel.addEventListener("change",reset);
+  box.append(h("div",{class:"btnrow",style:"align-items:center"},sel,h("button",{class:"btn",type:"button",onclick:()=>{if(e>0){e--;upd();}}},"Geef 1 e⁻ af"),h("button",{class:"btn",type:"button",onclick:()=>{if(e<E.Z+4){e++;upd();}}},"Neem 1 e⁻ op"),h("button",{class:"btn",type:"button",onclick:reset},"Terug naar atoom")),
+    h("div",{class:"ionstage"},h("div",{},left,capL),h("div",{class:"mid"},"⟶"),h("div",{},right,capR)),info);
+  sel.value="Na";reset();
+})();
+
+(function iontable(){
+  const box=$("#ex-iontable");let total=0,good=0;
+  const POOL=[["Cl",-1],["O",-2],["Ne",0],["Mg",2],["Na",1],["F",-1],["S",-2],["Al",3],["Ar",0],["K",1],["Ca",2],["N",-3],["Li",1],["P",-3],["Be",2]];
+  function gen(){
+    const sc=wsHead(box,"Atoom of ion? Vul de tabel aan","Test jezelf 4");sc.textContent=total?`${good}/${total}`:"";
+    const [s,q]=pick(POOL,1)[0];const E=BYSYM[s];const e=E.Z-q;const c=cfg4(e);
+    box.append(h("p",{class:"col",html:`Bestudeer het deeltje <b style="font-family:var(--f-display);font-size:1.4rem">${ionHtml(s,q)}</b> en vul aan.`}));
+    const I={Z:numInput("it-z","4em"),e:numInput("it-e","4em"),v:numInput("it-v","4em")};
+    const soort=h("select",{id:"it-s","aria-label":"soort deeltje"},h("option",{value:""},"kies …"),["anion","kation","atoom"].map(x=>h("option",{},x)));
+    const mnm=h("select",{id:"it-m","aria-label":"soort element"},h("option",{value:""},"kies …"),["metaal","niet-metaal","edelgas"].map(x=>h("option",{},x)));
+    const grp=h("select",{id:"it-g","aria-label":"groep"},h("option",{value:""},"kies …"),["Ia","IIa","IIIa","IVa","Va","VIa","VIIa","0"].map(x=>h("option",{},x)));
+    const ans={Z:E.Z,e,v:c[c.length-1]};const sAns=q>0?"kation":q<0?"anion":"atoom";const mAns=E.cls==="edel"?"edelgas":E.cls==="nmet"?"niet-metaal":"metaal";
+    const fb=h("p",{class:"fb"});
+    box.append(h("div",{class:"countgrid"},h("label",{},"atoomnummer",I.Z),h("label",{},"totaal aantal e⁻",I.e),h("label",{},"valentie-e⁻ van het deeltje",I.v),h("label",{},"groep",grp),h("label",{},"anion/kation/atoom",soort),h("label",{},"metaal/niet-metaal/edelgas",mnm)),
+      h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:ev=>{let ok=true;for(const k in I){const g=I[k].value!==""&&+I[k].value===ans[k];I[k].className=g?"ok":"no";ok=ok&&g;}[[soort,sAns],[mnm,mAns],[grp,ROMAN[E.group]]].forEach(([el,a])=>{const g=el.value===a;el.className=g?"ok":"no";ok=ok&&g;});total++;if(ok)good++;sc.textContent=`${good}/${total}`;ev.target.disabled=true;
+        fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Alles juist! ":"Niet alles juist. ")+`${s}: Z = ${E.Z}, groep ${ROMAN[E.group]}. Lading ${q===0?"0":chg(q)}, dus ${E.Z} ${q>0?"−":"+"} ${Math.abs(q)} = ${e} elektronen (${cfg4Txt(c)}): ${ans.v} op de buitenste schil. Het is een ${sAns} van een ${mAns}.`;if(total>=3)markDone("ex-iontable");}},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Ander deeltje")),fb);
+  }
+  gen();
+})();
+
+mcEx("ex-ionmc",{title:"Ionen: kies het juiste antwoord",tag:"Meerkeuze",n:8,questions:()=>{
+  const out=[];
+  pick(IONEL,5).forEach(s=>{const E=BYSYM[s];const {q}=ionOf(s);const opts=[ionHtml(s,q),ionHtml(s,-q),ionHtml(s,q>0?q+1:q-1),ionHtml(s,q>0?(q>1?q-1:q+2):(q<-1?q+1:q-2))];
+    out.push({q:`Welk stabiel ion vormt ${E.n} (Z = ${E.Z}, ${cfg4Txt(cfg4(E.Z))})?`,opts:[...new Set(opts)],a:ionHtml(s,q),why:q>0?`${E.s} is een metaal met ${q} valentie-elektron${q>1?"en":""}: ${E.s} − ${q} e<sup>−</sup> ⟶ ${ionHtml(s,q)}.`:`${E.s} is een niet-metaal met ${8+q} valentie-elektronen: ${E.s} + ${-q} e<sup>−</sup> ⟶ ${ionHtml(s,q)}.`});});
+  out.push({q:"Een zwavelion (massagetal van S is 32) is opgebouwd uit …",opts:["18 e<sup>−</sup>, 16 n<sup>0</sup> en 16 p<sup>+</sup>","14 e<sup>−</sup>, 16 n<sup>0</sup> en 14 p<sup>+</sup>","18 e<sup>−</sup>, 18 n<sup>0</sup> en 18 p<sup>+</sup>","16 e<sup>−</sup>, 16 n<sup>0</sup> en 16 p<sup>+</sup>"],a:"18 e<sup>−</sup>, 16 n<sup>0</sup> en 16 p<sup>+</sup>",why:"S<sup>2−</sup>: 16 protonen, 16 + 2 = 18 elektronen, 32 − 16 = 16 neutronen."});
+  out.push({q:"Een deeltje met 10 e<sup>−</sup>, 13 n<sup>0</sup> en 12 p<sup>+</sup> is een …",opts:["positief ion","atoom","negatief ion","edelgas"],a:"positief ion",why:"Minder elektronen dan protonen."});
+  out.push({q:"Welk deeltje heeft de meeste elektronen?",opts:["S<sup>2−</sup>","Al<sup>3+</sup>","Cl","Si<sup>4+</sup>"],a:"S<sup>2−</sup>",why:"S<sup>2−</sup>: 18, Cl: 17, Al<sup>3+</sup>: 10, Si<sup>4+</sup>: 10."});
+  out.push({q:"Welk atoom vormt een eenwaardig anion?",opts:["Br","K","N","Ne"],a:"Br",why:"Groep VIIa neemt 1 elektron op."});
+  out.push({q:"Na<sup>+</sup>, Ne en F<sup>−</sup> hebben dezelfde elektronenconfiguratie (K: 2 L: 8). Waarom hebben ze toch andere eigenschappen?",opts:["Ze hebben een verschillend aantal protonen.","Ze hebben een verschillend aantal elektronen.","Ze hebben een verschillende massa.","Ze staan in dezelfde groep."],a:"Ze hebben een verschillend aantal protonen."});
+  return shuffle(out);}});
+
+(function en(){
+  const box=$("#ex-en");wsHead(box,"EN-waarden vergelijken","Grafiek en vragen");
+  const per=[["Li","Be","B","C","N","O","F"],["Na","Mg","Al","Si","P","S","Cl"]];const grp=["Li","Na","K","Rb","Cs","Fr"];
+  const col=v=>v>=3?"#C62828":v>=2?"#E0B000":v>=1.5?"#7FB3A8":"#3D6FB6";
+  const chart=(list,t)=>h("div",{},h("p",{class:"mini"},t),h("div",{class:"encols"},list.map(s=>h("div",{class:"c"},h("span",{},enTxt(s)),h("span",{class:"bar",style:`height:${EN[s]*28}px;background:${col(EN[s])}`}),h("b",{},s)))));
+  box.append(h("div",{class:"two"},chart(per[0],"Periode 2: van links naar rechts"),chart(grp,"Groep Ia: van boven naar onder")));
+  const q=h("div");box.append(q);
+  mcInto(q,"ex-en",[
+   {q:"Welk deeltje heeft de grootste neiging om elektronen los te laten?",opts:["Na","Li","Ca","Be"],a:"Na",why:"Kleinste EN-waarde (0,9)."},
+   {q:"Welk deeltje heeft de grootste EN-waarde?",opts:["Cl","Na","Al","Ar"],a:"Cl",why:"Cl 3,0. Edelgassen zoals Ar hebben geen EN-waarde."},
+   {q:"Welk atoom gedraagt zich het meest elektropositief?",opts:["Cs","F","Be","Li"],a:"Cs",why:"Cs heeft EN 0,7: het geeft het makkelijkst elektronen af."},
+   {q:"Welk deeltje moet het grootste aantal elektronen afstaan om tot de edelgasconfiguratie te komen?",opts:["Al","Na","Ar","Cl<sup>−</sup>"],a:"Al",why:"Al moet 3 elektronen afgeven."},
+   {q:"De EN-waarde … van links naar rechts in eenzelfde periode.",opts:["neemt toe","neemt af","blijft gelijk"],keep:true,a:"neemt toe"},
+   {q:"Het niet-metaalkarakter … van boven naar onder in eenzelfde groep.",opts:["neemt af","neemt toe","blijft gelijk"],keep:true,a:"neemt af"}]);
+})();
+function mcInto(container,id,qs){let i=0,score=0;const order=shuffle(qs);const area=h("div",{class:"mc"});container.append(area);
+  function show(){area.innerHTML="";if(i>=order.length){markDone(id);area.append(h("p",{class:"q"},`Klaar: ${score}/${order.length} juist.`),h("button",{class:"btn",type:"button",onclick:()=>{i=0;score=0;show();}},"Opnieuw"));return;}
+    const Q=order[i];area.append(h("p",{class:"q",html:`${i+1}/${order.length}. ${Q.q}`}));const og=h("div",{class:"opts"});const why=h("div",{class:"why",hidden:true});const nx=h("button",{class:"btn primary",type:"button",hidden:true,onclick:()=>{i++;show();}},"Volgende");
+    (Q.keep?Q.opts:shuffle(Q.opts)).forEach(o=>{const b=h("button",{class:"opt",type:"button",html:o});b.addEventListener("click",()=>{$$("button",og).forEach(x=>x.disabled=true);const ok=o===Q.a;b.classList.add(ok?"right":"wrong");if(ok)score++;why.hidden=false;why.innerHTML=(ok?"<b>Juist.</b> ":`<b>Niet juist.</b> Het antwoord is ${Q.a}. `)+(Q.why||"");nx.hidden=false;});og.append(b);});
+    area.append(og,why,h("div",{class:"btnrow"},nx));}
+  show();}
+
+sortEx("ex-tf1",{title:"Controle: waar of niet waar?",tag:"Controle 1",options:["waar","niet waar"],keep:true,items:[
+ {t:"Alle edelgassen bevatten 8 valentie-elektronen.",a:"niet waar",why:"Helium heeft er 2."},
+ {t:"Een ander woord voor een positief ion is een anion.",a:"niet waar",why:"Een positief ion is een kation."},
+ {t:"Niet-metaalatomen vormen negatieve ionen om tot een edelgasconfiguratie te komen.",a:"waar"},
+ {t:"De massa van een natriumion is duidelijk kleiner dan de massa van een natriumatoom.",a:"niet waar",why:"De massa van een elektron is verwaarloosbaar."},
+ {t:"Hoe hoger de EN-waarde, hoe sterker het metaalkarakter.",a:"niet waar",why:"Hoe hoger de EN-waarde, hoe sterker het niet-metaalkarakter."}]});
+
+/* ===================== 2 IONVERBINDING ===================== */
+const METS=["Li","Na","K","Mg","Ca","Ba","Al"];const NMETS=["F","Cl","Br","I","O","S","N"];
+BYSYM.Ba.cls="met";
+function ionCharge(s){const E=BYSYM[s];if(E.cls==="met")return E.group<=2?E.group:3;return E.group===17?-1:E.group===16?-2:-3;}
+const gcd2=(a,b)=>b?gcd2(b,a%b):a;
+function formulaUnit(m,n){const a=ionCharge(m),b=-ionCharge(n);const l=a*b/gcd2(a,b);const x=l/a,y=l/b;return{x,y,txt:`${m}${x>1?x:""}${n}${y>1?y:""}`};}
+(function formula(){
+  const box=$("#ex-formula");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Bouw de formule-eenheid","Interactief");sc.textContent=total?`${good}/${total}`:"";
+    const m=pick(METS,1)[0],n=pick(NMETS,1)[0];const qm=ionCharge(m),qn=ionCharge(n);const F=formulaUnit(m,n);
+    box.append(h("p",{class:"col",html:`Ionbinding tussen <b style="color:#2E6DB4">${BYSYM[m].n} (${m})</b> en <b style="color:#2E8B57">${BYSYM[n].n} (${n})</b>.`}));
+    const chOpts=[3,2,1,-1,-2,-3];const sm=h("select",{id:"fu-qm","aria-label":"lading metaalion"},h("option",{value:""},"lading …"),chOpts.map(c=>h("option",{value:c},`${m}${chgU(c)}`)));
+    const sn=h("select",{id:"fu-qn","aria-label":"lading niet-metaalion"},h("option",{value:""},"lading …"),chOpts.map(c=>h("option",{value:c},`${n}${chgU(c)}`)));
+    const fb1=h("p",{class:"fb"});const step2=h("div",{hidden:true});
+    box.append(h("p",{class:"q",style:"margin-top:8px"},"Stap 1: welke ionen ontstaan?"),h("div",{class:"btnrow",style:"align-items:center"},sm,sn,h("button",{class:"btn primary",type:"button",onclick:()=>{const g1=+sm.value===qm,g2=+sn.value===qn;sm.className=g1?"ok":"no";sn.className=g2?"ok":"no";if(g1&&g2){fb1.className="fb good";fb1.innerHTML=`Juist: ${m} − ${qm} e<sup>−</sup> ⟶ ${ionHtml(m,qm)} en ${n} + ${-qn} e<sup>−</sup> ⟶ ${ionHtml(n,qn)}.`;step2.hidden=false;}else{fb1.className="fb badf";fb1.textContent="Nog niet juist. Kijk naar de groep: metalen geven hun valentie-elektronen af, niet-metalen nemen er op tot 8.";}}},"Controleer")),fb1,step2);
+    let cm=1,cn=1;const pile=h("div",{class:"ionpile"});const bar=h("p",{class:"chargebar"});const om=h("output",{},"1"),on=h("output",{},"1");const fb=h("p",{class:"fb"});
+    const draw=()=>{pile.innerHTML="";for(let i=0;i<cm;i++)pile.append(h("span",{class:"ion cat",html:ionHtml(m,qm)}));for(let i=0;i<cn;i++)pile.append(h("span",{class:"ion an",html:ionHtml(n,qn)}));const t=cm*qm+cn*qn;bar.innerHTML=`totale lading: ${cm} · (${chg(qm)}) + ${cn} · (${chg(qn)}) = <b style="color:${t===0?"var(--ok)":"var(--bad)"}">${t===0?"0":(t>0?"+":"−")+Math.abs(t)}</b>`;om.textContent=cm;on.textContent=cn;fb.textContent="";};
+    const stp=(label,o,f)=>h("div",{class:"ctrl"},h("b",{html:label}),h("div",{class:"step"},h("button",{type:"button",onclick:()=>{f(-1);draw();}},"−"),o,h("button",{type:"button",onclick:()=>{f(1);draw();}},"+")));
+    step2.append(h("p",{class:"q"},"Stap 2: hoeveel ionen van elk heb je nodig zodat de totale lading 0 is?"),h("div",{class:"ctrls",style:"max-width:420px"},stp("aantal "+ionHtml(m,qm),om,d=>cm=Math.max(1,Math.min(6,cm+d))),stp("aantal "+ionHtml(n,qn),on,d=>cn=Math.max(1,Math.min(6,cn+d)))),pile,bar,
+      h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:ev=>{const t=cm*qm+cn*qn;const ok=t===0&&cm===F.x&&cn===F.y;total++;if(ok)good++;sc.textContent=`${good}/${total}`;fb.className="fb "+(ok?"good":"badf");
+        fb.innerHTML=ok?`Juist! Formule-eenheid: <b style="font-family:var(--f-display);font-size:1.2rem">${fmt(F.txt)}</b>. (${m} − ${qm} e<sup>−</sup> ⟶ ${ionHtml(m,qm)}) × ${F.x} en (${n} + ${-qn} e<sup>−</sup> ⟶ ${ionHtml(n,qn)}) × ${F.y}.`:t!==0?"De totale lading is nog niet 0. Er moeten evenveel elektronen afgegeven als opgenomen worden.":`De lading is 0, maar neem de kleinst mogelijke aantallen: ${F.x} en ${F.y}.`;if(ok&&total>=3)markDone("ex-formula");}},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe combinatie")),fb);
+    draw();
+  }
+  gen();
+})();
+
+/* Lewisstructuur ionverbinding */
+function ionLewisHtml(m,n){const F=formulaUnit(m,n);const qm=ionCharge(m),qn=ionCharge(n);const parts=[];
+  for(let i=0;i<F.x;i++)parts.push(`<span>${ionHtml(m,qm)}</span>`);
+  for(let i=0;i<F.y;i++)parts.push(`<span>${lewisCustom(n,[2,2,2,2])}<sup>${chg(qn)}</sup></span>`);return `<div class="ionlewis">${parts.join("")}</div>`;}
+(function ionlewis(){
+  const box=$("#ex-ionlewis");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Lewisstructuur van een ionverbinding","Kies de juiste");sc.textContent=total?`${good}/${total}`:"";
+    const m=pick(METS.filter(x=>x!=="Ba"),1)[0],n=pick(["F","Cl","O","S","Br"],1)[0];const F=formulaUnit(m,n);const qm=ionCharge(m),qn=ionCharge(n);
+    const vM=BYSYM[m].group<=2?BYSYM[m].group:3,vN=BYSYM[n].group-10;
+    box.append(h("p",{class:"col",html:`Stap 1, het elektronenstipmodel: ${lewisHtml(m,vM,false)} en ${lewisHtml(n,vN,false)}. Welke lewisstructuur hoort bij de ionverbinding tussen ${BYSYM[m].n} en ${BYSYM[n].n}?`}));
+    const right=ionLewisHtml(m,n);
+    const wrong1=(()=>{const parts=[`<span>${ionHtml(m,qm)}</span>`,`<span>${lewisCustom(n,[2,2,2,2])}<sup>${chg(qn)}</sup></span>`];return F.x===1&&F.y===1?`<div class="ionlewis"><span>${ionHtml(m,-qn)}</span><span>${lewisCustom(n,[2,2,2,2])}<sup>${chg(-qm)}</sup></span><span></span></div>`:`<div class="ionlewis">${parts.join("")}</div>`;})();
+    const wrong2=`<div class="ionlewis"><span>${ionHtml(m,qm)}</span>${Array(Math.max(1,F.y)).fill(`<span>${lewisCustom(n,[2,1,2,1])}<sup>${chg(qn)}</sup></span>`).join("")}${F.x>1?`<span>${ionHtml(m,qm)}</span>`.repeat(F.x-1):""}</div>`;
+    const wrong3=`<div class="ionlewis">${`<span>${lewisCustom(m,[0,0,0,0])}</span>`.repeat(F.x)}${`<span>${lewisCustom(n,[2,2,2,1])}</span>`.repeat(F.y)}</div>`;
+    const g=h("div",{class:"lewopts"});const fb=h("p",{class:"fb"});let done=false;
+    shuffle([[right,1],[wrong1,0],[wrong2,0],[wrong3,0]].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i)).forEach(([html,ok])=>{const b=h("button",{type:"button",html});b.addEventListener("click",()=>{if(done)return;done=true;total++;if(ok)good++;sc.textContent=`${good}/${total}`;b.classList.add(ok?"right":"wrong");$$("button",g).forEach(x=>{if(x.innerHTML===right||x.innerHTML.replace(/\s/g,"")===right.replace(/\s/g,""))x.classList.add("right");});
+      fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist. ":"Niet juist. ")+`${m} geeft ${qm} elektron${qm>1?"en":""} af, ${n} neemt er ${-qn} op. Formule-eenheid ${fmt(F.txt)}: ${F.x} × ${ionHtml(m,qm)} en ${F.y} × ${ionHtml(n,qn)}, elk anion met 4 elektronenparen en zijn lading.`;if(total>=3)markDone("ex-ionlewis");box.append(h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:gen},"Volgende")));});g.append(b);});
+    box.append(g,fb);
+  }
+  gen();
+})();
+
+mcEx("ex-fu",{title:"Kies de formule-eenheid",tag:"Test jezelf 9",questions:()=>{const out=[];pick(METS.flatMap(m=>NMETS.map(n=>[m,n])),6).forEach(([m,n])=>{const F=formulaUnit(m,n);const qm=ionCharge(m),qn=-ionCharge(n);
+  const d=new Set([fmt(F.txt),fmt(`${n}${F.y>1?F.y:""}${m}${F.x>1?F.x:""}`),fmt(`${m}${n}`),fmt(`${m}${qn>1?qn:""}${n}${qm>1?qm:""}`),fmt(`${m}${F.y>1?F.y:""}${n}${F.x>1?F.x:""}`),fmt(`${m}2${n}2`)]);
+  out.push({q:`${BYSYM[m].n.charAt(0).toUpperCase()+BYSYM[m].n.slice(1)} vormt met ${BYSYM[n].n} een verbinding met de formule-eenheid:`,opts:[...d].slice(0,4).concat(d.size<4?[]:[]),a:fmt(F.txt),why:`${ionHtml(m,qm)} en ${ionHtml(n,-qn)}: ${F.x} × (+${qm}) + ${F.y} × (−${qn}) = 0. Eerst het metaal, dan het niet-metaal.`});});return out.map(q=>{if(!q.opts.includes(q.a))q.opts[0]=q.a;return q;});}});
+
+sortEx("ex-tf2",{title:"Controle: waar of niet waar?",tag:"Controle 2",options:["waar","niet waar"],keep:true,items:[
+ {t:"In een ionverbinding is het aantal anionen en kationen altijd gelijk.",a:"niet waar",why:"Bv. Li<sub>2</sub>S: 2 kationen per anion."},
+ {t:"In een formule-eenheid vermeld je eerst het anion en vervolgens het kation.",a:"niet waar",why:"Eerst het metaal (kation)."},
+ {t:"De totale lading van de ionen vermeld in een formule-eenheid is altijd 0.",a:"waar"},
+ {t:"In elk ionrooster zitten evenveel positieve als negatieve ionen.",a:"niet waar",why:"Alleen de totale lading is 0, bv. MgF<sub>2</sub>."},
+ {t:"Ionverbindingen geleiden de elektrische stroom als ze opgelost zijn in water.",a:"waar"},
+ {t:"Ionverbindingen zijn vervormbaar.",a:"niet waar",why:"Gelijke ladingen komen tegenover elkaar en stoten af: het rooster breekt."}]});
+
+/* ===================== 3 ATOOMVERBINDING ===================== */
+/* Moleculen: atomen [s,x,y], bindingen [i,j,orde] */
+const MOLS={
+ Cl2:{a:[["Cl",0,0],["Cl",1,0]],b:[[0,1,1]]},
+ H2O:{a:[["H",0,0],["O",1,0],["H",2,0]],b:[[0,1,1],[1,2,1]]},
+ N2:{a:[["N",0,0],["N",1,0]],b:[[0,1,3]]},
+ O2:{a:[["O",0,0],["O",1,0]],b:[[0,1,2]]},
+ HCl:{a:[["H",0,0],["Cl",1,0]],b:[[0,1,1]]},
+ H2S:{a:[["H",0,0],["S",1,0],["H",2,0]],b:[[0,1,1],[1,2,1]]},
+ CO2:{a:[["O",0,0],["C",1,0],["O",2,0]],b:[[0,1,2],[1,2,2]]},
+ CS2:{a:[["S",0,0],["C",1,0],["S",2,0]],b:[[0,1,2],[1,2,2]]},
+ CH4:{a:[["C",1,1],["H",1,0],["H",0,1],["H",2,1],["H",1,2]],b:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]]},
+ NH3:{a:[["N",1,0],["H",0,0],["H",2,0],["H",1,1]],b:[[0,1,1],[0,2,1],[0,3,1]]},
+ CCl4:{a:[["C",1,1],["Cl",1,0],["Cl",0,1],["Cl",2,1],["Cl",1,2]],b:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]]},
+ CF4:{a:[["C",1,1],["F",1,0],["F",0,1],["F",2,1],["F",1,2]],b:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]]},
+ SiF4:{a:[["Si",1,1],["F",1,0],["F",0,1],["F",2,1],["F",1,2]],b:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]]},
+ HCN:{a:[["H",0,0],["C",1,0],["N",2,0]],b:[[0,1,1],[1,2,3]]},
+ CH2O:{a:[["C",1,1],["H",1,0],["H",0,1],["O",2,1]],b:[[0,1,1],[0,2,1],[0,3,2]]},
+ PCl3:{a:[["P",1,0],["Cl",0,0],["Cl",2,0],["Cl",1,1]],b:[[0,1,1],[0,2,1],[0,3,1]]},
+ CH3OH:{a:[["C",1,1],["H",1,0],["H",0,1],["H",1,2],["O",2,1],["H",3,1]],b:[[0,1,1],[0,2,1],[0,3,1],[0,4,1],[4,5,1]]}};
+const VAL={H:1,C:4,Si:4,N:5,P:5,O:6,S:6,F:7,Cl:7,Br:7,I:7};
+function molInfo(M,bOverride,lpOverride){const n=M.a.length;const bo=bOverride||M.b;const bs=Array(n).fill(0);bo.forEach(([i,j,o])=>{bs[i]+=o;bs[j]+=o;});
+  const lp=lpOverride||M.a.map(([s],i)=>s==="H"?0:(VAL[s]-bs[i])/2);return{bs,lp,bo};}
+function lewisSvg(M,bOverride,lpOverride){
+  const {lp,bo}=molInfo(M,bOverride,lpOverride);const U=64,P=34;const xs=M.a.map(a=>a[1]),ys=M.a.map(a=>a[2]);const W=(Math.max(...xs))*U+2*P,H=(Math.max(...ys))*U+2*P;
+  const X=i=>M.a[i][1]*U+P,Y=i=>M.a[i][2]*U+P;let s=`<svg viewBox="0 0 ${W} ${H}" width="${W*1.1}" role="img" aria-label="lewisstructuur">`;
+  bo.forEach(([i,j,o])=>{const dx=X(j)-X(i),dy=Y(j)-Y(i),L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,px=-uy,py=ux;const r=15;for(let k=0;k<o;k++){const off=(k-(o-1)/2)*6;s+=`<line class="bd" x1="${(X(i)+ux*r+px*off).toFixed(1)}" y1="${(Y(i)+uy*r+py*off).toFixed(1)}" x2="${(X(j)-ux*r+px*off).toFixed(1)}" y2="${(Y(j)-uy*r+py*off).toFixed(1)}"/>`;}});
+  M.a.forEach(([sym],i)=>{s+=`<text x="${X(i)}" y="${Y(i)+7}" text-anchor="middle">${sym}</text>`;
+    const used=new Set();bo.forEach(([a,b])=>{if(a===i||b===i){const o=a===i?b:a;const dx=M.a[o][1]-M.a[i][1],dy=M.a[o][2]-M.a[i][2];used.add(Math.abs(dx)>=Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"b":"t"));}});
+    const outward=xs.length>1&&M.a[i][1]===Math.min(...xs)?"l":M.a[i][1]===Math.max(...xs)?"r":null;
+    const order=[outward,"t","b","l","r"].filter((v,k,a)=>v&&a.indexOf(v)===k&&!used.has(v));const w=sym.length>1?17:11;
+    for(let k=0;k<Math.min(lp[i],order.length);k++){const side=order[k];const cx=X(i),cy=Y(i);
+      if(side==="t")s+=`<line class="lp" x1="${cx-w}" y1="${cy-13}" x2="${cx+w}" y2="${cy-13}"/>`;
+      if(side==="b")s+=`<line class="lp" x1="${cx-w}" y1="${cy+13}" x2="${cx+w}" y2="${cy+13}"/>`;
+      if(side==="l")s+=`<line class="lp" x1="${cx-w-5}" y1="${cy-10}" x2="${cx-w-5}" y2="${cy+10}"/>`;
+      if(side==="r")s+=`<line class="lp" x1="${cx+w+5}" y1="${cy-10}" x2="${cx+w+5}" y2="${cy+10}"/>`;}});
+  return s+"</svg>";
+}
+(function lewview(){
+  const box=$("#ex-lewview");wsHead(box,"Lewisstructuren bekijken","Interactief");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Kies een molecule. Een streepje tussen twee atomen is een gemeenschappelijk elektronenpaar; een streepje aan één atoom is een vrij elektronenpaar.")));
+  const sel=h("select",{id:"lv-sel","aria-label":"molecule"},Object.keys(MOLS).map(k=>h("option",{value:k,html:fmt(k)})));const pic=h("div",{class:"lew"});const info=h("div");let n=0;
+  const upd=()=>{const M=MOLS[sel.value];const {bs,lp,bo}=molInfo(M);pic.innerHTML=lewisSvg(M);const multi=bo.filter(b=>b[2]>1);
+    const els=[...new Set(M.a.map(a=>a[0]))];info.innerHTML=`<dl class="facts"><dt>brutoformule</dt><dd>${fmt(sel.value)}</dd><dt>valentie-elektronen</dt><dd>${els.map(e=>`${e}: ${VAL[e]}`).join(", ")}</dd><dt>bindingen per atoom</dt><dd>${els.map(e=>`${e}: ${e==="H"?1:8-VAL[e]}`).join(", ")}</dd><dt>gemeenschappelijke paren</dt><dd>${bo.reduce((a,b)=>a+b[2],0)}</dd><dt>vrije elektronenparen</dt><dd>${lp.reduce((a,b)=>a+b,0)}</dd><dt>meervoudige bindingen</dt><dd>${multi.length?multi.map(b=>`${b[2]===2?"dubbele":"drievoudige"} binding ${M.a[b[0]][0]}–${M.a[b[1]][0]}`).join(", "):"alleen enkelvoudige bindingen"}</dd></dl>`;if(++n>=5)markDone("ex-lewview");};
+  sel.addEventListener("change",upd);box.append(sel,h("div",{class:"builder",style:"margin-top:10px"},pic,info));upd();n=0;
+})();
+(function lewpick(){
+  const box=$("#ex-lewpick");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Kies de juiste lewisstructuur","Atoomverbinding");sc.textContent=total?`${good}/${total}`:"";
+    const key=pick(Object.keys(MOLS),1)[0];const M=MOLS[key];const base=molInfo(M);
+    const variants=[{b:M.b,lp:base.lp,ok:1}];
+    {const lp=[...base.lp];const i=lp.findIndex(x=>x>0);if(i>=0){lp[i]--;variants.push({b:M.b,lp,ok:0});}}
+    {const bi=M.b.findIndex(b=>b[2]>1);if(bi>=0){const b=M.b.map(x=>[...x]);b[bi][2]--;variants.push({b,lp:base.lp,ok:0});}else{const b=M.b.map(x=>[...x]);const k=M.b.findIndex(x=>M.a[x[0]][0]!=="H"&&M.a[x[1]][0]!=="H");if(k>=0){b[k][2]=2;variants.push({b,lp:base.lp,ok:0});}}}
+    {const lp=[...base.lp];const i=lp.findIndex((x,ii)=>M.a[ii][0]!=="H"&&x<3);if(i>=0){lp[i]++;variants.push({b:M.b,lp,ok:0});}}
+    {const lp=base.lp.map((x,i)=>M.a[i][0]==="H"?x:0);if(lp.some((x,i)=>x!==base.lp[i]))variants.push({b:M.b,lp,ok:0});}
+    box.append(h("p",{class:"col",html:`Welke lewisstructuur van <b>${fmt(key)}</b> is juist? Controleer voor elk atoom: elk streepje telt voor 2 elektronen. Rond elk atoom moeten 8 elektronen staan (H: 2).`}));
+    const g=h("div",{class:"lewopts"});const fb=h("p",{class:"fb"});let done=false;
+    shuffle(variants.slice(0,4)).forEach(v=>{const b=h("button",{type:"button",class:"lew",html:lewisSvg(M,v.b,v.lp),"data-ok":v.ok});b.addEventListener("click",()=>{if(done)return;done=true;total++;if(v.ok)good++;sc.textContent=`${good}/${total}`;b.classList.add(v.ok?"right":"wrong");$$("button",g).forEach(x=>{if(x.dataset.ok==="1")x.classList.add("right");});
+      const els=[...new Set(M.a.map(a=>a[0]))];fb.className="fb "+(v.ok?"good":"badf");fb.innerHTML=(v.ok?"Juist. ":"Niet juist. ")+`Bindingen per atoom: ${els.map(e=>`${e} ${e==="H"?1:8-VAL[e]}`).join(", ")}. Alle atomen hebben nu een edelgasconfiguratie.`;if(total>=4)markDone("ex-lewpick");box.append(h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:gen},"Volgende")));});g.append(b);});
+    box.append(g,fb);
+  }
+  gen();
+})();
+mcEx("ex-lewcount",{title:"Atoombindingen tellen",tag:"Meerkeuze",n:8,questions:()=>{const out=[];
+  pick(Object.keys(MOLS),5).forEach(k=>{const M=MOLS[k];const {lp,bo}=molInfo(M);const pairs=bo.reduce((a,b)=>a+b[2],0),free=lp.reduce((a,b)=>a+b,0);
+    if(Math.random()<.5)out.push({q:`Hoeveel gemeenschappelijke elektronenparen (streepjes tussen atomen) heeft ${fmt(k)}?`,svg:null,opts:[...new Set([pairs,pairs+1,Math.max(1,pairs-1),pairs+2])].map(String),a:String(pairs)});
+    else out.push({q:`Hoeveel vrije elektronenparen heeft ${fmt(k)} in totaal?`,opts:[...new Set([free,free+1,free+2,Math.max(0,free-1)])].map(String),a:String(free)});});
+  out.push({q:"Welke binding komt voor in N<sub>2</sub>?",opts:["drievoudige binding","dubbele binding","enkelvoudige binding","ionbinding"],a:"drievoudige binding"});
+  out.push({q:"Welke binding komt voor in O<sub>2</sub>?",opts:["dubbele binding","drievoudige binding","enkelvoudige binding","metaalbinding"],a:"dubbele binding"});
+  out.push({q:"Hoeveel atoombindingen vormt een koolstofatoom?",opts:["4","2","3","1"],a:"4",why:"C heeft 4 valentie-elektronen: 4 tekort."});
+  out.push({q:"Een molecule bestaat uit 2 koolstofatomen, 6 waterstofatomen en 1 zuurstofatoom. Wat is de brutoformule?",opts:["C<sub>2</sub>H<sub>6</sub>O","C<sub>2</sub>H<sub>6</sub>O<sub>2</sub>","CH<sub>3</sub>O","C<sub>6</sub>H<sub>2</sub>O"],a:"C<sub>2</sub>H<sub>6</sub>O"});
+  return shuffle(out);}});
+
+sortEx("ex-btype",{title:"Welk bindingstype?",intro:"M + nM: ionbinding. nM + nM: atoombinding. M + M: metaalbinding.",options:["ionbinding","atoombinding","metaalbinding"],items:[
+ {t:"waterstof en zwavel",a:"atoombinding"},{t:"magnesium en magnesium",a:"metaalbinding"},{t:"koolstof en waterstof",a:"atoombinding"},{t:"zink en zink",a:"metaalbinding"},{t:"zuurstof en zuurstof",a:"atoombinding"},{t:"natrium en fluor",a:"ionbinding"},
+ {t:"koolstof en zuurstof",a:"atoombinding"},{t:"aluminium en chloor",a:"ionbinding"},{t:"calcium en chloor",a:"ionbinding"},{t:"stikstof en waterstof",a:"atoombinding"},{t:"aluminium en aluminium",a:"metaalbinding"},{t:"waterstof en waterstof",a:"atoombinding"},
+ {t:"MgO",a:"ionbinding"},{t:"NH<sub>3</sub>",a:"atoombinding"},{t:"Al",a:"metaalbinding"},{t:"KBr",a:"ionbinding"}]});
+
+sortEx("ex-tf3",{title:"Controle: waar of niet waar?",tag:"Controle 3",options:["waar","niet waar"],keep:true,items:[
+ {t:"Atoombindingen komen uitsluitend voor in enkelvoudige stoffen.",a:"niet waar",why:"Ook in samengestelde stoffen zoals H<sub>2</sub>O en CO<sub>2</sub>."},
+ {t:"In N<sub>2</sub> zijn de atomen sterker aan elkaar gebonden dan in O<sub>2</sub>.",a:"waar",why:"Drievoudige binding tegenover dubbele binding."},
+ {t:"In H<sub>2</sub>O komen drie covalente bindingen voor.",a:"niet waar",why:"Twee: H–O en O–H."},
+ {t:"NaCl is een voorbeeld van een atoomverbinding.",a:"niet waar",why:"Metaal + niet-metaal: ionverbinding."},
+ {t:"Cl<sub>2</sub> is een voorbeeld van een covalente verbinding.",a:"waar"},
+ {t:"Diamant en grafiet bestaan allebei uit koolstofatomen.",a:"waar"}]});
+
+/* ===================== 4 METALEN ===================== */
+(function lattice(){
+  const box=$("#ex-lattice");wsHead(box,"Oefen een kracht uit op een rooster","Simulatie");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Duw de bovenste laag één plaats opzij en vergelijk het ionrooster met het metaalrooster.")));
+  const pic=h("div",{class:"lat"});const txt=h("p",{class:"readout"});let pushed=false;
+  const draw=()=>{const r=15,dx=36;let s='<svg viewBox="0 0 640 230" aria-label="ionrooster en metaalrooster">';
+    s+=`<text class="lbl" x="20" y="20">ionrooster (NaCl)</text><text class="lbl" x="340" y="20">metaalrooster (Na)</text>`;
+    const shift=pushed?dx:0;
+    for(let row=0;row<4;row++){const sh=row<2?shift:0;const y=60+row*40+(pushed&&row<2?-8:0);
+      s+=`<g class="row">`;for(let c=0;c<7;c++){const pos=(row+c)%2===0;const x=40+c*dx+sh;s+=`<circle cx="${x}" cy="${y+(pushed&&row<2?-14:0)}" r="${r}" fill="${pos?"#2E6DB4":"#2E8B57"}"/><text x="${x}" y="${y+5+(pushed&&row<2?-14:0)}" text-anchor="middle" fill="#fff" font-size="13">${pos?"+":"−"}</text>`;}s+="</g>";
+      s+=`<g class="row">`;for(let c=0;c<7;c++){const x=360+c*dx+sh;s+=`<circle cx="${x}" cy="${y+8}" r="${r}" fill="#7d8790"/><text x="${x}" y="${y+13}" text-anchor="middle" fill="#fff" font-size="13">+</text>`;}s+="</g>";}
+    for(let k=0;k<26;k++){const x=345+((k*53)%245),y=45+((k*37)%165);s+=`<circle class="emove" cx="${x}" cy="${y}" r="4" fill="#E0B000"/>`;}
+    if(pushed){s+=`<path d="M40 128 L300 128" stroke="#C62828" stroke-width="3" stroke-dasharray="7 5"/><text x="160" y="212" text-anchor="middle" fill="#C62828" font-size="12">afstoting: het kristal breekt</text><text x="470" y="212" text-anchor="middle" fill="#1E7F4F" font-size="12">elektronen houden de ionen samen</text>`;}
+    pic.innerHTML=s+"</svg>";
+    txt.innerHTML=pushed?"In het <b>ionrooster</b> komen + tegenover + en − tegenover − te staan: ze stoten elkaar af en er ontstaat een breukvlak. In het <b>metaalrooster</b> schuiven de lagen gewoon op: metalen zijn vervormbaar, plooibaar en pletbaar.":"Beide roosters zijn regelmatig. In het ionrooster wisselen + en − ionen af. In het metaalrooster bewegen vrije elektronen (geel) tussen de positieve metaalionen.";};
+  box.append(pic,h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:()=>{pushed=true;draw();markDone("ex-lattice");}},"Duw de bovenste lagen opzij"),h("button",{class:"btn",type:"button",onclick:()=>{pushed=false;draw();}},"Herstel")),txt);draw();
+  // beweging van elektronen
+  let t=0;const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!reduce)setInterval(()=>{if(box.closest(".panel").hidden)return;t+=0.05;$$(".emove",pic).forEach((c,k)=>{const bx=345+((k*53)%245),by=45+((k*37)%165);c.setAttribute("cx",(bx+Math.sin(t+k)*12).toFixed(1));c.setAttribute("cy",(by+Math.cos(t*1.3+k)*10).toFixed(1));});},60);
+})();
+(function free(){
+  const box=$("#ex-free");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Vrije elektronen en metaalionen","Opdracht 12");sc.textContent=total?`${good}/${total}`:"";
+    const s=pick(["Na","Mg","Al","K","Ca","Li"],1)[0];const E=BYSYM[s];const v=E.group<=2?E.group:3;const n=rnd(3,6);
+    box.append(h("p",{class:"col",html:`Een stukje ${E.n} bevat ${n} metaalatomen. Hoeveel vrije elektronen en welke ionen bevat het metaalrooster?`}));
+    const pile=h("div",{class:"ionpile"});for(let i=0;i<n;i++)pile.append(h("span",{class:"ion",style:"background:#7d8790",html:s}));box.append(pile);
+    const ie=numInput("fr-e","4.5em");const si=h("select",{id:"fr-i","aria-label":"ion"},h("option",{value:""},"ion …"),[1,2,3].map(q=>h("option",{value:q,html:ionHtml(s,q)})));const fb=h("p",{class:"fb"});
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},h("label",{},"vrije elektronen: ",ie),si,h("button",{class:"btn primary",type:"button",onclick:ev=>{const g1=+ie.value===n*v&&ie.value!=="",g2=+si.value===v;ie.className=g1?"ok":"no";si.className=g2?"ok":"no";total++;if(g1&&g2)good++;sc.textContent=`${good}/${total}`;ev.target.disabled=true;pile.innerHTML="";for(let i=0;i<n;i++){pile.append(h("span",{class:"ion cat",html:ionHtml(s,v)}));for(let k=0;k<v;k++)pile.append(h("span",{class:"ion",style:"background:#E0B000;min-width:18px;height:18px;padding:0;color:#13293D;font-size:.7rem"},"e⁻"));}
+      fb.className="fb "+(g1&&g2?"good":"badf");fb.innerHTML=(g1&&g2?"Juist! ":"Niet juist. ")+`Elk ${s}-atoom geeft ${v} valentie-elektron${v>1?"en":""} af en wordt ${ionHtml(s,v)}. ${n} atomen geven ${n} × ${v} = ${n*v} vrije elektronen: ${v===1?"evenveel vrije elektronen als metaalionen":v===2?"dubbel zoveel vrije elektronen als metaalionen":"driemaal zoveel vrije elektronen als metaalionen"}.`;if(total>=3)markDone("ex-free");}},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Ander metaal")),fb);
+  }
+  gen();
+})();
+sortEx("ex-props",{title:"Welk rooster past bij de eigenschap?",intro:"Sommige eigenschappen passen bij meer dan één rooster; kies het rooster waarvoor de uitspraak typisch is.",options:["ionrooster","moleculerooster","atoomrooster","metaalrooster"],items:[
+ {t:"geleidt de elektrische stroom in vaste toestand door vrije elektronen",a:"metaalrooster"},{t:"vervormbaar en pletbaar",a:"metaalrooster"},{t:"brosse kristallen die breken bij een kracht; geleiden opgelost in water",a:"ionrooster"},
+ {t:"ijs: watermoleculen op een vaste plaats",a:"moleculerooster"},{t:"diamant: alle koolstofatomen even sterk verbonden",a:"atoomrooster"},{t:"keukenzout: kubusvormig rooster van Na⁺ en Cl⁻",a:"ionrooster"},
+ {t:"bij druk breken alleen de krachten tussen de moleculen, de atoombindingen blijven",a:"moleculerooster"},{t:"goede warmtegeleider, bv. een metalen theepot",a:"metaalrooster"},{t:"grafiet: vlakke lagen die over elkaar glijden",a:"atoomrooster"},{t:"de stof is vaak een gas of vloeistof bij kamertemperatuur",a:"moleculerooster"}]});
+sortEx("ex-tf4",{title:"Controle: waar of niet waar?",tag:"Controle 4",options:["waar","niet waar"],keep:true,items:[
+ {t:"Metalen zijn goede geleiders voor elektrische stroom door de aanwezigheid van vrije kationen.",a:"niet waar",why:"Door de vrije elektronen."},
+ {t:"In het metaalrooster van aluminium staat elk aluminiumatoom 2 elektronen af.",a:"niet waar",why:"Aluminium (groep IIIa) staat 3 elektronen af."},
+ {t:"Het aantal vrije elektronen per kation is in elk metaalrooster hetzelfde.",a:"niet waar",why:"Na: 1, Mg: 2, Al: 3."},
+ {t:"In een metalen theepot blijft de thee langer warm dan in een dikke porseleinen theepot.",a:"niet waar",why:"Metalen geleiden warmte goed en laten de warmte snel door."},
+ {t:"Alle metalen zijn vast bij kamertemperatuur.",a:"niet waar",why:"Kwik is vloeibaar."}]});
+
+/* ===================== FOCUS ===================== */
+const MIN=[["Agaat","Lijkt in de kristallen te groeien. Komt voor in de natuurlijke holten van vulkanische gesteenten."],["Zuiver kwarts of bergkristal","SiO₂, doorzichtig als glas. De oude Grieken dachten dat het bevroren ijs was dat niet kon smelten."],["Fluoriet","CaF₂. Bestraald met uv-licht kleurt het intens blauw: de kleur hangt af van het gebruikte licht."],["Amethist","Kwarts met ijzerionen als onzuiverheden: SiO₂(Fe³⁺). Daardoor is het paars."],["Seleniet","In Naica (Mexico) staan op 300 m diepte gipskristallen (CaSO₄ · 2 H₂O) van 15 m lang, zo'n 500 000 jaar oud."],["Pyriet","FeS₂. Met zijn gele metaalglans lijkt het op goud: kattengoud of goud der dwazen."],["Robijn en saffier","Rode robijn en blauwe saffier worden bewerkt tot juwelen."]];
+(function(){const g=$("#minerals");MIN.forEach(([t,d])=>g.append(h("article",{},h("p",{style:"font-family:var(--f-display);font-size:1.05rem"},t),h("p",{},d))));})();
+mcEx("ex-focus",{title:"Welk mineraal is het?",tag:"Meerkeuze",questions:()=>shuffle(MIN).slice(0,6).map(([t,d])=>({q:d.replace(/^(SiO₂|CaF₂|FeS₂)[,.]\s*/,"").replace(/Kwarts met/,"Een mineraal met"),opts:[t,...pick(MIN.filter(m=>m[0]!==t).map(m=>m[0]),3)],a:t}))});
+
+/* ===================== 5 OG ===================== */
+const OGS=[
+ {f:"S8",t:"enkel",og:{S:0}},{f:"N2",t:"enkel",og:{N:0}},{f:"Mg",t:"enkel",og:{Mg:0}},{f:"O2",t:"enkel",og:{O:0}},{f:"Al",t:"enkel",og:{Al:0}},{f:"He",t:"enkel",og:{He:0}},
+ {f:"KCl",t:"ion",og:{K:1,Cl:-1}},{f:"Na2O",t:"ion",og:{Na:1,O:-2}},{f:"MgF2",t:"ion",og:{Mg:2,F:-1}},{f:"CaCl2",t:"ion",og:{Ca:2,Cl:-1}},{f:"Al2O3",t:"ion",og:{Al:3,O:-2}},{f:"Na2S",t:"ion",og:{Na:1,S:-2}},{f:"Li2S",t:"ion",og:{Li:1,S:-2}},{f:"MgO",t:"ion",og:{Mg:2,O:-2}},{f:"AlCl3",t:"ion",og:{Al:3,Cl:-1}},
+ {f:"H2S",t:"atoom",og:{H:1,S:-2}},{f:"CH4",t:"atoom",og:{C:-4,H:1}},{f:"CO2",t:"atoom",og:{C:4,O:-2}},{f:"H2O",t:"atoom",og:{H:1,O:-2}},{f:"NH3",t:"atoom",og:{N:-3,H:1}},{f:"HCl",t:"atoom",og:{H:1,Cl:-1}},{f:"CCl4",t:"atoom",og:{C:4,Cl:-1}},{f:"SiF4",t:"atoom",og:{Si:4,F:-1}},{f:"PCl3",t:"atoom",og:{P:3,Cl:-1}},{f:"CF4",t:"atoom",og:{C:4,F:-1}}];
+function parseOG(s){s=String(s).trim().toUpperCase().replace(/\s/g,"").replace(/−|–/g,"-");if(s==="0")return 0;let m=s.match(/^([+-])?(I{1,3}|IV|V|VI|VII|VIII|\d)([+-])?$/);if(!m)return NaN;const sign=m[1]||m[3];if(!sign)return NaN;const R={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8};const v=R[m[2]]??+m[2];return sign==="-"?-v:v;}
+(function tree(){
+  const box=$("#ex-tree");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Doorloop de beslissingsboom","Oxidatiegetal");sc.textContent=total?`${good}/${total}`:"";
+    const S=pick(OGS,1)[0];const els=Object.keys(S.og);const area=h("div",{class:"tree"});
+    box.append(h("p",{class:"col",html:`Bepaal het oxidatiegetal van ${els.map(e=>`<b>${e}</b>`).join(" en ")} in <b style="font-family:var(--f-display);font-size:1.3rem">${fmt(S.f)}</b>.`}),area);
+    const fb=h("p",{class:"fb"});let firstTry=true;
+    const ask=(q,opts,right,why,next)=>{const row=h("div",{});const og=h("div",{class:"btnrow"});row.append(h("p",{class:"stepq"},q),og);area.append(row);
+      opts.forEach(o=>og.append(h("button",{class:"opt",type:"button",onclick:ev=>{if(o===right){$$("button",og).forEach(b=>b.disabled=true);ev.target.classList.add("right");row.append(h("p",{class:"fb good",html:why}));next();}else{firstTry=false;ev.target.classList.add("wrong");ev.target.disabled=true;}}},o)));};
+    const finish=()=>{if(S.t==="enkel"){total++;if(firstTry)good++;sc.textContent=`${good}/${total}`;area.append(h("p",{class:"fb good",html:`OG(${els[0]}) = 0.`}),h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:gen},"Volgende stof")));if(total>=4)markDone("ex-tree");return;}
+      const I={};const row=h("div",{class:"ogrow"});els.forEach(e=>{I[e]=h("input",{type:"text",id:"og-"+e,style:"width:5em",placeholder:"bv. +II",autocomplete:"off"});row.append(h("label",{},`OG(${e}) =`,I[e]));});
+      const counts=parseFormula(S.f).counts;
+      let lewis="";if(S.t==="atoom"&&MOLS[S.f])lewis=`<div class="lew" style="margin:6px 0">${lewisSvg(MOLS[S.f])}</div>`;else if(S.t==="ion"){const m=els[0],n=els[1];lewis=`<div style="margin:6px 0">${ionLewisHtml(m,n)}</div>`;}
+      const hint=S.t==="ion"?"Het OG van een mono-atomisch ion = de ionlading. Gebruik de tabel met de groepen.":`EN-waarden: ${els.map(e=>`${e} ${enTxt(e)}`).join(", ")}. Het atoom met de grootste EN-waarde krijgt de bindingselektronen.`;
+      area.append(h("div",{html:lewis}),h("p",{class:"mini"},hint),row,h("p",{class:"mini"},"Schrijf het OG als +I, −II … (+1 of -2 mag ook)."),h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:ev=>{let ok=true;els.forEach(e=>{const v=parseOG(I[e].value);const g=v===S.og[e];I[e].className=g?"ok":"no";ok=ok&&g;});total++;if(ok&&firstTry)good++;sc.textContent=`${good}/${total}`;ev.target.disabled=true;
+        fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist! ":"Niet juist. ")+els.map(e=>`OG(${e}) = ${ROMN(S.og[e])}`).join(" en ")+`. Controle: ${els.map(e=>(counts[e]>1?counts[e]+" · ":"")+"("+ROMN(S.og[e])+")").join(" + ")} = 0.`;area.append(fb,h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:gen},"Volgende stof")));if(total>=4)markDone("ex-tree");}},"Controleer")));};
+    ask("Is de stof enkelvoudig of samengesteld?",["enkelvoudig","samengesteld"],S.t==="enkel"?"enkelvoudig":"samengesteld",S.t==="enkel"?"Eén atoomsoort: een enkelvoudige stof.":"Meerdere atoomsoorten: een samengestelde stof.",()=>{
+      if(S.t==="enkel"){finish();return;}
+      const isMet=els.some(e=>BYSYM[e].cls==="met");
+      ask("Is het een ionverbinding of een atoomverbinding?",["ionverbinding","atoomverbinding"],S.t==="ion"?"ionverbinding":"atoomverbinding",S.t==="ion"?"Metaal + niet-metaal: ionverbinding.":"Alleen niet-metalen: atoomverbinding.",finish);});
+  }
+  gen();
+})();
+mcEx("ex-ogpse",{title:"OG afleiden uit het PSE",tag:"Opdracht 15",questions:()=>{const out=[];
+  pick(["Li","Na","K","Mg","Ca","Be","Al","O","S","F","Cl","Br"],7).forEach(s=>{const q=ionCharge(s);out.push({q:`Welk OG heeft ${BYSYM[s].n} (groep ${ROMAN[BYSYM[s].group]}) in een ionverbinding?`,opts:[ROMN(q),ROMN(-q),ROMN(q>0?q+1:q-1),"0"].filter((x,i,a)=>a.indexOf(x)===i),a:ROMN(q),why:`${q>0?q+" e<sup>−</sup> afgeven":-q+" e<sup>−</sup> opnemen"} om een edelgasconfiguratie te bereiken.`});});
+  out.push({q:"Wat is het OG van een atoom in een enkelvoudige stof?",opts:["0","+I","−I","hangt af van de binding"],a:"0"});
+  out.push({q:"In een atoomverbinding krijgt het atoom met de grootste EN-waarde een …",opts:["negatief OG","positief OG","OG 0"],keep:true,a:"negatief OG"});
+  return shuffle(out);}});
+sortEx("ex-tf5",{title:"Controle: waar of niet waar?",tag:"Controle 5",options:["waar","niet waar"],keep:true,items:[
+ {t:"In een atoomverbinding krijgt het element met de kleinste EN-waarde een positief OG.",a:"waar"},
+ {t:"In een atoomverbinding kun je het OG steeds afleiden uit het groepsnummer in het PSE.",a:"niet waar",why:"Je bepaalt het via de lewisstructuur en de EN-waarden, bv. C in CH<sub>4</sub> (−IV) en in CO<sub>2</sub> (+IV)."},
+ {t:"In een ionverbinding zal het ion met lading 2+ OG +II hebben.",a:"waar"},
+ {t:"De som van de oxidatiegetallen in een molecule is 0.",a:"waar"}]});
+
+/* ===================== ANIMATIE ===================== */
+window.openAnim=m=>{showTab("animatie",true);if(window.animSetMode)window.animSetMode(m);};
+mcEx("ex-animq",{title:"Wat zag je in de animatie?",tag:"Meerkeuze",questions:[
+ {q:"Wat gebeurt er met het valentie-elektron van natrium bij de vorming van NaCl?",opts:["Het gaat volledig over naar het chlooratoom.","Het wordt gedeeld met chloor.","Het blijft bij natrium.","Het verdwijnt."],a:"Het gaat volledig over naar het chlooratoom."},
+ {q:"Waarom heeft magnesium in MgCl<sub>2</sub> twee chlooratomen nodig?",opts:["Mg geeft 2 elektronen af, en een Cl-atoom kan er maar 1 opnemen.","Mg neemt 2 elektronen op.","Chloor geeft 2 elektronen af.","Mg en Cl delen 2 elektronenparen."],a:"Mg geeft 2 elektronen af, en een Cl-atoom kan er maar 1 opnemen."},
+ {q:"Welke edelgasconfiguratie heeft een Na<sup>+</sup>-ion?",opts:["die van neon","die van argon","die van helium","geen"],a:"die van neon"},
+ {q:"Wat houdt de atomen bij elkaar in een covalente binding?",opts:["een gemeenschappelijk elektronenpaar tussen de twee kernen","de aantrekking tussen + en − ionen","vrij bewegende elektronen","de neutronen"],a:"een gemeenschappelijk elektronenpaar tussen de twee kernen"},
+ {q:"Hoeveel gemeenschappelijke elektronenparen heeft O<sub>2</sub>?",opts:["2","1","3","4"],a:"2",why:"Een dubbele binding: O=O."},
+ {q:"Hoeveel vrije elektronenparen houdt zuurstof over in H<sub>2</sub>O?",opts:["2","0","1","3"],a:"2"},
+ {q:"Waarom is stikstofgas weinig reactief?",opts:["De drievoudige binding N≡N is heel sterk.","N heeft geen valentie-elektronen.","N<sub>2</sub> is een ionverbinding.","Stikstof is een edelgas."],a:"De drievoudige binding N≡N is heel sterk."},
+ {q:"Hoeveel elektronen telt een H-atoom na de binding in H<sub>2</sub>?",opts:["2 (een duet)","1","8 (een octet)","0"],a:"2 (een duet)"}]});
+
+/* ===================== TEST ===================== */
+const FINAL=[
+ {q:"Welke elementen komen altijd als afzonderlijke atomen voor?",opts:["de edelgassen","de alkalimetalen","de halogenen","de metalen"],a:"de edelgassen"},
+ {q:"Wat is de edelgasconfiguratie?",opts:["een volledig bezette buitenste schil: 8 valentie-elektronen (He: 2)","een buitenste schil met 2 elektronen","evenveel protonen als neutronen","een lege buitenste schil"],a:"een volledig bezette buitenste schil: 8 valentie-elektronen (He: 2)"},
+ {q:"Metalen vormen …",opts:["kationen door elektronen af te geven","anionen door elektronen op te nemen","kationen door elektronen op te nemen","anionen door protonen af te geven"],a:"kationen door elektronen af te geven"},
+ {q:"Welke vergelijking is juist?",opts:["O + 2 e<sup>−</sup> ⟶ O<sup>2−</sup>","O − 2 e<sup>−</sup> ⟶ O<sup>2−</sup>","O + 2 e<sup>−</sup> ⟶ O<sup>2+</sup>","O − 2 e<sup>−</sup> ⟶ O<sup>2+</sup>"],a:"O + 2 e<sup>−</sup> ⟶ O<sup>2−</sup>"},
+ {q:"Welk ion vormt lithium?",opts:["Li<sup>+</sup>","Li<sup>−</sup>","Li<sup>2+</sup>","Li<sup>7−</sup>"],a:"Li<sup>+</sup>"},
+ {q:"Welk ion vormt zwavel?",opts:["S<sup>2−</sup>","S<sup>6+</sup>","S<sup>2+</sup>","S<sup>−</sup>"],a:"S<sup>2−</sup>"},
+ {q:"Een ion heeft de configuratie K: 2 L: 8 en is eenwaardig positief. Welk ion is het?",opts:["Na<sup>+</sup>","Ne<sup>+</sup>","F<sup>−</sup>","Mg<sup>2+</sup>"],a:"Na<sup>+</sup>",why:"Het neutrale atoom heeft K: 2 L: 8 M: 1, dus Z = 11."},
+ {q:"Welk element heeft de grootste EN-waarde?",opts:["F","Fr","O","Cl"],a:"F"},
+ {q:"Een ionbinding ontstaat tussen …",opts:["een metaal en een niet-metaal","twee niet-metalen","twee metalen","twee edelgassen"],a:"een metaal en een niet-metaal"},
+ {q:"Wat is de formule-eenheid van de verbinding tussen aluminium en zuurstof?",opts:["Al<sub>2</sub>O<sub>3</sub>","AlO","O<sub>3</sub>Al<sub>2</sub>","Al<sub>3</sub>O<sub>2</sub>"],a:"Al<sub>2</sub>O<sub>3</sub>"},
+ {q:"Wat is de formule-eenheid van de verbinding tussen calcium en chloor?",opts:["CaCl<sub>2</sub>","CaCl","KCl<sub>2</sub>","Ca<sub>2</sub>Cl"],a:"CaCl<sub>2</sub>"},
+ {q:"Wat is de formule-eenheid van de verbinding tussen magnesium en zwavel?",opts:["MgS","Mg<sub>2</sub>S<sub>2</sub>","SMg","MgS<sub>2</sub>"],a:"MgS"},
+ {q:"Wat is de formule-eenheid van de verbinding tussen natrium en zuurstof?",opts:["Na<sub>2</sub>O","NaO<sub>2</sub>","NaO","H<sub>2</sub>Na"],a:"Na<sub>2</sub>O"},
+ {q:"Waarom zijn ionverbindingen niet vervormbaar?",opts:["Bij verschuiving komen gelijke ladingen tegenover elkaar en stoten elkaar af.","Er zijn vrije elektronen.","De ionen zijn te klein.","Er zijn geen bindingen."],a:"Bij verschuiving komen gelijke ladingen tegenover elkaar en stoten elkaar af."},
+ {q:"Wanneer geleidt een ionverbinding de elektrische stroom?",opts:["opgelost in water of in vloeibare toestand","altijd","nooit","alleen in vaste toestand"],a:"opgelost in water of in vloeibare toestand"},
+ {q:"Plet je een grof NaCl-kristal, dan hebben de fragmenten een gelijkaardige vorm. Waarom?",opts:["De ionen ordenen zich in een regelmatig ionrooster.","NaCl is een metaal.","NaCl bestaat uit moleculen.","De kristallen zijn gesmolten."],a:"De ionen ordenen zich in een regelmatig ionrooster."},
+ {q:"Een atoombinding ontstaat tussen …",opts:["twee niet-metaalatomen","een metaal en een niet-metaal","twee metaalatomen","een ion en een elektron"],a:"twee niet-metaalatomen"},
+ {q:"Wat zijn bindingselektronen?",opts:["gemeenschappelijke elektronen die tot de buitenste schil van beide atomen horen","elektronen die worden afgegeven","elektronen in de K-schil","vrij bewegende elektronen in een metaal"],a:"gemeenschappelijke elektronen die tot de buitenste schil van beide atomen horen"},
+ {q:"Welke lewisstructuur hoort bij CO<sub>2</sub>?",opts:["O=C=O, met 2 vrije paren op elke O","O–C–O, met 3 vrije paren op elke O","O≡C≡O","O=C–O"],a:"O=C=O, met 2 vrije paren op elke O"},
+ {q:"Welke lewisstructuur hoort bij HCN?",opts:["H–C≡N|","H=C=N|","H–C–N","H–N≡C"],a:"H–C≡N|"},
+ {q:"Hoeveel vrije elektronenparen heeft het zuurstofatoom in H<sub>2</sub>O?",opts:["2","1","3","0"],a:"2"},
+ {q:"Welk bindingstype heeft NH<sub>3</sub>?",opts:["atoombinding","ionbinding","metaalbinding"],keep:true,a:"atoombinding"},
+ {q:"Welk bindingstype heeft KBr?",opts:["ionbinding","atoombinding","metaalbinding"],keep:true,a:"ionbinding"},
+ {q:"Waarom is grafiet zacht en diamant hard?",opts:["In grafiet glijden vlakke lagen over elkaar; in diamant zijn alle C-atomen even sterk verbonden.","Grafiet bevat geen koolstof.","Diamant is een metaal.","Grafiet is een ionverbinding."],a:"In grafiet glijden vlakke lagen over elkaar; in diamant zijn alle C-atomen even sterk verbonden."},
+ {q:"Wat is een metaalbinding?",opts:["een binding tussen positieve metaalionen en vrij bewegende elektronen","een binding tussen metaalionen en niet-metaalionen","gemeenschappelijke elektronenparen tussen metalen","een binding tussen neutrale metaalatomen"],a:"een binding tussen positieve metaalionen en vrij bewegende elektronen"},
+ {q:"Wat is de verhouding vrije elektronen : metaalionen in magnesium?",opts:["2 : 1","1 : 1","1 : 2","3 : 1"],a:"2 : 1"},
+ {q:"Waarom kun je metalen plooien zonder dat ze breken?",opts:["De lagen metaalionen verschuiven en de vrije elektronen houden ze samen.","Metalen bevatten geen ionen.","Metaalionen trekken elkaar aan.","Metalen zijn vloeibaar."],a:"De lagen metaalionen verschuiven en de vrije elektronen houden ze samen."},
+ {q:"Wat is het OG van S in S<sub>8</sub>?",opts:["0","−II","+VIII","+II"],a:"0"},
+ {q:"Wat is het OG van C in CH<sub>4</sub>?",opts:["−IV","+IV","0","−I"],a:"−IV",why:"EN(C) = 2,5 > EN(H) = 2,1."},
+ {q:"Wat zijn de OG's in Na<sub>2</sub>O?",opts:["Na: +I en O: −II","Na: +II en O: −II","Na: −I en O: +II","Na: 0 en O: 0"],a:"Na: +I en O: −II"},
+ {q:"Wat zijn de OG's in H<sub>2</sub>S?",opts:["H: +I en S: −II","H: −I en S: +II","H: +II en S: −I","H: 0 en S: 0"],a:"H: +I en S: −II",why:"EN(S) = 2,5 > EN(H) = 2,1."}];
+mcEx("ex-final",{title:"Toets: Chemische bindingen",tag:"15 vragen",n:15,questions:FINAL});
+
+(function flash(){
+  const T=[["edelgasconfiguratie","Een volledig bezette buitenste schil: 8 valentie-elektronen (helium 2)."],["metaal","Element dat elektronen afgeeft en positieve ionen vormt."],["positief ion of kation","Ion met meer protonen dan elektronen."],["elektropositief element","Element dat gemakkelijk elektronen afgeeft: een metaal."],["niet-metaal","Element dat elektronen opneemt en negatieve ionen vormt."],["negatief ion of anion","Ion met meer elektronen dan protonen."],["elektronegatief element","Element dat elektronen naar zich toe trekt: een niet-metaal."],["ionvorming","Het proces waarbij atomen elektronen uitwisselen om tot een edelgasconfiguratie te komen."],["EN-waarde","Maat voor hoe sterk een element elektronen naar zich toe trekt."],["ionbinding","De aantrekking tussen een positief metaalion en een negatief niet-metaalion."],["ionverbinding","Stof opgebouwd uit positieve en negatieve ionen."],["formule-eenheid","Voorstelling van een ionverbinding met de kleinste gehele verhouding kationen : anionen."],["lewisstructuur","Voorstelling met elektronenparen als streepjes (en ladingen bij ionen)."],["ionrooster","Regelmatig patroon van positieve en negatieve ionen."],["atoombinding of covalente binding","Binding waarbij twee niet-metaalatomen elektronen gemeenschappelijk stellen."],["bindingselektronen","De gemeenschappelijke elektronen tussen twee atomen."],["enkelvoudige binding","Elk atoom stelt 1 elektron gemeenschappelijk: 1 streepje."],["dubbele binding","Elk atoom stelt 2 elektronen gemeenschappelijk: 2 streepjes."],["drievoudige binding","Elk atoom stelt 3 elektronen gemeenschappelijk: 3 streepjes."],["atoomverbinding of covalente verbinding","Stof uit atomen die via atoombindingen gebonden zijn: moleculen."],["moleculerooster","Geordend patroon van moleculen in vaste toestand, bv. ijs."],["atoomrooster","Groot, stevig rooster van gebonden atomen, bv. diamant en grafiet."],["metaalbinding","Binding tussen positieve metaalionen en vrij bewegende elektronen."],["metaalrooster","Regelmatige schikking van positieve metaalionen."],["oxidatiegetal","Denkbeeldige lading van een atoom als alle bindingen ionbindingen zouden zijn."]];
+  const box=$("#flash");let order=shuffle(T),i=0,back=false;
+  const card=h("div",{class:"card",tabindex:"0",role:"button","aria-label":"Draai de kaart om"});const cnt=h("span",{class:"mini"});
+  const draw=()=>{const [t,d]=order[i];card.innerHTML=back?`<div class="d">${d}</div>`:`<div class="t">${t}</div>`;cnt.textContent=`kaart ${i+1} van ${order.length}`;};
+  const flip=()=>{back=!back;draw();};card.addEventListener("click",flip);card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
+  box.append(card,h("div",{class:"btnrow",style:"align-items:center"},h("button",{class:"btn",type:"button",onclick:()=>{i=(i-1+order.length)%order.length;back=false;draw();}},"Vorige"),h("button",{class:"btn primary",type:"button",onclick:()=>{i=(i+1)%order.length;back=false;draw();}},"Volgende"),h("button",{class:"btn",type:"button",onclick:()=>{order=shuffle(T);i=0;back=false;draw();}},"Schudden"),cnt));draw();
+})();
+
+/* ===== Start ===== */
+const initial=(location.hash||"").slice(1)||state.tab||"ionen";
+showTab(initial,false);updateDots();
+window.addEventListener("hashchange",()=>showTab(location.hash.slice(1),false));
+
+</script>
+<script>
+
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const COL=['#F5B841','#4CC9F0','#F072A8','#7BD88F'];
+const NUC={H:15,O:19,N:19,Cl:20,Na:18,Mg:18};
+const rad=d=>d*Math.PI/180;
+const polar=(x,y,r,d)=>[x+r*Math.cos(rad(d)),y+r*Math.sin(rad(d))];
+const $=id=>document.getElementById(id);
+const mk=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;};
+const clamp=v=>Math.max(0,Math.min(1,v));
+const ease=v=>v<.5?2*v*v:1-Math.pow(-2*v+2,2)/2;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const angDiff=(b,a)=>((b-a)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI;
+const angLerp=(a,b,t)=>a+angDiff(b,a)*t;
+const FONT='Unbounded, Trebuchet MS, sans-serif';
+const sym=(parent,txt,size)=>{const t=mk('text',{'text-anchor':'middle','dominant-baseline':'central',fill:'#F2F6FC','font-family':FONT,'font-weight':800,'font-size':size},parent);t.textContent=txt;return t;};
+const legendHTML=A=>A.map((a,i)=>{const same=A.filter(x=>x.el===a.el).length>1;const n=A.filter((x,j)=>x.el===a.el&&j<=i).length;
+  return '<span><i style="background:'+COL[a.c]+'"></i>elektronen van '+a.el+(same?' ('+n+')':'')+'</span>';}).join('');
+
+/* ---------- IONBINDING ---------- */
+const IONQ={Na:'⁺',Mg:'²⁺',Cl:'⁻',O:'²⁻'}, NG={Na:'Ne',Mg:'Ne',Cl:'Ar',O:'Ne'};
+const IR={Na:66,Mg:60,Cl:58,O:52}, INNER=34;
+const ION={
+ NaCl:{f:'NaCl',n:'natriumchloride',lattice:true,
+  atoms:[{el:'Na',m:1,v:1,c:0,x:-150,y:0,fx:-60,fy:0},{el:'Cl',m:0,v:7,c:1,x:150,y:0,fx:60,fy:0}],tr:[[0,1]],
+  t:['Natrium is een metaal met 1 valentie-elektron. Chloor is een niet-metaal met 7 valentie-elektronen: het komt er 1 tekort voor een octet.',
+     'Natrium staat zijn valentie-elektron af aan chloor. Er wordt niets gedeeld: het elektron gaat volledig over naar het chlooratoom.',
+     'Natrium verliest zijn buitenste schil en wordt een positief ion, Na⁺. De schil eronder is vol (8 elektronen, zoals neon). Chloor heeft nu 8 valentie-elektronen en wordt een negatief ion, Cl⁻ (zoals argon).',
+     'Tegengestelde ladingen trekken elkaar aan: dat is de ionbinding. In een zoutkristal liggen ontelbaar veel Na⁺- en Cl⁻-ionen afwisselend in een ionrooster. Verhouding 1 : 1, formule NaCl.']},
+ MgO:{f:'MgO',n:'magnesiumoxide',lattice:true,
+  atoms:[{el:'Mg',m:1,v:2,c:0,x:-150,y:0,fx:-60,fy:0},{el:'O',m:0,v:6,c:1,x:150,y:0,fx:60,fy:0}],tr:[[0,1],[0,1]],
+  t:['Magnesium heeft 2 valentie-elektronen. Zuurstof heeft er 6 en komt er 2 tekort voor een octet.',
+     'Magnesium staat zijn 2 valentie-elektronen af aan zuurstof.',
+     'Magnesium wordt Mg²⁺ (2 elektronen afgegeven), zuurstof wordt O²⁻ (2 elektronen opgenomen). Beide ionen hebben nu de elektronenconfiguratie van neon.',
+     'Mg²⁺ en O²⁻ trekken elkaar sterk aan en vormen een ionrooster. Eén Mg²⁺ per O²⁻: formule MgO.']},
+ MgCl2:{f:'MgCl₂',n:'magnesiumchloride',lattice:false,
+  atoms:[{el:'Mg',m:1,v:2,c:0,x:0,y:0,fx:0,fy:0},{el:'Cl',m:0,v:7,c:1,x:-205,y:0,fx:-112,fy:0},{el:'Cl',m:0,v:7,c:2,x:205,y:0,fx:112,fy:0}],tr:[[0,1],[0,2]],
+  t:['Magnesium heeft 2 valentie-elektronen. Een chlooratoom kan maar 1 elektron opnemen. Magnesium heeft dus 2 chlooratomen nodig.',
+     'Magnesium geeft 1 elektron aan elk chlooratoom.',
+     'Er ontstaan één Mg²⁺-ion en twee Cl⁻-ionen. De totale lading is (2+) + 2 × (1−) = 0.',
+     'De ionen trekken elkaar aan. In het ionrooster zitten twee keer zoveel Cl⁻-ionen als Mg²⁺-ionen: formule MgCl₂.']},
+ Na2O:{f:'Na₂O',n:'natriumoxide',lattice:false,
+  atoms:[{el:'O',m:0,v:6,c:1,x:0,y:0,fx:0,fy:0},{el:'Na',m:1,v:1,c:0,x:-205,y:0,fx:-112,fy:0},{el:'Na',m:1,v:1,c:2,x:205,y:0,fx:112,fy:0}],tr:[[1,0],[2,0]],
+  t:['Zuurstof heeft 6 valentie-elektronen en komt er 2 tekort. Een natriumatoom kan maar 1 elektron afgeven, dus zijn er 2 natriumatomen nodig.',
+     'Elk natriumatoom geeft zijn valentie-elektron af aan zuurstof.',
+     'Er ontstaan twee Na⁺-ionen en één O²⁻-ion. De totale lading is 2 × (1+) + (2−) = 0.',
+     'De ionen trekken elkaar aan. Twee Na⁺ per O²⁻: formule Na₂O.']}
+};
+const ionEng={
+ mols:ION, steps:['Losse atomen','Elektronenoverdracht','Ionen ontstaan','Ionbinding'], starts:[0,.2,.5,.72],
+ note:'Getekend: de buitenste schil met valentie-elektronen. Bij het metaal zie je ook (vaag) de volle schil eronder. Elk atoom heeft een eigen kleur; zo zie je welk elektron van wie komt.',
+ setup(k){
+  const M=ION[k];const A=M.atoms.map(a=>Object.assign({},a,{R:IR[a.el],nr:NUC[a.el]}));
+  if(M.lattice){const cat=A.find(a=>a.m),an=A.find(a=>!a.m);
+    for(let i=-5;i<=6;i++)for(let j=-3;j<=3;j++){if(j===0&&(i===0||i===1))continue;
+      const isCat=((i+j)%2+2)%2===0;const x=-60+120*i,y=120*j;const a=isCat?cat:an;
+      mk('circle',{cx:x,cy:y,r:isCat?INNER:a.R*1.12,fill:COL[a.c],'fill-opacity':.16,stroke:COL[a.c],'stroke-opacity':.6,'stroke-width':2},$('an-gLat'));
+      const t=sym($('an-gLat'),a.el+IONQ[a.el],22);t.setAttribute('x',x);t.setAttribute('y',y);}}
+  A.forEach(a=>{
+    a.shell=mk('circle',{r:a.R,fill:'none',stroke:COL[a.c],'stroke-width':1.6,'stroke-dasharray':'4 6','stroke-opacity':.75},$('an-gShell'));
+    if(a.m)a.inner=mk('circle',{r:INNER,fill:'none',stroke:COL[a.c],'stroke-width':1.4,'stroke-dasharray':'3 5'},$('an-gShell'));
+    a.g=mk('g',{},$('an-gNuc'));
+    mk('circle',{r:a.nr,fill:COL[a.c],'fill-opacity':.22,stroke:COL[a.c],'stroke-width':2},a.g);
+    sym(a.g,a.el,a.el.length>1?18:22);
+    a.q=mk('text',{fill:'#F2F6FC','font-family':FONT,'font-weight':800,'font-size':24},$('an-gLab'));a.q.textContent={Na:'+',Mg:'2+',Cl:'−',O:'2−'}[a.el];
+    a.lab=mk('text',{'text-anchor':'middle',fill:'#8C9AB1','font-family':'Atkinson Hyperlegible, Segoe UI, sans-serif','font-size':15},$('an-gLab'));
+    if(!a.m){a.slots=[];[0,90,180,270].forEach(d=>{a.slots.push(rad(d-14),rad(d+14));});a.taken=a.slots.map(()=>false);}
+    a.base=.5;a.out=0;});
+  const E=[];
+  M.tr.forEach(([f,t],n)=>{const a=A[f],b=A[t];const dir=Math.atan2(a.y-b.y,a.x-b.x);
+    let best=-1,bd=9;b.slots.forEach((s,i)=>{if(b.taken[i])return;const d=Math.abs(angDiff(s,dir));if(d<bd){bd=d;best=i;}});b.taken[best]=true;
+    const same=M.tr.filter(x=>x[0]===f&&x[1]===t).length, si=M.tr.slice(0,n).filter(x=>x[0]===f&&x[1]===t).length;
+    E.push({t:'x',a:f,b:t,slot:b.slots[best],k:a.out++,order:n,face:Math.atan2(b.y-a.y,b.x-a.x)+(si-(same-1)/2)*.45});});
+  A.forEach((a,ai)=>{
+    if(a.m){for(let k=0;k<8;k++)E.push({t:'i',a:ai,k});}
+    else{let q=0;a.slots.forEach((s,i)=>{if(!a.taken[i]&&q<a.v){E.push({t:'o',a:ai,slot:s,k:q++});}});}});
+  E.forEach(e=>{const c=COL[A[e.a].c];e.el=mk('circle',{r:e.t==='i'?4:5.5,fill:c,style:e.t==='i'?'':'filter:drop-shadow(0 0 5px '+c+')'},$('an-gEl'));});
+  this.S={M,A,E};
+  const seen=new Set(),chips=[];A.forEach(a=>{if(seen.has(a.el))return;seen.add(a.el);
+    chips.push('<span class="chip"><strong>'+a.el+'</strong> · '+(a.m?a.v+' e⁻ afgegeven':(8-a.v)+' e⁻ opgenomen')+' → <strong>'+a.el+IONQ[a.el]+'</strong> (zoals '+NG[a.el]+')</span>');});
+  return {legend:legendHTML(A)+'<span><i style="background:'+COL[A.find(a=>a.m).c]+';opacity:.45"></i>volle schil onder de buitenste (metaal)</span>',chips:chips.join('')};
+ },
+ render(T,clock){
+  const {M,A,E}=this.S;
+  const eP=ease(clamp((T-.1)/.1)),eI=ease(clamp((T-.5)/.12)),eF=ease(clamp((T-.74)/.12)),eG=M.lattice?ease(clamp((T-.86)/.12)):0;
+  $('an-gRoot').setAttribute('transform','scale('+lerp(1,.5,eG)+')');$('an-gLat').setAttribute('opacity',eG*.55);
+  A.forEach(a=>{a.px=lerp(a.x,a.fx,eF);a.py=lerp(a.y,a.fy,eF);a.rr=a.m?a.R:a.R*(1+.12*eI);
+    a.shell.setAttribute('cx',a.px);a.shell.setAttribute('cy',a.py);a.shell.setAttribute('r',a.rr);
+    a.shell.setAttribute('opacity',a.m?1-eI:1);
+    if(a.m){a.inner.setAttribute('cx',a.px);a.inner.setAttribute('cy',a.py);a.inner.setAttribute('opacity',lerp(.35,.9,eI));}
+    a.g.setAttribute('transform','translate('+a.px+','+a.py+')');
+    const ir=a.m?lerp(a.R,INNER,eI):a.rr;
+    a.q.setAttribute('x',a.px+ir*.72+4);a.q.setAttribute('y',a.py-ir*.72);a.q.setAttribute('opacity',eI);
+    a.lab.setAttribute('x',a.px);a.lab.setAttribute('y',a.py+ir+26);a.lab.setAttribute('opacity',1-eG);
+    a.lab.textContent=eI>.5?a.el+IONQ[a.el]+'-ion':a.el+'-atoom';});
+  E.forEach(e=>{const a=A[e.a];let x,y,op=1;
+    if(e.t==='i'){const an=e.k*Math.PI/4+clock*.5;x=a.px+INNER*Math.cos(an);y=a.py+INNER*Math.sin(an);op=lerp(.35,1,eI);}
+    else if(e.t==='o'){const an=e.slot+Math.sin(clock*2+e.k)*.04;x=a.px+a.rr*Math.cos(an);y=a.py+a.rr*Math.sin(an);}
+    else{const b=A[e.b];const p=ease(clamp((T-.22-e.order*.08)/.14));
+      const free=a.base+e.k*2*Math.PI/a.v+clock*.9;const an=angLerp(free,e.face,eP);
+      const sx=a.px+a.R*Math.cos(an),sy=a.py+a.R*Math.sin(an);
+      const ex=b.px+b.rr*Math.cos(e.slot),ey=b.py+b.rr*Math.sin(e.slot);
+      if(p<=0){x=sx;y=sy;}else if(p>=1){x=ex;y=ey;}
+      else{const cx=(sx+ex)/2,cy=(sy+ey)/2-120-e.order*28;const u=1-p;x=u*u*sx+2*u*p*cx+p*p*ex;y=u*u*sy+2*u*p*cy+p*p*ey;}}
+    e.el.setAttribute('cx',x);e.el.setAttribute('cy',y);e.el.setAttribute('opacity',op);});
+ }
+};
+
+/* ---------- COVALENTE BINDING ---------- */
+const SHELL={H:44,O:58,N:58,Cl:60};
+const APPROACH='De atomen naderen elkaar tot hun buitenste schillen overlappen. Elke kern trekt nu ook aan de elektronen van het andere atoom.';
+const h1=polar(0,-22,90,142.25), h2=polar(0,-22,90,37.75);
+const COV={
+ H2:{f:'H₂',n:'diwaterstof',atoms:[{el:'H',x:-35,y:0,v:1,c:1,lp:[]},{el:'H',x:35,y:0,v:1,c:2,lp:[]}],bonds:[[0,1,1]],
+  t:['Twee waterstofatomen hebben elk 1 valentie-elektron. Voor een stabiele edelgasconfiguratie (zoals helium) heeft elk H-atoom 2 elektronen nodig: een duet.',
+     APPROACH,
+     'De twee elektronen vormen samen een gemeenschappelijk elektronenpaar dat tussen beide kernen beweegt. Dat paar houdt de atomen bij elkaar: dat is de covalente binding. Elk H-atoom telt nu 2 elektronen.',
+     'In de Lewisnotatie teken je een gemeenschappelijk elektronenpaar als één streepje: H–H. Dit is een enkelvoudige binding.']},
+ HCl:{f:'HCl',n:'waterstofchloride',atoms:[{el:'H',x:-46,y:0,v:1,c:1,lp:[]},{el:'Cl',x:46,y:0,v:7,c:3,lp:[0,-90,90]}],bonds:[[0,1,1]],
+  t:['Waterstof heeft 1 valentie-elektron en wil er 2 (duet). Chloor heeft 7 valentie-elektronen en wil er 8 (octet). Elk atoom komt er dus één tekort.',
+     APPROACH,
+     'H en Cl leveren elk 1 elektron voor één gemeenschappelijk elektronenpaar. H heeft nu een duet, Cl een octet. De 6 andere elektronen van Cl vormen 3 vrije (niet-bindende) elektronenparen.',
+     'Lewisnotatie: H–Cl, met 3 vrije elektronenparen rond Cl. Het streepje is het bindende elektronenpaar.']},
+ H2O:{f:'H₂O',n:'water',atoms:[{el:'O',x:0,y:-22,v:6,c:0,lp:[-125,-55]},{el:'H',x:h1[0],y:h1[1],v:1,c:1,lp:[]},{el:'H',x:h2[0],y:h2[1],v:1,c:2,lp:[]}],bonds:[[0,1,1],[0,2,1]],
+  t:['Zuurstof heeft 6 valentie-elektronen en komt er 2 tekort voor een octet. Elk waterstofatoom heeft 1 valentie-elektron en komt er 1 tekort voor een duet.',
+     APPROACH,
+     'Zuurstof vormt met elk H-atoom een gemeenschappelijk elektronenpaar: 2 covalente bindingen. O telt nu 8 elektronen (octet), elk H-atoom 2 (duet). Zuurstof houdt 2 vrije elektronenparen over.',
+     'Lewisnotatie: twee streepjes O–H en 2 vrije elektronenparen op O. De vrije paren duwen de bindingen weg, daardoor is de watermolecule gebogen (ongeveer 104,5°).']},
+ O2:{f:'O₂',n:'dizuurstof',atoms:[{el:'O',x:-50,y:0,v:6,c:0,lp:[-140,140]},{el:'O',x:50,y:0,v:6,c:3,lp:[-40,40]}],bonds:[[0,1,2]],
+  t:['Elk zuurstofatoom heeft 6 valentie-elektronen en komt er 2 tekort voor een octet. Eén gedeeld elektronenpaar is hier dus niet genoeg.',
+     APPROACH,
+     'Elk O-atoom levert 2 elektronen: er ontstaan 2 gemeenschappelijke elektronenparen, een dubbele binding. Elk O-atoom telt nu 8 elektronen.',
+     'Lewisnotatie: O=O, met 2 vrije elektronenparen op elk zuurstofatoom. Twee streepjes betekent een dubbele binding.']},
+ N2:{f:'N₂',n:'distikstof',atoms:[{el:'N',x:-48,y:0,v:5,c:1,lp:[180]},{el:'N',x:48,y:0,v:5,c:2,lp:[0]}],bonds:[[0,1,3]],
+  t:['Elk stikstofatoom heeft 5 valentie-elektronen en komt er 3 tekort voor een octet.',
+     APPROACH,
+     'Elk N-atoom levert 3 elektronen: 3 gemeenschappelijke elektronenparen, een drievoudige binding. Elk N-atoom houdt 1 vrij elektronenpaar over en telt zo 8 elektronen.',
+     'Lewisnotatie: N≡N. De drievoudige binding is heel sterk; daarom is stikstofgas, 78 % van de lucht, zo weinig reactief.']}
+};
+const covEng={
+ mols:COV, steps:['Losse atomen','Naderen','Gedeeld elektronenpaar','Lewisnotatie'], starts:[0,.22,.47,.77],
+ note:'Getekend is alleen de buitenste schil met de valentie-elektronen. Elk atoom heeft een eigen kleur, en zijn elektronen dragen dezelfde kleur: zo zie je wie welk elektron levert.',
+ setup(k){
+  const M=COV[k];
+  const A=M.atoms.map(a=>Object.assign({},a,{R:SHELL[a.el],nr:NUC[a.el]}));
+  const cx=A.reduce((s,a)=>s+a.x,0)/A.length, cy=A.reduce((s,a)=>s+a.y,0)/A.length;
+  A.forEach((a,i)=>{const dx=a.x-cx,dy=a.y-cy,L=Math.hypot(dx,dy);const ux=L>5?dx/L:0,uy=L>5?dy/L:0;
+    a.sx=a.x+ux*112;a.sy=a.y+uy*112;a.base=i*1.7+.4;a.spin=(i%2?-1:1)*.9;a.used=0;
+    a.shell=mk('circle',{r:a.R,fill:'none',stroke:COL[a.c],'stroke-width':1.6,'stroke-dasharray':'4 6','stroke-opacity':.7},$('an-gShell'));
+    a.g=mk('g',{},$('an-gNuc'));
+    a.nuc=mk('circle',{r:a.nr,fill:COL[a.c],'fill-opacity':.22,stroke:COL[a.c],'stroke-width':2},a.g);
+    sym(a.g,a.el,a.el.length>1?19:22);});
+  const B=M.bonds.map(([i,j,n],bi)=>{const a=A[i],b=A[j];const ang=Math.atan2(b.y-a.y,b.x-a.x);
+    const cp=mk('clipPath',{id:'cl'+bi},$('an-defs'));const cc=mk('circle',{r:b.R},cp);
+    const lens=mk('circle',{r:a.R,fill:'#FFFFFF','clip-path':'url(#cl'+bi+')'},$('an-gLens'));
+    const lines=[];for(let q=0;q<n;q++)lines.push(mk('line',{stroke:'#F2F6FC','stroke-width':3,'stroke-linecap':'round'},$('an-gLine')));
+    return {i,j,n,ang,cc,lens,lines};});
+  const E=[];
+  B.forEach((bd,bi)=>{for(let p=0;p<bd.n;p++){const off=(p-(bd.n-1)/2)*22;
+    E.push({a:bd.i,k:A[bd.i].used++,t:'b',bi,p,side:0,home:bd.ang+rad(off)});
+    E.push({a:bd.j,k:A[bd.j].used++,t:'b',bi,p,side:1,home:bd.ang+Math.PI-rad(off)});}});
+  A.forEach((a,ai)=>{const rest=a.v-a.used;for(let q=0;q<rest;q++){const slot=a.lp[Math.floor(q/2)];const sg=q%2?1:-1;
+    E.push({a:ai,k:a.used++,t:'l',home:rad(slot+sg*13),lew:rad(slot+sg*17)});}});
+  E.forEach(e=>{const c=COL[A[e.a].c];e.el=mk('circle',{r:5.5,fill:c,style:'filter:drop-shadow(0 0 5px '+c+')'},$('an-gEl'));});
+  this.S={M,A,B,E};
+  const seen=new Set(),chips=[];A.forEach((a,ai)=>{let pairs=0;B.forEach(b=>{if(b.i===ai||b.j===ai)pairs+=b.n;});
+    const tot=2*pairs+(a.v-pairs);const k2=a.el+tot;if(seen.has(k2))return;seen.add(k2);
+    chips.push('<span class="chip"><strong>'+a.el+'</strong> · '+a.v+' → '+tot+' e⁻ · '+(a.el==='H'?'duet':'octet')+' ✓</span>');});
+  return {legend:legendHTML(A),chips:chips.join('')};
+ },
+ render(T,clock){
+  const {A,B,E}=this.S;
+  $('an-gRoot').removeAttribute('transform');
+  const eA=ease(clamp((T-.22)/.2)),eS=ease(clamp((T-.47)/.12)),eL=ease(clamp((T-.77)/.12));
+  A.forEach(a=>{a.px=lerp(a.sx,a.x,eA);a.py=lerp(a.sy,a.y,eA);
+    a.shell.setAttribute('cx',a.px);a.shell.setAttribute('cy',a.py);a.shell.setAttribute('opacity',1-eL);
+    a.g.setAttribute('transform','translate('+a.px+','+a.py+')');a.nuc.setAttribute('opacity',1-eL*.9);a.nuc.setAttribute('r',lerp(a.nr,a.nr*1.25,eL));});
+  B.forEach(b=>{const a=A[b.i],c=A[b.j];
+    b.cc.setAttribute('cx',c.px);b.cc.setAttribute('cy',c.py);b.lens.setAttribute('cx',a.px);b.lens.setAttribute('cy',a.py);
+    b.lens.setAttribute('fill-opacity',(.08*eA+.2*eS)*(1-eL));
+    const d=Math.hypot(c.px-a.px,c.py-a.py),ux=(c.px-a.px)/d,uy=(c.py-a.py)/d;b.ux=ux;b.uy=uy;b.d=d;b.mx=(a.px+c.px)/2;b.my=(a.py+c.py)/2;
+    const half=(d/2-20)*eL;
+    b.lines.forEach((ln,q)=>{const o=(q-(b.n-1)/2)*8;const ox=-uy*o,oy=ux*o;
+      ln.setAttribute('x1',b.mx+ox-ux*half);ln.setAttribute('y1',b.my+oy-uy*half);ln.setAttribute('x2',b.mx+ox+ux*half);ln.setAttribute('y2',b.my+oy+uy*half);ln.setAttribute('opacity',eL);});});
+  E.forEach(e=>{const a=A[e.a];
+    const free=a.base+e.k*2*Math.PI/a.v+clock*a.spin;let ang=angLerp(free,e.home,eA);
+    if(e.t==='l')ang+=Math.sin(clock*2+e.k)*.05*eA;
+    let x=a.px+a.R*Math.cos(ang),y=a.py+a.R*Math.sin(ang),op=1;
+    if(e.t==='b'){const b=B[e.bi];const off=(e.p-(b.n-1)/2)*15;const ph=clock*2.6+e.side*Math.PI+e.p*1.1;
+      const rx=b.d*.3,ry=6,px=-b.uy,py=b.ux;
+      const ox=b.mx+px*off+b.ux*rx*Math.cos(ph)+px*ry*Math.sin(ph), oy=b.my+py*off+b.uy*rx*Math.cos(ph)+py*ry*Math.sin(ph);
+      x=lerp(x,ox,eS);y=lerp(y,oy,eS);x=lerp(x,b.mx+px*off,eL);y=lerp(y,b.my+py*off,eL);op=1-eL;}
+    else{const rr=lerp(lerp(a.R,a.R*.9,eS),27,eL);const an=angLerp(ang,e.lew,eL);x=a.px+rr*Math.cos(an);y=a.py+rr*Math.sin(an);}
+    e.el.setAttribute('cx',x);e.el.setAttribute('cy',y);e.el.setAttribute('opacity',op);e.el.setAttribute('r',lerp(5.5,4.5,eL));});
+ }
+};
+
+/* ---------- SPELER ---------- */
+const ENG={ion:ionEng,cov:covEng};
+const DUR=15000;
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let mode,eng,key,info,T=0,playing=!reduce,clock=0,last=performance.now(),curStep=-1;
+
+function setMode(m){
+  mode=m;eng=ENG[m];
+  document.querySelectorAll('.an-mode').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
+  $('an-tabs').innerHTML='';
+  Object.keys(eng.mols).forEach(k=>{const b=document.createElement('button');b.type='button';b.className='an-tab';b.dataset.k=k;
+    b.innerHTML='<b>'+eng.mols[k].f+'</b><span>'+eng.mols[k].n+'</span>';b.onclick=()=>setMol(k);$('an-tabs').appendChild(b);});
+  $('an-steps').innerHTML='';
+  eng.steps.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.className='an-step';
+    b.innerHTML='<b>Stap '+(i+1)+'</b>'+s;b.onclick=()=>{T=i===0?0:(i===3?.92:eng.starts[i]+.001);syncPlay();};$('an-steps').appendChild(b);});
+  $('an-note').textContent=eng.note;
+  setMol(Object.keys(eng.mols)[0]);
+}
+function setMol(k){
+  key=k;curStep=-1;
+  document.querySelectorAll('.an-tab').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  ['an-defs','an-gLat','an-gLens','an-gShell','an-gLine','an-gNuc','an-gEl','an-gLab'].forEach(id=>$(id).innerHTML='');
+  $('an-gRoot').removeAttribute('transform');
+  info=eng.setup(k);
+  $('an-tag').innerHTML=eng.mols[k].f+'<small>'+eng.mols[k].n+'</small>';
+  $('an-legend').innerHTML=info.legend;
+  T=reduce?.6:0;playing=!reduce;syncPlay();
+}
+function render(){
+  eng.render(T,clock);
+  let s=0;eng.starts.forEach((v,i)=>{if(T>=v)s=i;});
+  if(s!==curStep){curStep=s;
+    document.querySelectorAll('.an-step').forEach((b,i)=>{if(i===s)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});
+    $('an-capTitle').textContent='Stap '+(s+1)+' · '+eng.steps[s];$('an-capText').textContent=eng.mols[key].t[s];$('an-chips').innerHTML=s>=2?info.chips:'';}
+  $('an-scrub').value=Math.round(T*1000);
+}
+function syncPlay(){$('an-play').textContent=playing?'Pauzeer':(T>=1?'Opnieuw afspelen':'Afspelen');}
+$('an-play').onclick=()=>{if(T>=1)T=0;playing=!playing;syncPlay();};
+$('an-restart').onclick=()=>{T=0;playing=true;syncPlay();};
+$('an-scrub').oninput=e=>{T=e.target.value/1000;playing=false;syncPlay();};
+document.querySelectorAll('.an-mode').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+function frame(now){const dt=Math.min(50,now-last);last=now;if(!reduce)clock+=dt/1000;
+  if(playing){T+=dt/DUR;if(T>=1){T=1;playing=false;syncPlay();}}render();requestAnimationFrame(frame);}
+setMode('ion');window.animSetMode=m=>setMode(m);requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bouw van atomen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: periodic-table tiles as chapter navigation; reading column on clean lab paper; exercises sit on graph-paper "werkbladen". */
+:root{
+  --paper:#F6F8FA; --surface:#FFFFFF; --ink:#13293D; --muted:#557085; --line:#D5DEE7; --grid:#E6EDF3;
+  --glass:#1F6FA8; --glass-soft:#E3EFF8; --ghs:#D3222A; --ok:#1E7F4F; --ok-soft:#E1F3EA; --bad:#B42318; --bad-soft:#FCE8E6;
+  --warn:#8A5A00; --warn-soft:#FFF3D6; --tile:#13293D; --tile-ink:#FFFFFF;
+  --f-display:"Unbounded","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1A24; --surface:#14232F; --ink:#E3ECF4; --muted:#93AABD; --line:#2A3E4F; --grid:#1B2C3A;
+  --glass:#6AB3E6; --glass-soft:#16324A; --ghs:#FF5A5F; --ok:#5BD69A; --ok-soft:#123327; --bad:#FF8A80; --bad-soft:#3A1A1A;
+  --warn:#F4C46B; --warn-soft:#33290F; --tile:#E3ECF4; --tile-ink:#0E1A24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1A24; --surface:#14232F; --ink:#E3ECF4; --muted:#93AABD; --line:#2A3E4F; --grid:#1B2C3A;
+  --glass:#6AB3E6; --glass-soft:#16324A; --ghs:#FF5A5F; --ok:#5BD69A; --ok-soft:#123327; --bad:#FF8A80; --bad-soft:#3A1A1A;
+  --warn:#F4C46B; --warn-soft:#33290F; --tile:#E3ECF4; --tile-ink:#0E1A24; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0}
+h2{font-size:1.55rem;font-weight:700;margin-block:2.2rem .8rem}
+h3{font-size:1.08rem;font-weight:500;margin-block:1.6rem .5rem}
+p{margin:.5rem 0}
+.lead{font-size:1.12rem;max-width:62ch}
+.col{max-width:68ch}
+a{color:var(--glass)}
+sub{font-size:.72em;line-height:0}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--glass);outline-offset:2px}
+
+/* Header */
+header.top{padding-block:28px 10px}
+.hero{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.bigtile{width:118px;height:118px;flex:none;background:var(--tile);color:var(--tile-ink);border-radius:8px;position:relative;font-family:var(--f-display)}
+.bigtile .z{position:absolute;top:8px;left:10px;font-size:.85rem}
+.bigtile .sym{position:absolute;inset:0;display:grid;place-items:center;font-size:2.9rem;font-weight:700}
+.bigtile .nm{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:.62rem;letter-spacing:.04em}
+.hero h1{font-size:clamp(1.8rem,5vw,2.9rem);font-weight:700}
+.hero .sub{color:var(--muted);margin-top:.3rem}
+
+/* Tile navigation */
+nav.tiles{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding-block:10px}
+.tilerow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.tbtn{flex:none;width:86px;height:86px;border:2px solid var(--ink);border-radius:7px;background:var(--surface);cursor:pointer;position:relative;text-align:left;padding:0;font-family:var(--f-display)}
+.tbtn .z{position:absolute;top:5px;left:7px;font-size:.68rem;font-family:var(--f-body);font-weight:700}
+.tbtn .s{position:absolute;top:18px;left:0;right:0;text-align:center;font-size:1.6rem;font-weight:700}
+.tbtn .n{position:absolute;bottom:6px;left:2px;right:2px;text-align:center;font-size:.62rem;font-family:var(--f-body);line-height:1.15}
+.tbtn .dot{position:absolute;top:6px;right:7px;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.tbtn .dot.done{background:var(--ok)}
+.tbtn[aria-selected="true"]{background:var(--tile);color:var(--tile-ink);border-color:var(--tile)}
+.tbtn:hover{border-color:var(--glass)}
+.tbtn.vm{border-style:dashed}
+@media (max-width:560px){.tbtn{width:64px;height:64px}.tbtn .s{top:13px;font-size:1.2rem}.tbtn .n{font-size:.52rem;bottom:4px}.tbtn .z{font-size:.6rem;top:3px;left:5px}.tbtn .dot{top:4px;right:5px;width:7px;height:7px}body{font-size:16px}}
+
+main{padding-block:8px 60px}
+.panel[hidden]{display:none}
+
+/* Concepts */
+.def{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:4px 18px;margin:1rem 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.def dt{font-weight:700;color:var(--glass)}
+.def dd{margin:0 0 6px}
+@media (max-width:560px){.def{grid-template-columns:1fr}.def dd{margin-bottom:10px}}
+.kw{font-weight:700;color:var(--glass)}
+.note{background:var(--warn-soft);color:var(--ink);border-radius:var(--r);padding:12px 16px;margin:1rem 0;max-width:68ch}
+.note b.tag{color:var(--warn);margin-right:.4rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.two>*{min-width:0}
+.tablewrap{overflow-x:auto;margin:1rem 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted);font-size:.85rem}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+ul.clean{padding-left:1.1rem;margin:.4rem 0}
+ul.clean li{margin:.2rem 0}
+
+/* Worksheet (exercise) */
+.ws{--cell:22px;background-color:var(--surface);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:var(--cell) var(--cell);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 20px;margin:1.4rem 0}
+.ws>header{display:flex;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:.4rem}
+.ws>header .score{margin-left:auto}
+.ws h3{margin:0;font-size:1rem}
+.ws .tag{font-size:.8rem;color:var(--muted);font-weight:700}
+.ws .ask{background:var(--surface);display:inline;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.score{font-weight:700;font-variant-numeric:tabular-nums;color:var(--glass)}
+.btn{border:2px solid var(--ink);background:var(--surface);border-radius:999px;padding:5px 14px;cursor:pointer;font-weight:700;font-size:.92rem}
+.btn:hover{border-color:var(--glass);color:var(--glass)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--glass);border-color:var(--glass);color:var(--paper)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.opt{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.93rem}
+.opt:hover{border-color:var(--glass)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.opt:disabled{cursor:default}
+.items{display:grid;gap:8px;margin-top:10px}
+.item{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.item .lbl{flex:1 1 220px;min-width:0;font-weight:700}
+.item .opts{display:flex;gap:6px;flex-wrap:wrap}
+.fb{flex-basis:100%;font-size:.9rem;margin:0}
+.fb.good{color:var(--ok)} .fb.badf{color:var(--bad)}
+.mc .q{font-weight:700;font-size:1.05rem;margin:.4rem 0 .6rem;background:var(--surface)}
+.mc .opts{display:grid;gap:7px}
+.mc .opt{text-align:left;padding:9px 13px}
+.mc .why{background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:.93rem}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 10px}
+.progress>i{display:block;height:100%;background:var(--glass);width:0;transition:width .3s}
+input[type=text],input[type=number],select{background:var(--surface);border:1.5px solid var(--line);border-radius:7px;padding:5px 9px;max-width:100%}
+input.ok,select.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.no,select.no{border-color:var(--bad);background:var(--bad-soft)}
+.mini{font-size:.86rem;color:var(--muted)}
+.pill{display:inline-block;border-radius:999px;padding:1px 10px;font-size:.82rem;font-weight:700}
+.pill.v{background:var(--glass-soft);color:var(--glass)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* Etiket */
+.etiket{background:#FFF27A;color:#111;border:3px solid #111;border-radius:4px;padding:10px 12px;max-width:440px;font-size:.82rem;line-height:1.35;position:relative}
+.etiket .hot{cursor:pointer;border-radius:4px;outline:2px dashed transparent;outline-offset:2px}
+.etiket .hot:hover,.etiket .hot.sel{outline-color:#1F6FA8}
+.etiket .hot.found{outline:2px solid #1E7F4F}
+.etiket .nm{font-family:var(--f-display);font-size:1.5rem;font-weight:700}
+.etiket .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.etiket svg{width:70px;height:70px}
+.etiket .foot{display:flex;justify-content:space-between;border-top:1px solid #111;margin-top:6px;padding-top:4px;font-weight:700}
+
+/* Pictograms & gear */
+.ghsgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:1rem 0}
+.ghsgrid figure{margin:0;text-align:center;font-size:.88rem}
+.ghsgrid svg{width:86px;height:86px}
+.gear{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:1rem 0}
+.gear button{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;font-size:.88rem;font-weight:700}
+.gear button:hover,.gear button.sel{border-color:var(--glass)}
+.gear svg{width:70px;height:70px;display:block;margin:0 auto 4px}
+.gearinfo{min-height:3.2em;background:var(--glass-soft);border-radius:8px;padding:10px 14px}
+svg .glass{fill:var(--glass-soft);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+svg .ln{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+svg .liq{fill:var(--glass);opacity:.45;stroke:none}
+svg .solid{fill:var(--ink);stroke:none}
+
+/* Graph */
+.graph svg{width:100%;max-width:560px;height:auto;display:block}
+.graph .axis{stroke:var(--ink);stroke-width:2;fill:none}
+.graph text{fill:var(--ink);font-size:12px;font-family:var(--f-body)}
+.readout{font-weight:700;min-height:1.6em}
+.slider{width:100%;max-width:520px}
+.states{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:10px}
+.state{display:flex;justify-content:space-between;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:.92rem}
+.state b{font-size:.8rem;border-radius:999px;padding:0 8px}
+.st-vast{background:#D9DEE4;color:#2A3A48}
+.st-vloeibaar{background:#CFE6F7;color:#0E4C78}
+.st-gas{background:#FCEFB7;color:#6B5200}
+.therm{font-family:var(--f-display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+
+/* Particle boxes */
+.boxes{display:flex;gap:14px;flex-wrap:wrap}
+.pbox{width:220px;max-width:100%;aspect-ratio:1;background:var(--surface);border:2px solid var(--ink);border-top:none;border-radius:0 0 10px 10px}
+.pbox svg{width:100%;height:100%}
+
+/* Schema */
+.schema{display:grid;gap:6px;justify-items:center;text-align:center;margin-top:10px}
+.schema .node{background:var(--surface);border:1.5px solid var(--ink);border-radius:6px;padding:4px 12px;font-weight:700}
+.schema .arrow{color:var(--muted);font-size:.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.schema .split{display:flex;gap:30px;justify-content:center;flex-wrap:wrap}
+.schema .branch{display:grid;gap:6px;justify-items:center}
+
+/* Molecule viewer */
+.molrow{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.mol{display:flex;flex-wrap:wrap;gap:2px;max-width:150px;padding:6px;border:1.5px dashed var(--line);border-radius:12px;background:var(--surface)}
+.atom{width:20px;height:20px;border-radius:50%;border:1px solid #8A99A8;display:inline-block}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.88rem}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.countgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.countgrid label{display:flex;flex-direction:column;gap:3px;font-size:.88rem;font-weight:700;background:var(--surface);padding:6px 8px;border-radius:7px;border:1px solid var(--line)}
+
+/* Flashcards */
+.card{background:var(--surface);border:2px solid var(--ink);border-radius:12px;min-height:150px;display:grid;place-items:center;text-align:center;padding:20px;cursor:pointer;max-width:520px}
+.card .t{font-family:var(--f-display);font-size:1.3rem}
+.card .d{font-size:1.02rem}
+
+/* HP lookup */
+.hpres{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-top:10px;min-height:2.8em}
+.codebadge{display:inline-block;background:var(--tile);color:var(--tile-ink);border-radius:5px;padding:0 7px;font-weight:700;margin-right:6px;font-variant-numeric:tabular-nums}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem;margin:.6rem 0 0}
+.toc a{text-decoration:none;border-bottom:1px solid var(--line)}
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-block:18px 30px}
+</style>
+<style>
+/* Thema 2 extras: reaction stage, balancer, energy diagrams */
+.eq{font-family:var(--f-display);font-size:clamp(1.05rem,3.2vw,1.45rem);line-height:1.9;margin:.6rem 0}
+.eq .arrow,.eq .plus{margin:0 .4em}
+.eq .pill{font-size:.85rem}
+.eq .arrow{font-size:1.3em;color:var(--muted)}
+.eq .plus{color:var(--muted)}
+.stage svg{width:100%;max-width:620px;height:auto;display:block}
+.stage .lab{fill:var(--ink);font-family:var(--f-body);font-size:13px}
+.stage circle.at{transition:transform 1.4s cubic-bezier(.6,0,.3,1)}
+@media (prefers-reduced-motion: reduce){.stage circle.at{transition:none}}
+.tally{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-top:10px}
+.tally div{background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:5px 9px;font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;gap:6px;font-size:.93rem}
+.tally div.ok{border-color:var(--ok);background:var(--ok-soft)}
+.tally div.no{border-color:var(--bad);background:var(--bad-soft)}
+.bal{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 8px;margin:12px 0}
+.sp{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-width:96px}
+.sp .f{font-family:var(--f-display);font-size:1.15rem}
+.step{display:flex;align-items:center;gap:4px}
+.step button{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--surface);font-weight:700;cursor:pointer;line-height:1}
+.step button:hover{border-color:var(--glass);color:var(--glass)}
+.step output{min-width:1.6em;text-align:center;font-family:var(--f-display);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.sp .pile{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:150px}
+.sp .pile .mol{padding:3px;gap:1px;max-width:none}
+.sp .pile .atom{width:12px;height:12px}
+.balsep{align-self:center;font-family:var(--f-display);font-size:1.4rem;color:var(--muted)}
+.edia svg{width:100%;max-width:440px;height:auto;display:block}
+.edia text{fill:var(--ink);font-family:var(--f-body);font-size:12px}
+.edia .axis{stroke:var(--ink);stroke-width:2;fill:none}
+.edia .lvl{fill:var(--ok-soft);stroke:var(--ok);stroke-width:2}
+.edia .lvltxt{font-size:11px;fill:var(--ok)}
+.edia .ln{stroke:var(--ok);stroke-width:2.5;fill:none}
+.edia .note{font-size:12px}
+.pickdia{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:640px}
+.pickdia button{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px;cursor:pointer}
+.pickdia button:hover{border-color:var(--glass)}
+.pickdia button.right{border-color:var(--ok);background:var(--ok-soft)}
+.pickdia button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.sentence{font-size:1.05rem;line-height:2.1;background:var(--surface);border-radius:8px;padding:6px 10px}
+.sentence .w{cursor:pointer;border-radius:4px;padding:1px 2px}
+.sentence .w:hover{background:var(--glass-soft)}
+.sentence .w.on{background:var(--glass);color:var(--paper)}
+.sentence .w.miss{outline:2px dashed var(--bad)}
+.sentence .w.ok{background:var(--ok);color:var(--paper)}
+.sentence .w.no{background:var(--bad);color:var(--paper)}
+.scale{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.vessel{width:150px;text-align:center}
+.vessel svg{width:150px;height:150px}
+.vessel .reading{font-family:var(--f-display);font-size:1.4rem;font-variant-numeric:tabular-nums}
+.focusgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:1rem 0}
+.focusgrid article{background:var(--tile);color:var(--tile-ink);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.focusgrid article p{margin:0;font-size:.95rem}
+.focusgrid .eqs{font-family:var(--f-display);font-size:1.02rem;border-top:1px solid currentColor;padding-top:8px;opacity:.95}
+.steps{counter-reset:s;list-style:none;padding:0;max-width:68ch}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2.2em 1fr;gap:10px;margin:.5rem 0}
+.steps li::before{content:counter(s);width:2em;height:2em;border-radius:50%;background:var(--tile);color:var(--tile-ink);display:grid;place-items:center;font-weight:700;font-family:var(--f-display);font-size:.9rem}
+</style>
+<style>
+/* Thema 3 extras: atoombouwer, PSE, zoom */
+.nuclide{display:inline-grid;grid-template-columns:auto auto;grid-template-rows:auto auto;align-items:center;font-family:var(--f-display);line-height:1;column-gap:2px}
+.nuclide .A{grid-column:1;grid-row:1;font-size:.55em;text-align:right}
+.nuclide .Z{grid-column:1;grid-row:2;font-size:.55em;text-align:right}
+.nuclide .X{grid-column:2;grid-row:1/3;font-size:1em}
+.builder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:700px){.builder{grid-template-columns:1fr}}
+.ctrls{display:grid;gap:8px}
+.ctrl{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:6px 10px}
+.ctrl b{min-width:7.5em}
+.bohr svg{width:100%;max-width:320px;height:auto;display:block;margin:0 auto}
+.bohr .ring{fill:none;stroke:var(--muted);stroke-width:1.3}
+.bohr .ringlbl{fill:var(--muted);font-size:11px;font-family:var(--f-body)}
+.bohr .e{fill:var(--glass)}
+.bohr .e.val{fill:var(--ok)}
+.bohr .core{fill:#C62828}
+.bohr .coretxt{fill:#fff;font-weight:700;font-family:var(--f-body)}
+.bohr .ring.click{cursor:pointer;stroke-width:10;stroke:transparent}
+.bigsym{font-size:2.6rem}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:.95rem;margin-top:8px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.pse{overflow-x:auto;padding-bottom:6px}
+.pse .grid{display:grid;grid-template-columns:repeat(18,minmax(38px,1fr));gap:2px;min-width:720px}
+.pse .el{aspect-ratio:1;border:1px solid var(--line);border-radius:4px;background:var(--surface);cursor:pointer;padding:2px 3px;display:flex;flex-direction:column;justify-content:space-between;font-size:.62rem;line-height:1;text-align:left;color:var(--ink)}
+.pse .el .s{font-family:var(--f-display);font-size:.95rem;text-align:center}
+.pse .el.met{background:var(--glass-soft)}
+.pse .el.nmet{background:var(--ok-soft)}
+.pse .el.edel{background:var(--warn-soft)}
+.pse .el:hover{outline:2px solid var(--glass);z-index:1}
+.pse .el.sel{outline:3px solid var(--ink);z-index:2}
+.pse .el.hit{outline:3px solid var(--ok)}
+.pse .el.miss{outline:3px solid var(--bad)}
+.pse .hdr{font-size:.66rem;color:var(--muted);text-align:center;align-self:end;padding-bottom:2px}
+.pse .gap{height:10px;grid-column:1/-1}
+.pse .el.staircase-r{border-right:3px solid var(--ink)}
+.pse .el.staircase-t{border-top:3px solid var(--ink)}
+.legend3{display:flex;flex-wrap:wrap;gap:12px;font-size:.88rem;margin:.5rem 0}
+.legend3 i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line);vertical-align:-2px;margin-right:5px}
+.psehint{display:none}@media (max-width:760px){.psehint{display:block}}
+.pseinfo{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;min-height:5em}
+.zoom svg{width:100%;max-width:560px;height:auto;display:block;background:#0E1A24;border-radius:10px}
+.zoom .zl{fill:#E3ECF4;font-family:var(--f-body)}
+.zoomread{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;margin:8px 0}
+.zoomread .big{font-family:var(--f-display);font-size:1.5rem}
+.lewis{display:inline-grid;grid-template-columns:18px auto 18px;grid-template-rows:14px auto 14px;align-items:center;justify-items:center;font-family:var(--f-display);font-size:1.5rem;line-height:1;padding:4px}
+.lewis .t{grid-column:2;grid-row:1}.lewis .b{grid-column:2;grid-row:3}.lewis .l{grid-column:1;grid-row:2}.lewis .r{grid-column:3;grid-row:2}.lewis .c{grid-column:2;grid-row:2;padding:0 2px}
+.lewis .dot{width:6px;height:6px;border-radius:50%;background:var(--ink);display:block}
+.lewis .hbar{width:22px;height:2.5px;background:var(--ink);display:block}
+.lewis .vbar{width:2.5px;height:22px;background:var(--ink);display:block}
+.lewisopts{display:flex;flex-wrap:wrap;gap:10px}
+.lewisopts button{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;color:var(--ink)}
+.lewisopts button.right{border-color:var(--ok);background:var(--ok-soft)}
+.lewisopts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.work{background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:.95rem;line-height:1.75}
+.work .k{color:var(--muted);font-weight:700}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:1rem 0;font-weight:700}
+.flow .box{background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:6px 12px}
+.flow .arr{display:grid;text-align:center;font-size:.85rem;color:var(--muted);line-height:1.2}
+.pick2{display:flex;flex-wrap:wrap;gap:6px}
+.pick2 button.on{background:var(--glass);color:var(--paper);border-color:var(--glass)}
+</style>
+</head>
+<body style="position:relative">
+<a href="../index.html" style="position:absolute;top:8px;left:16px;font:700 .85rem/1 system-ui,sans-serif;color:var(--glass,#1F6FA8);text-decoration:none;z-index:30">← Alle thema's</a>
+<header class="top wrap">
+  <div class="hero">
+    <div class="bigtile" aria-hidden="true"><span class="z">3de jaar</span><span class="sym">3</span><span class="nm">THEMA</span></div>
+    <div>
+      <h1>Bouw en eigenschappen van atomen</h1>
+      <p class="sub">Chemie 3de jaar · Thema 3. Bouw atomen, ontdek het PSE en reken met mol.</p>
+    </div>
+  </div>
+</header>
+
+<nav class="tiles" aria-label="Hoofdstukken">
+  <div class="wrap tilerow" role="tablist">
+    <button class="tbtn vm" role="tab" data-tab="focus"><span class="z">F</span><span class="dot"></span><span class="s">10ⁿ</span><span class="n">Groot en klein</span></button>
+    <button class="tbtn" role="tab" data-tab="atoom" aria-selected="true"><span class="z">1</span><span class="dot"></span><span class="s">At</span><span class="n">Atoommodel</span></button>
+    <button class="tbtn" role="tab" data-tab="pse"><span class="z">2</span><span class="dot"></span><span class="s">Ps</span><span class="n">Het PSE</span></button>
+    <button class="tbtn" role="tab" data-tab="rekenen"><span class="z">3</span><span class="dot"></span><span class="s">Re</span><span class="n">Chemisch rekenen</span></button>
+    <button class="tbtn" role="tab" data-tab="test"><span class="z">T</span><span class="dot"></span><span class="s">Tj</span><span class="n">Test jezelf</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ FOCUS ============ -->
+<section class="panel" id="p-focus" role="tabpanel" hidden>
+  <h2>Focus: onbevattelijk groot tot minuscuul klein</h2>
+  <p class="lead">In de wetenschappen werk je vaak met machten van tien. Getallen zijn dikwijls zeer groot of zeer klein. Elke stap is een factor 10.</p>
+  <div class="ws" id="ex-zoom"></div>
+  <div class="ws" id="ex-tien"></div>
+</section>
+
+<!-- ============ 1 ATOOMMODEL ============ -->
+<section class="panel" id="p-atoom" role="tabpanel">
+  <h2>1 Het atoommodel volgens Rutherford-Bohr</h2>
+  <p class="lead">Atomen zijn te klein om waar te nemen. Daarom gebruik je een atoommodel. Door betere onderzoekstechnieken werd het model telkens verfijnd.</p>
+  <nav class="toc"><a href="#a11">1.1 Bestanddelen</a><a href="#a-iso">Isotopen</a><a href="#a12">1.2 Plaats van de elektronen</a><a href="#a-lewis">Lewisnotatie</a></nav>
+
+  <h3 id="a11">1.1 Bestanddelen van het atoom</h3>
+  <p class="col">Ernest Rutherford stelde dat een atoom bestaat uit een <span class="kw">atoomkern</span> met daarrond een <span class="kw">elektronenwolk</span>. In de kern zitten positief geladen <span class="kw">protonen</span> en ongeladen <span class="kw">neutronen</span>. In de elektronenwolk bewegen negatief geladen <span class="kw">elektronen</span>. Rond de kern is het atoom op de elektronen na leeg: een ijle ruimte. De kern is ongeveer 20 000 keer kleiner dan de elektronenwolk.</p>
+  <div class="tablewrap col"><table>
+    <tr><th>Elementair deeltje</th><th>Afkorting</th><th>Plaats</th><th>Relatieve massa</th><th>Relatieve lading</th></tr>
+    <tr><td>elektron</td><td>e<sup>−</sup></td><td>rond de atoomkern</td><td class="num">0</td><td class="num">−1</td></tr>
+    <tr><td>proton</td><td>p<sup>+</sup></td><td>in de atoomkern</td><td class="num">1</td><td class="num">+1</td></tr>
+    <tr><td>neutron</td><td>n<sup>0</sup></td><td>in de atoomkern</td><td class="num">1</td><td class="num">0</td></tr>
+  </table></div>
+  <dl class="def">
+    <dt>Nucleonen</dt><dd>Protonen en neutronen samen, ook kerndeeltjes genoemd. Bijna de volledige massa van het atoom zit in de kern.</dd>
+    <dt>Elementaire lading</dt><dd>De lading van één proton: ongeveer 1,602 · 10<sup>−19</sup> C. Een elektron heeft een even grote, negatieve lading.</dd>
+    <dt>Atoomnummer Z</dt><dd>Het aantal protonen. Het bepaalt de atoomsoort. Je schrijft het links onderaan het symbool. Een atoom is neutraal, dus Z is ook het aantal elektronen.</dd>
+    <dt>Massagetal A</dt><dd>Het aantal protonen plus neutronen. Je schrijft het links bovenaan het symbool.</dd>
+    <dt>Aantal neutronen</dt><dd>A − Z</dd>
+    <dt>Nuclide</dt><dd>Een atoom met een gegeven aantal protonen en een gegeven aantal neutronen.</dd>
+  </dl>
+  <div class="ws" id="ex-build"></div>
+  <div class="ws" id="ex-comp"></div>
+  <div class="ws" id="ex-cmp"></div>
+
+  <h3 id="a-iso">Isotopen</h3>
+  <p class="col"><span class="kw">Isotopen</span> zijn atomen van hetzelfde element met evenveel protonen maar een verschillend aantal neutronen. De relatieve atoommassa A<sub>r</sub> in het PSE is het gewogen gemiddelde van de isotopen in de natuur. Daarom is A<sub>r</sub> meestal geen geheel getal.</p>
+  <p class="col mini">Voorbeeld magnesium: 79 % <sup>24</sup>Mg, 10 % <sup>25</sup>Mg en 11 % <sup>26</sup>Mg geeft A<sub>r</sub> = 24,32. Bij twee isotopen stel je het voorkomen van de eerste gelijk aan x en dat van de tweede aan 100 − x.</p>
+  <div class="ws" id="ex-iso"></div>
+
+  <h3 id="a12">1.2 De plaats van de elektronen in het atoom</h3>
+  <p class="col">Niels Bohr verfijnde het model in 1913: elektronen bewegen in zeven <span class="kw">energieniveaus</span> of <span class="kw">schillen</span> rond de kern: K, L, M, N, O, P en Q. Een schil kan maximaal 2 · n² elektronen bevatten, met een maximum van 32.</p>
+  <div class="tablewrap"><table>
+    <tr><th>naam schil</th><td>K</td><td>L</td><td>M</td><td>N</td><td>O</td><td>P</td><td>Q</td></tr>
+    <tr><th>schilnummer n</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+    <tr><th>maximum aantal e<sup>−</sup></th><td>2</td><td>8</td><td>18</td><td>32</td><td>32</td><td>32</td><td>32</td></tr>
+  </table></div>
+  <p class="col">Verhit je een atoom, dan springen elektronen naar een hogere schil. Daarna vallen ze terug en geven ze de extra energie af als straling. Daarom geeft elk element bij verhitting een eigen <b>vlamkleur</b>: NaCl geel-oranje, CuCl<sub>2</sub> groen, SrCl<sub>2</sub> rood.</p>
+  <p class="col">De <span class="kw">elektronenconfiguratie</span> geeft aan hoe de elektronen over de schillen verdeeld zijn. Vul steeds eerst de laagste schil tot het maximum, en ga dan naar de volgende. <span class="kw">Valentie-elektronen</span> zijn de elektronen op de buitenste bezette schil.</p>
+  <div class="ws" id="ex-config"></div>
+  <div class="ws" id="ex-shells"></div>
+
+  <h3 id="a-lewis">Elektronenstipmodel of lewisnotatie</h3>
+  <ul class="clean col">
+    <li>Elk valentie-elektron stel je voor met een stip.</li>
+    <li>De eerste vier plaats je zo ver mogelijk uit elkaar, in de volgorde boven, rechts, onder, links.</li>
+    <li>Vanaf het vijfde elektron vormen zich <span class="kw">elektronenparen</span> of doubletten. Die teken je als een streepje, opnieuw in de volgorde boven, rechts, onder, links.</li>
+    <li>De K-schil is een uitzondering: twee elektronen op de K-schil teken je als een elektronenpaar.</li>
+  </ul>
+  <div class="ws" id="ex-lewis"></div>
+  <div class="ws" id="ex-tf1"></div>
+</section>
+
+<!-- ============ 2 PSE ============ -->
+<section class="panel" id="p-pse" role="tabpanel" hidden>
+  <h2>2 Het Periodiek Systeem van de Elementen</h2>
+  <p class="lead">Er bestaan 118 erkende elementen. Ze staan geordend volgens stijgend atoomnummer in het PSE. Elementen met soortgelijke chemische eigenschappen staan onder elkaar.</p>
+  <dl class="def">
+    <dt>Groep</dt><dd>Een verticale kolom. De 18 groepen zijn doorlopend genummerd, of met Romeinse cijfers: a-groepen en groep 0 zijn de <b>hoofdgroepen</b>, b-groepen de <b>nevengroepen</b>. Het Romeinse cijfer van een a-groep = het aantal valentie-elektronen.</dd>
+    <dt>Periode</dt><dd>Een horizontale rij. Het periodenummer = het aantal bezette schillen.</dd>
+    <dt>Edelgassen</dt><dd>Groep 0. Zeer stabiel: 8 elektronen op de buitenste schil (helium 2). Ze reageren niet, ze zijn <b>inert</b>.</dd>
+  </dl>
+  <div class="tablewrap col"><table>
+    <tr><th>Groep</th><th>Naam</th><th>Groep</th><th>Naam</th></tr>
+    <tr><td>Ia</td><td>alkalimetalen</td><td>Va</td><td>stikstofgroep</td></tr>
+    <tr><td>IIa</td><td>aardalkalimetalen</td><td>VIa</td><td>zuurstofgroep</td></tr>
+    <tr><td>IIIa</td><td>boorgroep</td><td>VIIa</td><td>halogenen</td></tr>
+    <tr><td>IVa</td><td>koolstofgroep</td><td>0</td><td>edelgassen</td></tr>
+  </table></div>
+  <p class="col"><b>Metalen</b> staan links van de scheidingslijn, <b>niet-metalen</b> rechts ervan, en de <b>edelgassen</b> uiterst rechts. Waterstof staat bij de metalen, maar gedraagt zich eerder als een niet-metaal.</p>
+  <div class="ws" id="ex-pse"></div>
+  <div class="ws" id="ex-psetask"></div>
+  <div class="ws" id="ex-derive"></div>
+  <div class="ws" id="ex-pick2"></div>
+  <div class="ws" id="ex-tf2"></div>
+</section>
+
+<!-- ============ 3 REKENEN ============ -->
+<section class="panel" id="p-rekenen" role="tabpanel" hidden>
+  <h2>3 Chemisch rekenen</h2>
+  <p class="lead">Atomen en moleculen hebben een heel kleine massa. Daarom werk je met relatieve massa's en met de hoeveelheid stof in mol.</p>
+  <nav class="toc"><a href="#r31">3.1 Absolute en relatieve massa</a><a href="#r32">3.2 Stofhoeveelheid</a><a href="#r33">3.3 Rekenen met reacties</a></nav>
+
+  <h3 id="r31">3.1 Absolute en relatieve massa</h3>
+  <dl class="def">
+    <dt>Absolute massa m</dt><dd>De werkelijke massa, in kilogram (kg).</dd>
+    <dt>Atoommassa-eenheid u</dt><dd>u = 1,66 · 10<sup>−27</sup> kg: 1/12de van de massa van een <sup>12</sup>C-atoom.</dd>
+    <dt>Relatieve atoommassa A<sub>r</sub></dt><dd>Hoeveel keer de massa van een atoom groter is dan u. Geen eenheid. A<sub>r</sub> = m / u, dus m = A<sub>r</sub> · u. Je vindt A<sub>r</sub> links boven elk element in het PSE.</dd>
+    <dt>Relatieve moleculemassa M<sub>r</sub></dt><dd>De som van de relatieve atoommassa's, rekening houdend met de indices. m = M<sub>r</sub> · u.</dd>
+  </dl>
+  <div class="ws" id="ex-mr"></div>
+  <div class="ws" id="ex-abs"></div>
+
+  <h3 id="r32">3.2 Stofhoeveelheid</h3>
+  <dl class="def">
+    <dt>Hoeveelheid stof n</dt><dd>Uitgedrukt in mol.</dd>
+    <dt>Constante van Avogadro N<sub>A</sub></dt><dd>N<sub>A</sub> = 6,022 · 10<sup>23</sup> 1/mol: zoveel deeltjes zitten in 1 mol.</dd>
+    <dt>Aantal deeltjes N</dt><dd>N = n · N<sub>A</sub>, dus n = N / N<sub>A</sub>.</dd>
+    <dt>Molaire massa M</dt><dd>De massa in gram van 1 mol stof, in g/mol. M = m / n. De getalwaarde is gelijk aan A<sub>r</sub> of M<sub>r</sub>. Bv. M(H<sub>2</sub>O) = 18,0 g/mol.</dd>
+  </dl>
+  <div class="flow" aria-label="schema: massa, hoeveelheid stof en aantal deeltjes">
+    <span class="box">massa m (g)</span><span class="arr"><span>: M ⟶</span><span>⟵ · M</span></span><span class="box">hoeveelheid stof n (mol)</span><span class="arr"><span>· N<sub>A</sub> ⟶</span><span>⟵ : N<sub>A</sub></span></span><span class="box">aantal deeltjes N</span>
+  </div>
+  <div class="ws" id="ex-conv"></div>
+
+  <h3 id="r33">3.3 Rekenen met chemische reacties</h3>
+  <p class="col"><span class="kw">Stoichiometrie</span> is de verhouding waarin reagentia met elkaar reageren en reactieproducten vormen. De coëfficiënten geven ook de <span class="kw">molverhouding</span>: O<sub>2</sub> + 2 H<sub>2</sub> ⟶ 2 H<sub>2</sub>O betekent 1 mol O<sub>2</sub> + 2 mol H<sub>2</sub> ⟶ 2 mol H<sub>2</sub>O, of 32 g + 4 g ⟶ 36 g.</p>
+  <ol class="steps">
+    <li><span>Zet alle gegevens om in mol.</span></li>
+    <li><span>Schrijf de correcte reactievergelijking.</span></li>
+    <li><span>Bereken het aantal mol van de gevraagde stof met de molverhouding.</span></li>
+    <li><span>Herleid het aantal mol van de gevraagde stof naar de gevraagde eenheid.</span></li>
+  </ol>
+  <div class="ws" id="ex-ratio"></div>
+  <div class="ws" id="ex-stoich"></div>
+  <div class="ws" id="ex-tf3"></div>
+</section>
+
+<!-- ============ TEST ============ -->
+<section class="panel" id="p-test" role="tabpanel" hidden>
+  <h2>Test jezelf</h2>
+  <p class="lead">Een toets van 15 vragen, telkens willekeurig gekozen uit het hele thema. Doe hem zo vaak je wilt.</p>
+  <div class="ws" id="ex-final"></div>
+  <h3>Flitskaarten: nieuwe begrippen</h3>
+  <p class="mini">Lees het begrip, zeg de betekenis luidop en draai dan de kaart om.</p>
+  <div id="flash"></div>
+</section>
+
+</main>
+<footer class="wrap">Gebaseerd op de cursus Chemie, Thema 3 “Bouw en eigenschappen van atomen”. Je vooruitgang wordt enkel in deze browser bewaard.</footer>
+<script>
+const ATOMCOL = {C:"#1d1d1f",H:"#f4f4f4",O:"#d62828",N:"#2f6fdb",S:"#f2c80f",P:"#7b4fc9",Cl:"#3aa53a",F:"#3aa53a",Br:"#3aa53a",I:"#3aa53a",He:"#9fd8ea",Ne:"#9fd8ea",Ar:"#9fd8ea"};
+const METAL = "#7d8790";
+function atomColor(s){return ATOMCOL[s]||METAL;}
+
+/* ===== Helpers ===== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs||{})){if(k==="class")e.className=v;else if(k==="html")e.innerHTML=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?"":v);}for(const k of kids.flat()){if(k==null||k===false)continue;e.append(k instanceof Node?k:document.createTextNode(k));}return e;}
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=(a,n)=>shuffle(a).slice(0,n);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const fmt=s=>String(s).replace(/([A-Za-z\)])(\d+)/g,'$1<sub>$2</sub>');
+const KEY="chemie-t3-v1";
+let state={done:{},tab:"atoom"};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&typeof s==="object")state=Object.assign(state,s);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function markDone(id){state.done[id]=true;save();updateDots();}
+function updateDots(){$$(".tbtn").forEach(b=>{const p=$("#p-"+b.dataset.tab);const ids=$$(".ws",p).map(w=>w.id);const done=ids.length&&ids.every(i=>state.done[i]);b.querySelector(".dot").classList.toggle("done",!!done);b.querySelector(".dot").title=done?"Alle oefeningen gemaakt":"";});}
+function wsHead(box,title,tag){box.innerHTML="";const sc=h("span",{class:"score"});box.append(h("header",{},h("h3",{},title),h("span",{class:"tag"},tag||"Oefening"),sc));return sc;}
+const norm=s=>String(s).trim().toLowerCase().replace(/\s+/g," ").replace(/[‐–—]/g,"-");
+
+/* ===== Tabs ===== */
+function showTab(name,push){if(!$("#p-"+name))name="atoom";$$(".panel").forEach(p=>p.hidden=p.id!=="p-"+name);$$(".tbtn").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name?"true":"false"));state.tab=name;save();if(push){try{history.replaceState(null,"","#"+name);}catch(e){location.hash=name;}window.scrollTo({top:0});}}
+$$(".tbtn").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab,true)));
+$$(".toc a").forEach(a=>a.addEventListener("click",ev=>{ev.preventDefault();const t=$(a.getAttribute("href"));if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}));
+
+/* ===== Generic: sorteeroefening (per item een keuze) ===== */
+function sortEx(id,cfg){
+  const box=$("#"+id);if(!box)return;
+  function build(){
+    const sc=wsHead(box,cfg.title,cfg.tag);
+    if(cfg.intro)box.append(h("p",{class:"mini"},h("span",{class:"ask"},cfg.intro)));
+    const list=h("div",{class:"items"});box.append(list);
+    let answered=0,first=0;const items=cfg.keep?cfg.items:shuffle(cfg.items);
+    const upd=()=>{sc.textContent=answered===items.length?`${first}/${items.length} in één keer juist`:`${answered}/${items.length}`;};
+    items.forEach(it=>{
+      const acc=[].concat(it.a);let tries=0;
+      const fb=h("p",{class:"fb"});const opts=h("div",{class:"opts"});
+      if(cfg.select){const sel=h("select",{"aria-label":"kies"},h("option",{value:""},"kies …"),(it.options||cfg.options).map(o=>h("option",{value:o},o)));sel.addEventListener("change",()=>{if(!sel.value)return;tries++;if(acc.includes(sel.value)){sel.className="ok";sel.disabled=true;fb.className="fb good";fb.innerHTML=(tries===1?"Juist! ":"Ja, nu klopt het. ")+(it.why||"");answered++;if(tries===1)first++;upd();if(answered===items.length)markDone(id);}else{sel.className="no";fb.className="fb badf";fb.innerHTML=it.hint||"Niet juist. Probeer opnieuw.";}});opts.append(sel);}
+      else (it.options||cfg.options).forEach(o=>{const b=h("button",{class:"opt",type:"button"},o);b.addEventListener("click",()=>{tries++;if(acc.includes(o)){b.classList.add("right");$$("button",opts).forEach(x=>x.disabled=true);fb.className="fb good";fb.innerHTML=(tries===1?"Juist! ":"Ja, nu klopt het. ")+(it.why||"");answered++;if(tries===1)first++;upd();if(answered===items.length){markDone(id);}}else{b.classList.add("wrong");b.disabled=true;fb.className="fb badf";fb.innerHTML=it.hint||"Niet juist. Probeer opnieuw.";}});opts.append(b);});
+      list.append(h("div",{class:"item"},h("span",{class:"lbl",html:it.t}),opts,fb));
+    });
+    upd();
+    box.append(h("div",{class:"btnrow"},h("button",{class:"btn",type:"button",onclick:build},"Opnieuw (andere volgorde)")));
+  }
+  build();
+}
+
+/* ===== Generic: meerkeuzereeks ===== */
+function mcEx(id,cfg){
+  const box=$("#"+id);if(!box)return;
+  function start(){
+    const sc=wsHead(box,cfg.title,cfg.tag);
+    if(cfg.intro)box.append(h("p",{class:"mini"},h("span",{class:"ask"},cfg.intro)));
+    const qs=(typeof cfg.questions==="function"?cfg.questions():(cfg.n?pick(cfg.questions,cfg.n):shuffle(cfg.questions)));
+    const bar=h("div",{class:"progress"},h("i"));const area=h("div",{class:"mc"});box.append(bar,area);
+    let i=0,score=0;const wrongs=[];
+    function show(){
+      bar.firstChild.style.width=(i/qs.length*100)+"%";sc.textContent=`vraag ${Math.min(i+1,qs.length)}/${qs.length} · score ${score}`;
+      area.innerHTML="";
+      if(i>=qs.length){
+        markDone(id);
+        const pct=Math.round(score/qs.length*100);
+        area.append(h("p",{class:"q"},`Klaar! Je score: ${score}/${qs.length} (${pct}%).`),h("p",{},pct>=80?"Sterk gedaan. Je beheerst dit onderdeel.":pct>=50?"Goed op weg. Bekijk de vragen die fout liepen nog eens.":"Lees de leerstof nog eens rustig na en probeer opnieuw."));
+        if(wrongs.length){area.append(h("p",{class:"mini"},"Om te herhalen:"),h("ul",{class:"clean"},wrongs.map(w=>h("li",{html:w}))));}
+        area.append(h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:start},"Nieuwe reeks")));
+        return;
+      }
+      const q=qs[i];const opts=q.keep?q.opts:shuffle(q.opts);
+      if(q.svg)area.append(h("div",{html:q.svg,style:"width:110px;height:110px;margin-bottom:6px"}));
+      if(q.graph)area.append(h("div",{class:"graph",html:q.graph}));
+      area.append(h("p",{class:"q",html:q.q}));
+      const og=h("div",{class:"opts"});const why=h("div",{class:"why",hidden:true});
+      const next=h("button",{class:"btn primary",type:"button",hidden:true,onclick:()=>{i++;show();}},i===qs.length-1?"Toon resultaat":"Volgende vraag");
+      opts.forEach(o=>{const b=h("button",{class:"opt",type:"button",html:o});b.addEventListener("click",()=>{const ok=o===q.a;$$("button",og).forEach(x=>{x.disabled=true;if(x.innerHTML===b.innerHTML&&!ok)x.classList.add("wrong");});$$("button",og).forEach(x=>{if(x.dataset.v===q.a)x.classList.add("right");});if(ok)score++;else wrongs.push(q.q+" → "+q.a);why.hidden=false;why.innerHTML=(ok?"<b>Juist.</b> ":"<b>Niet juist.</b> Het juiste antwoord is: "+q.a+". ")+(q.why||"");sc.textContent=`vraag ${i+1}/${qs.length} · score ${score}`;next.hidden=false;next.focus();});b.dataset.v=o;og.append(b);});
+      area.append(og,why,h("div",{class:"btnrow"},next));
+    }
+    show();
+  }
+  start();
+}
+
+
+function parseFormula(str){
+  str=str.replace(/\s+/g," ").trim();let coef=1;const m=str.match(/^(\d+)\s*(.*)$/);if(m){coef=+m[1];str=m[2];}
+  let i=0;function group(){const c={};while(i<str.length&&str[i]!==")"){let part={};if(str[i]==="("){i++;part=group();i++;}else{const mm=str.slice(i).match(/^[A-Z][a-z]?/);if(!mm)throw new Error("bad");part={[mm[0]]:1};i+=mm[0].length;}const d=str.slice(i).match(/^\d+/);let k=1;if(d){k=+d[0];i+=d[0].length;}for(const e in part)c[e]=(c[e]||0)+part[e]*k;}return c;}
+  const counts=group();if(i!==str.length)throw new Error("bad");return{coef,counts,f:str};
+}
+
+/* ===== Thema 2 helpers ===== */
+function parseEq(s){const [L,R]=s.split("->");const side=x=>x.split(" + ").map(t=>{t=t.trim();const m=t.match(/^(\d+)\s+(.+)$/);return{c:m?+m[1]:1,f:m?m[2]:t};});return{L:side(L),R:side(R)};}
+const eqStr=(E,coefs)=>{let k=0;const part=a=>a.map(sp=>{const c=coefs?coefs[k++]:sp.c;return (c>1?c+" ":"")+fmt(sp.f);}).join(' <span class="plus">+</span> ');return part(E.L)+' <span class="arrow">⟶</span> '+part(E.R);};
+function tallySide(side,coefs){const t={};side.forEach((sp,i)=>{const c=parseFormula(sp.f).counts;for(const e in c)t[e]=(t[e]||0)+c[e]*coefs[i];});return t;}
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+
+/* Elementen: Z|symbool|naam|Ar (1 decimaal, zoals in het cursus-PSE; [x] = meest stabiele isotoop) */
+const ELRAW=`1|H|waterstof|1,0;2|He|helium|4,0;3|Li|lithium|6,9;4|Be|beryllium|9,0;5|B|boor|10,8;6|C|koolstof|12,0;7|N|stikstof|14,0;8|O|zuurstof|16,0;9|F|fluor|19,0;10|Ne|neon|20,2;11|Na|natrium|23,0;12|Mg|magnesium|24,3;13|Al|aluminium|27,0;14|Si|silicium|28,1;15|P|fosfor|31,0;16|S|zwavel|32,1;17|Cl|chloor|35,5;18|Ar|argon|39,9;19|K|kalium|39,1;20|Ca|calcium|40,1;21|Sc|scandium|45,0;22|Ti|titanium|47,9;23|V|vanadium|50,9;24|Cr|chroom|52,0;25|Mn|mangaan|54,9;26|Fe|ijzer|55,8;27|Co|kobalt|58,9;28|Ni|nikkel|58,7;29|Cu|koper|63,5;30|Zn|zink|65,4;31|Ga|gallium|69,7;32|Ge|germanium|72,6;33|As|arseen|74,9;34|Se|seleen|79,0;35|Br|broom|79,9;36|Kr|krypton|83,8;37|Rb|rubidium|85,5;38|Sr|strontium|87,6;39|Y|yttrium|88,9;40|Zr|zirkonium|91,2;41|Nb|niobium|92,9;42|Mo|molybdeen|95,9;43|Tc|technetium|[98];44|Ru|ruthenium|101,1;45|Rh|rhodium|102,9;46|Pd|palladium|106,4;47|Ag|zilver|107,9;48|Cd|cadmium|112,4;49|In|indium|114,8;50|Sn|tin|118,7;51|Sb|antimoon|121,8;52|Te|tellurium|127,6;53|I|jood|126,9;54|Xe|xenon|131,3;55|Cs|cesium|132,9;56|Ba|barium|137,3;57|La|lanthaan|138,9;58|Ce|cerium|140,1;59|Pr|praseodymium|140,9;60|Nd|neodymium|144,2;61|Pm|promethium|[145];62|Sm|samarium|150,4;63|Eu|europium|152,0;64|Gd|gadolinium|157,3;65|Tb|terbium|158,9;66|Dy|dysprosium|162,5;67|Ho|holmium|164,9;68|Er|erbium|167,3;69|Tm|thulium|168,9;70|Yb|ytterbium|173,0;71|Lu|lutetium|175,0;72|Hf|hafnium|178,5;73|Ta|tantaal|180,9;74|W|wolfraam|183,9;75|Re|renium|186,2;76|Os|osmium|190,2;77|Ir|iridium|192,2;78|Pt|platina|195,1;79|Au|goud|197,0;80|Hg|kwik|200,6;81|Tl|thallium|204,4;82|Pb|lood|207,2;83|Bi|bismut|209,0;84|Po|polonium|[209];85|At|astaat|[210];86|Rn|radon|[222];87|Fr|francium|[223];88|Ra|radium|[226];89|Ac|actinium|[227];90|Th|thorium|232,0;91|Pa|protactinium|231,0;92|U|uraan|238,0;93|Np|neptunium|[237];94|Pu|plutonium|[244];95|Am|americium|[243];96|Cm|curium|[247];97|Bk|berkelium|[247];98|Cf|californium|[251];99|Es|einsteinium|[252];100|Fm|fermium|[257];101|Md|mendelevium|[258];102|No|nobelium|[259];103|Lr|lawrencium|[262];104|Rf|rutherfordium|;105|Db|dubnium|;106|Sg|seaborgium|;107|Bh|bohrium|;108|Hs|hassium|;109|Mt|meitnerium|;110|Ds|darmstadtium|;111|Rg|röntgenium|;112|Cn|copernicium|;113|Nh|nihonium|;114|Fl|flerovium|;115|Mc|moscovium|;116|Lv|livermorium|;117|Ts|tennessine|;118|Og|oganesson|`;
+const NONMET=new Set(["H","B","C","N","O","F","Si","P","S","Cl","As","Se","Br","Te","I","At"]);
+const NOBLE=new Set(["He","Ne","Ar","Kr","Xe","Rn","Og"]);
+const ROMAN={1:"Ia",2:"IIa",3:"IIIb",4:"IVb",5:"Vb",6:"VIb",7:"VIIb",8:"VIIIb",9:"VIIIb",10:"VIIIb",11:"Ib",12:"IIb",13:"IIIa",14:"IVa",15:"Va",16:"VIa",17:"VIIa",18:"0"};
+const GNAME={1:"alkalimetalen",2:"aardalkalimetalen",13:"boorgroep",14:"koolstofgroep",15:"stikstofgroep",16:"zuurstofgroep",17:"halogenen",18:"edelgassen"};
+const EL=[];const BYSYM={};
+ELRAW.split(";").forEach(r=>{const [z,s,n,a]=r.split("|");const Z=+z;let ar=null,arTxt=a||"";if(a&&a[0]!=="[")ar=parseFloat(a.replace(",","."));
+  let period,group,row,col;
+  if(Z<=2){period=1;group=Z===1?1:18;}else if(Z<=10){period=2;group=Z<=4?Z-2:Z+8;}else if(Z<=18){period=3;group=Z<=12?Z-10:Z;}else if(Z<=36){period=4;group=Z-18;}else if(Z<=54){period=5;group=Z-36;}
+  else if(Z<=86){period=6;group=Z<=57?Z-54:Z<=71?null:Z-68;}else{period=7;group=Z<=89?Z-86:Z<=103?null:Z-100;}
+  if(group){row=period;col=group;}else{row=period===6?9:10;col=Z-(period===6?58:90)+4;}
+  const cls=NOBLE.has(s)?"edel":NONMET.has(s)?"nmet":"met";
+  const e={Z,s,n,ar,arTxt,period,group,row,col,cls};EL.push(e);BYSYM[s]=e;});
+const AR=s=>BYSYM[s].ar;
+function config(Z){const out=[];let left=Z;const mx=[2,8,8];for(let i=0;i<3&&left>0;i++){const k=Math.min(mx[i],left);out.push(k);left-=k;}return out;} // geldig voor Z ≤ 18
+const SHELL="KLMNOPQ";
+const cfgTxt=c=>c.map((k,i)=>SHELL[i]+": "+k).join("  ");
+function valence(e){if(e.Z<=18){const c=config(e.Z);return c[c.length-1];}if(e.group===18)return 8;if(e.group&&e.group<=2)return e.group;if(e.group>=13)return e.group-10;return null;}
+const fmtAr=x=>x.toFixed(1).replace(".",",");
+const dc=(x,d=1)=>x.toFixed(d).replace(".",",");
+function sci(x,d=2){if(x===0)return"0";const ex=Math.floor(Math.log10(Math.abs(x)));let m=x/Math.pow(10,ex);let mm=+m.toFixed(d);let e2=ex;if(Math.abs(mm)>=10){mm=+(mm/10).toFixed(d);e2++;}if(e2===0)return mm.toFixed(d).replace(".",",");return mm.toFixed(d).replace(".",",")+" · 10<sup>"+e2+"</sup>";}
+function parseSci(s){s=String(s).trim().replace(/\s+/g,"").replace(/−/g,"-").replace(/,/g,".");if(!s)return NaN;let m=s.match(/^([-+]?\d*\.?\d+)(?:(?:[x×*·.]?10\^?([-+]?\d+))|(?:e([-+]?\d+)))?$/i);if(m){const v=parseFloat(m[1]);const ex=m[2]!=null?+m[2]:m[3]!=null?+m[3]:0;return v*Math.pow(10,ex);}m=s.match(/^10\^([-+]?\d+)$/);if(m)return Math.pow(10,+m[1]);return NaN;}
+const close=(a,b,rel=0.02)=>Math.abs(a-b)<=Math.abs(b)*rel+1e-12;
+const NA=6.022e23,U=1.66e-27;
+function Mr(f){const c=parseFormula(f).counts;let t=0;for(const e in c)t+=c[e]*AR(e);return +t.toFixed(1);}
+function MrSteps(f){const c=parseFormula(f).counts;const els=Object.keys(c);return `M<sub>r</sub>(${fmt(f)}) = ${els.map(e=>c[e]+" · A<sub>r</sub>("+e+")").join(" + ")} = ${els.map(e=>c[e]+" · "+fmtAr(AR(e))).join(" + ")} = <b>${dc(Mr(f))}</b>`;}
+
+/* ===================== HELPERS THEMA 3 ===================== */
+const nucl=(A,Z,X)=>`<span class="nuclide"><span class="A">${A??""}</span><span class="Z">${Z??""}</span><span class="X">${X}</span></span>`;
+function bohrSvg(Z,e,opts={}){
+  const c=[];let left=e;const mx=[2,8,8];for(let i=0;i<3&&left>0;i++){const k=Math.min(mx[i],left);c.push(k);left-=k;}
+  const shells=opts.shells||Math.max(1,c.length);const R=[42,70,98];
+  let s=`<svg viewBox="0 0 240 240" role="img" aria-label="schillenmodel: ${cfgTxt(c)||"geen elektronen"}">`;
+  for(let i=0;i<shells;i++)s+=`<circle class="ring" cx="120" cy="120" r="${R[i]}"/><text class="ringlbl" x="${120+R[i]*0.72+4}" y="${120+R[i]*0.72+10}">${SHELL[i]}</text>`;
+  s+=`<circle class="core" cx="120" cy="120" r="20"/><text class="coretxt" x="120" y="125" text-anchor="middle" font-size="13">${Z}+</text>`;
+  const counts=opts.counts||c;
+  counts.forEach((k,i)=>{const val=opts.valence!==false&&i===counts.length-1&&k>0;
+    // plaats per 4 posities (boven, rechts, onder, links), paren naast elkaar
+    const pos=[[0,-1],[1,0],[0,1],[-1,0]];const per=[0,0,0,0];for(let j=0;j<k;j++)per[i===0?0:(j%4)]++;
+    if(i===0){per[0]=0;per[2]=0;per[1]=0;per[3]=0;if(k>=1)per[0]=1;if(k===2)per[0]=2;}
+    pos.forEach(([dx,dy],p)=>{const n=per[p];for(let q=0;q<n;q++){const off=n===2?(q?7:-7):0;const ang=Math.atan2(dy,dx)+off/R[i];const x=120+R[i]*Math.cos(ang),y=120+R[i]*Math.sin(ang);s+=`<circle class="e${val?" val":""}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5"/>`;}});});
+  return s+"</svg>";
+}
+function lewisHtml(sym,v,isK){
+  const slot=["t","r","b","l"];const n=[0,0,0,0];
+  if(isK){n[0]=v;}else{for(let j=0;j<v;j++)n[j%4]++;}
+  const part=(p,k)=>{if(!k)return`<span class="${p}"></span>`;if(k===1)return`<span class="${p}"><i class="dot"></i></span>`;return`<span class="${p}"><i class="${p==="t"||p==="b"?"hbar":"vbar"}"></i></span>`;};
+  return `<span class="lewis" aria-label="lewisnotatie ${sym}">${slot.map((p,i)=>part(p,n[i])).join("")}<span class="c">${sym}</span></span>`;
+}
+function lewisCustom(sym,n){const slot=["t","r","b","l"];return `<span class="lewis">${slot.map((p,i)=>!n[i]?`<span class="${p}"></span>`:n[i]===1?`<span class="${p}"><i class="dot"></i></span>`:`<span class="${p}"><i class="${p==="t"||p==="b"?"hbar":"vbar"}"></i></span>`).join("")}<span class="c">${sym}</span></span>`;}
+function numInput(id,w="7em",ph=""){return h("input",{type:"text",inputmode:"decimal",id,autocomplete:"off",style:`width:${w}`,placeholder:ph});}
+const fnum=x=>String(+(+x).toFixed(3)).replace(".",",");
+function workBox(html){return h("div",{class:"work",html});}
+
+/* ===================== FOCUS: ZOOM ===================== */
+const ZOOM={9:"baan om de aarde",8:"aarde",7:"planeet aarde",6:"westen van de VS",5:"baai van San Francisco",4:"berguitzicht",3:"Google-hoofdkwartier",2:"Googleplex",1:"restaurant",0:"Louise in het gras",[-1]:"gezicht",[-2]:"oog",[-3]:"pupil en netvlies",[-4]:"aders",[-5]:"bloedcellen",[-6]:"chromosomen",[-7]:"telomeer (uiteinde van een chromosoom)",[-8]:"opgerolde DNA-streng",[-9]:"zuurstofatoom"};
+const UNITS={9:"1 Gm",8:"100 Mm",7:"10 Mm",6:"1 Mm",5:"100 km",4:"10 km",3:"1 km",2:"1 hm",1:"1 dam",0:"1 m",[-1]:"1 dm",[-2]:"1 cm",[-3]:"1 mm",[-4]:"100 µm",[-5]:"10 µm",[-6]:"1 µm",[-7]:"100 nm",[-8]:"10 nm",[-9]:"1 nm"};
+function decTxt(k){if(k>=0)return (10**k).toLocaleString("nl-BE").replace(/\./g," ")+" m";return "0,"+"0".repeat(-k-1)+"1 m";}
+(function zoom(){
+  const box=$("#ex-zoom");wsHead(box,"Zoom in en uit met machten van tien","Interactief");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Versleep de schuifbalk. Elk vierkant is 10 keer groter dan het vorige. Het kader in het midden toont de breedte van het beeld.")));
+  const sl=h("input",{type:"range",min:-9,max:9,step:0.02,value:0,class:"slider",id:"zoomslider","aria-label":"macht van tien"});
+  const pic=h("div",{class:"zoom"});const rd=h("div",{class:"zoomread"});let seen=new Set();
+  const draw=()=>{const v=+sl.value;let s='<svg viewBox="0 0 560 320" aria-hidden="true">';
+    for(let k=-9;k<=9;k++){const size=220*Math.pow(10,k-v);if(size<3||size>3000)continue;const x=280-size/2,y=160-size/2;const op=Math.max(0.15,Math.min(1,1-Math.abs(k-v)/2.2));s+=`<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="none" stroke="#6AB3E6" stroke-opacity="${op}" stroke-width="${Math.round(k)===Math.round(v)?3:1.2}"/>`;if(size>60&&size<900)s+=`<text class="zl" x="${Math.max(6,x+6)}" y="${Math.max(16,y+16)}" font-size="12" opacity="${op}">10${k<0?"⁻":""}${String(Math.abs(k)).split("").map(d=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[d]).join("")} m · ${ZOOM[k]}</text>`;}
+    s+="</svg>";pic.innerHTML=s;const k=Math.round(v);seen.add(k);
+    rd.innerHTML=`<span class="big">10<sup>${k}</sup> m</span><span>${decTxt(k)}</span><span>${UNITS[k]}</span><span class="pill v">${ZOOM[k]}</span>`;if(seen.size>=8)markDone("ex-zoom");};
+  sl.addEventListener("input",draw);
+  box.append(pic,sl,h("div",{class:"btnrow"},h("button",{class:"btn",type:"button",onclick:()=>{sl.value=-9;draw();}},"Naar het atoom"),h("button",{class:"btn",type:"button",onclick:()=>{sl.value=0;draw();}},"Terug naar 1 m"),h("button",{class:"btn",type:"button",onclick:()=>{sl.value=9;draw();}},"Naar de baan om de aarde")),rd);draw();
+})();
+mcEx("ex-tien",{title:"Rekenen met machten van tien",tag:"Meerkeuze",questions:[
+ {q:"Hoe schrijf je 0,000 01 m als macht van tien?",opts:["10<sup>−5</sup> m","10<sup>5</sup> m","10<sup>−4</sup> m","10<sup>−6</sup> m"],a:"10<sup>−5</sup> m",why:"De 1 staat op de vijfde plaats na de komma."},
+ {q:"Hoeveel keer moet je met een factor 10 uitzoomen om van 1 m (Louise) naar 10<sup>7</sup> m (planeet aarde) te gaan?",opts:["7 keer","10 keer","70 keer","10 000 000 keer"],a:"7 keer"},
+ {q:"Hoeveel keer is 1 km groter dan 1 m?",opts:["10<sup>3</sup> keer","10<sup>2</sup> keer","10 keer","10<sup>6</sup> keer"],a:"10<sup>3</sup> keer"},
+ {q:"Welke lengte hoort bij 1 µm?",opts:["10<sup>−6</sup> m","10<sup>−3</sup> m","10<sup>−9</sup> m","10<sup>6</sup> m"],a:"10<sup>−6</sup> m"},
+ {q:"Welke lengte hoort bij 1 nm?",opts:["10<sup>−9</sup> m","10<sup>−6</sup> m","10<sup>−12</sup> m","10<sup>9</sup> m"],a:"10<sup>−9</sup> m"},
+ {q:"Een atoomkern is ongeveer 20 000 keer kleiner dan de elektronenwolk. 20 000 schrijf je als …",opts:["2 · 10<sup>4</sup>","2 · 10<sup>3</sup>","20 · 10<sup>4</sup>","2 · 10<sup>5</sup>"],a:"2 · 10<sup>4</sup>"},
+ {q:"Welke afstand is het kleinst?",opts:["10<sup>−7</sup> m","10<sup>−5</sup> m","1 mm","0,01 m"],a:"10<sup>−7</sup> m"}]});
+
+/* ===================== 1 ATOOMMODEL ===================== */
+(function build(){
+  const box=$("#ex-build");wsHead(box,"Atoombouwer","Interactief");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Voeg protonen, neutronen en elektronen toe. Het aantal protonen bepaalt het element.")));
+  const st={p:6,n:6,e:6};const view=h("div",{class:"bohr"});const info=h("div");
+  const mk=(k,label,max)=>{const o=h("output",{},String(st[k]));const set=v=>{st[k]=Math.max(k==="n"?0:k==="p"?1:0,Math.min(max,v));o.textContent=st[k];upd();};return h("div",{class:"ctrl"},h("b",{},label),h("div",{class:"step"},h("button",{type:"button","aria-label":"minder "+label,onclick:()=>set(st[k]-1)},"−"),o,h("button",{type:"button","aria-label":"meer "+label,onclick:()=>set(st[k]+1)},"+")));};
+  let tries=0;
+  function upd(){const E=EL[st.p-1];const A=st.p+st.n;const q=st.p-st.e;view.innerHTML=bohrSvg(st.p,st.e);
+    info.innerHTML=`<div class="bigsym">${nucl(A,st.p,E.s)}</div><dl class="facts"><dt>element</dt><dd>${E.n}</dd><dt>atoomnummer Z</dt><dd>${st.p}</dd><dt>massagetal A</dt><dd>${st.p} + ${st.n} = ${A}</dd><dt>nucleonen</dt><dd>${A}</dd><dt>lading</dt><dd>${q===0?"0: het atoom is neutraal":(q>0?"+":"−")+Math.abs(q)+": geen neutraal atoom"}</dd><dt>elektronenconfiguratie</dt><dd>${cfgTxt(config(st.e))||"—"}</dd></dl>`;if(++tries>6)markDone("ex-build");}
+  box.append(h("div",{class:"builder"},h("div",{class:"ctrls"},mk("p","protonen p⁺",18),mk("n","neutronen n⁰",22),mk("e","elektronen e⁻",18),h("div",{class:"btnrow"},h("button",{class:"btn",type:"button",onclick:()=>{st.e=st.p;upd();}},"Maak neutraal"))),h("div",{},view,info)));
+  upd();tries=0;
+})();
+
+/* Samenstelling */
+const NUCS=[[3,7],[11,23],[15,31],[8,16],[16,32],[19,39],[6,12],[17,35],[17,37],[12,24],[12,26],[13,27],[20,40],[18,40],[7,14],[9,19],[10,20],[26,56],[29,63],[47,107],[79,197],[56,138],[82,208],[25,55],[53,127],[80,198],[1,1],[2,4],[5,11],[14,28],[30,65],[35,79]];
+(function comp(){
+  const box=$("#ex-comp");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"De samenstelling van een atoom bepalen","Opdracht 1");sc.textContent=total?`${good}/${total}`:"";
+    const [Z,A]=pick(NUCS,1)[0];const E=EL[Z-1];const mode=rnd(0,2);
+    // mode 0: gegeven A en Z; 1: gegeven symbool en A (Z opzoeken); 2: gegeven Z, A, vraag samenstelling + symbool
+    const ans={p:Z,e:Z,n:A-Z};
+    box.append(h("p",{class:"mini"},h("span",{class:"ask"},mode===1?"Zoek het atoomnummer op in het PSE en bepaal de samenstelling.":"Bepaal het aantal protonen, elektronen en neutronen.")));
+    box.append(h("div",{class:"eq",html:mode===1?`${nucl(A,"",E.s)} <span class="mini">(${E.n})</span>`:nucl(A,Z,E.s)}));
+    const I={p:numInput("c-p","4.5em"),e:numInput("c-e","4.5em"),n:numInput("c-n","4.5em")};const fb=h("p",{class:"fb"});
+    const btn=h("button",{class:"btn primary",type:"button",onclick:()=>{let ok=true;for(const k in I){const g=I[k].value.trim()!==""&&+I[k].value===ans[k];I[k].className=g?"ok":"no";ok=ok&&g;}total++;if(ok)good++;sc.textContent=`${good}/${total}`;btn.disabled=true;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist! ":"Niet helemaal. ")+`Z = ${Z}, dus ${Z} p<sup>+</sup> en ${Z} e<sup>−</sup>. Neutronen: A − Z = ${A} − ${Z} = ${A-Z} n<sup>0</sup>.`;if(total>=4)markDone("ex-comp");}},"Controleer");
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},h("label",{},"p⁺ ",I.p),h("label",{},"e⁻ ",I.e),h("label",{},"n⁰ ",I.n),btn,h("button",{class:"btn",type:"button",onclick:gen},"Nieuw atoom")),fb);
+  }
+  gen();
+})();
+
+(function cmp(){
+  const box=$("#ex-cmp");let total=0,good=0;
+  const what={p:"protonen",n:"neutronen",e:"elektronen"};
+  function gen(){
+    const sc=wsHead(box,"Vergelijk: <, = of >","Opdracht 3");sc.textContent=total?`${good}/${total}`:"";
+    let a,b,ka,kb,va,vb,tries=0;do{a=pick(NUCS,1)[0];b=pick(NUCS,1)[0];ka=pick(["p","n","e"],1)[0];kb=Math.random()<.5?ka:pick(["p","n","e"],1)[0];va=ka==="n"?a[1]-a[0]:a[0];vb=kb==="n"?b[1]-b[0]:b[0];tries++;}while((a===b||Math.abs(va-vb)>25)&&tries<50);
+    const rel=va<vb?"<":va>vb?">":"=";
+    box.append(h("p",{class:"col",html:`Het aantal ${what[ka]} in ${nucl(a[1],a[0],EL[a[0]-1].s)} &nbsp;…&nbsp; het aantal ${what[kb]} in ${nucl(b[1],b[0],EL[b[0]-1].s)}`}));
+    const og=h("div",{class:"btnrow"});const fb=h("p",{class:"fb"});
+    ["<","=",">"].forEach(o=>og.append(h("button",{class:"opt",type:"button",style:"min-width:3em;font-size:1.2rem",onclick:ev=>{$$("button",og).forEach(x=>x.disabled=true);const ok=o===rel;total++;if(ok)good++;ev.target.classList.add(ok?"right":"wrong");sc.textContent=`${good}/${total}`;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=`${ok?"Juist":"Niet juist"}: ${va} ${rel} ${vb}.${ka==="n"||kb==="n"?" Neutronen = A − Z.":""}`;if(total>=5)markDone("ex-cmp");og.append(h("button",{class:"btn primary",type:"button",onclick:gen},"Volgende"));}},o)));
+    box.append(og,fb);
+  }
+  gen();
+})();
+
+(function iso(){
+  const box=$("#ex-iso");
+  const P=[["Cl",35,37,75],["Cu",63,65,75],["B",10,11,20],["Br",79,81,55],["Ga",69,71,65],["Li",6,7,10],["Ag",107,109,55]];
+  let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Procentueel voorkomen van isotopen","Rekenoefening");sc.textContent=total?`${good}/${total}`:"";
+    const [s,a1,a2,x]=pick(P,1)[0];const E=BYSYM[s];const mode=Math.random()<.65?"pct":"ar";
+    let q,ans,uit;
+    if(mode==="pct"){q=`Het element ${E.n} heeft twee isotopen: <sup>${a1}</sup>${s} en <sup>${a2}</sup>${s}. A<sub>r</sub>(${s}) = ${fmtAr(E.ar)}. Bereken het procentueel voorkomen van <sup>${a1}</sup>${s}.`;ans=x;
+      uit=`(${a1} · x + ${a2} · (100 − x)) / 100 = ${fmtAr(E.ar)} ⟶ ${a1}x + ${a2*100} − ${a2}x = ${dc(E.ar*100,0)} ⟶ ${a2-a1}x = ${dc(a2*100-E.ar*100,0)} ⟶ x = <b>${x} %</b>. <sup>${a2}</sup>${s} komt dan voor ${100-x} % voor.`;}
+    else{q=`${E.n.charAt(0).toUpperCase()+E.n.slice(1)} bestaat voor ${x} % uit <sup>${a1}</sup>${s} en voor ${100-x} % uit <sup>${a2}</sup>${s}. Bereken de relatieve atoommassa (1 decimaal).`;ans=(a1*x+a2*(100-x))/100;uit=`A<sub>r</sub> = (${a1} · ${x} + ${a2} · ${100-x}) / 100 = <b>${dc(ans)}</b>`;}
+    box.append(h("p",{class:"col",html:q}));const inp=numInput("iso-in","7em");const fb=h("p",{class:"fb"});let done=false;
+    const check=()=>{if(done)return;const v=parseSci(inp.value);if(isNaN(v)){fb.className="fb badf";fb.textContent="Typ een getal.";return;}done=true;total++;const ok=Math.abs(v-ans)<(mode==="pct"?0.6:0.06);if(ok)good++;inp.className=ok?"ok":"no";sc.textContent=`${good}/${total}`;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist! ":"Niet juist. ")+uit;if(total>=3)markDone("ex-iso");};
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},h("label",{},mode==="pct"?"x = ":"A<sub>r</sub> = ",inp,mode==="pct"?" %":""),h("button",{class:"btn primary",type:"button",onclick:check},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe opgave")),fb);
+    box.querySelector("label").innerHTML=(mode==="pct"?"x = ":"A<sub>r</sub> = ");box.querySelector("label").append(inp,mode==="pct"?" %":"");
+  }
+  gen();
+})();
+
+/* Elektronenconfiguratie */
+(function cfgEx(){
+  const box=$("#ex-config");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Bouw de elektronenwolk","Interactief");sc.textContent=total?`${good}/${total}`:"";
+    const E=EL[rnd(1,18)-1];const want=config(E.Z);const cur=[0,0,0];
+    box.append(h("p",{class:"mini"},h("span",{class:"ask",html:`Verdeel de elektronen van <b>${E.n}</b> (${nucl("",E.Z,E.s)}) over de schillen. Vul eerst de laagste schil.`})));
+    const view=h("div",{class:"bohr"});const left=h("p",{class:"readout"});const outs=[];
+    const draw=()=>{const n=cur.reduce((a,b)=>a+b,0);const shells=Math.max(1,cur[2]?3:cur[1]?2:1);view.innerHTML=bohrSvg(E.Z,0,{counts:cur.slice(0,shells),shells,valence:false});left.textContent=`Nog te verdelen: ${E.Z} − ${n} = ${E.Z-n} elektronen`;};
+    const ctr=h("div",{class:"ctrls"});["K","L","M"].forEach((nm,i)=>{const o=h("output",{},"0");outs.push(o);const mx=[2,8,18][i];ctr.append(h("div",{class:"ctrl"},h("b",{},nm+"-schil (max "+mx+")"),h("div",{class:"step"},h("button",{type:"button","aria-label":"minder op "+nm,onclick:()=>{cur[i]=Math.max(0,cur[i]-1);o.textContent=cur[i];draw();}},"−"),o,h("button",{type:"button","aria-label":"meer op "+nm,onclick:()=>{cur[i]=Math.min(mx,cur[i]+1);o.textContent=cur[i];draw();}},"+"))));});
+    const fb=h("p",{class:"fb"});
+    box.append(h("div",{class:"builder"},h("div",{},ctr,left),view),h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:ev=>{const n=cur.reduce((a,b)=>a+b,0);const w=[...want,0,0].slice(0,3);const ok=cur.every((k,i)=>k===w[i]);total++;if(ok)good++;sc.textContent=`${good}/${total}`;ev.target.disabled=true;
+      let msg;if(ok)msg=`Juist! ${cfgTxt(want)}. Valentie-elektronen: ${want[want.length-1]}, op de ${SHELL[want.length-1]}-schil.`;else if(n!==E.Z)msg=`${E.n} heeft ${E.Z} elektronen; jij verdeelde er ${n}. Juist: ${cfgTxt(want)}.`;else msg=`Vul eerst de laagste schillen tot het maximum (K: 2, L: 8). Juist: ${cfgTxt(want)}.`;
+      fb.className="fb "+(ok?"good":"badf");fb.textContent=msg;view.innerHTML=bohrSvg(E.Z,E.Z);if(total>=3)markDone("ex-config");}},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Ander element")),fb);draw();
+  }
+  gen();
+})();
+
+mcEx("ex-shells",{title:"Schillen en valentie-elektronen",tag:"Meerkeuze",n:8,questions:()=>{
+  const out=[];pick(EL.slice(0,18),6).forEach(E=>{const c=config(E.Z);const v=c[c.length-1];const t=Math.random();
+    if(t<.34){const o=[...new Set([v,v+1,v>1?v-1:v+2,E.Z===v?v+3:E.Z])].slice(0,4).map(String);out.push({q:`Hoeveel valentie-elektronen heeft ${E.n} (${E.s}, Z = ${E.Z})?`,opts:o,a:String(v),why:cfgTxt(c)});}
+    else if(t<.67){const d=[];if(E.Z>2)d.push(cfgTxt([1,E.Z-1].concat([]).length&&E.Z-1<=8?[1,E.Z-1]:[1,8,E.Z-9]));if(E.Z>10)d.push(cfgTxt([2,E.Z-2]));if(E.Z>3&&E.Z<=10)d.push(cfgTxt([2,E.Z-3,1]));if(E.Z>10&&E.Z<18)d.push(cfgTxt([2,7,E.Z-9]));d.push(cfgTxt(c.length>1?[...c.slice(0,-1),c[c.length-1]+1]:[E.Z+1]));
+      out.push({q:`Wat is de elektronenconfiguratie van ${E.s} (Z = ${E.Z})?`,opts:[cfgTxt(c),...[...new Set(d)].filter(x=>x!==cfgTxt(c)).slice(0,3)],a:cfgTxt(c),why:`Vul eerst de K-schil (2), dan de L-schil (8), dan de M-schil.`});}
+    else out.push({q:`Op welke schil zitten de valentie-elektronen van ${E.n} (Z = ${E.Z})?`,opts:["K-schil","L-schil","M-schil"],keep:true,a:SHELL[c.length-1]+"-schil",why:cfgTxt(c)});});
+  out.push({q:"Hoeveel elektronen kan de L-schil maximaal bevatten?",opts:["8","2","18","32"],a:"8",why:"2 · 2² = 8"});
+  out.push({q:"Hoeveel elektronen kan de M-schil maximaal bevatten?",opts:["18","8","32","9"],a:"18",why:"2 · 3² = 18"});
+  out.push({q:"Waarom heeft elk element een eigen vlamkleur?",opts:["Elk element heeft een unieke schilopvulling, dus geven de elektronen een eigen hoeveelheid energie af als straling.","Elk element heeft een andere massa.","De kern zendt licht uit.","De vlam verbrandt het element."],a:"Elk element heeft een unieke schilopvulling, dus geven de elektronen een eigen hoeveelheid energie af als straling."});
+  return shuffle(out);}});
+
+(function lewis(){
+  const box=$("#ex-lewis");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Kies de juiste lewisnotatie","Elektronenstipmodel");sc.textContent=total?`${good}/${total}`:"";
+    const E=EL[rnd(1,18)-1];const v=valence(E);const isK=E.Z<=2;
+    const right=(()=>{const n=[0,0,0,0];if(isK)n[0]=v;else for(let j=0;j<v;j++)n[j%4]++;return n;})();
+    const variants=[right];const key=n=>n.join();
+    const cand=[];cand.push(right.map(x=>x===2?1:x));// paren als stippen
+    if(v>1)cand.push(right.map((x,i)=>i===0?Math.max(0,x-1):x));// 1 te weinig
+    {const n=[...right];const i=n.findIndex(x=>x<2);if(i>=0)n[i]++;else n[0]=2;cand.push(n);}// 1 te veel
+    {const n=[0,0,0,0];let k=v;for(let i=0;i<4&&k>0;i++){const a=Math.min(2,k);n[i]=a;k-=a;}cand.push(n);}// eerst paren
+    cand.forEach(n=>{if(!variants.some(x=>key(x)===key(n))&&n.some(x=>x))variants.push(n);});
+    box.append(h("p",{class:"col",html:`Welke lewisnotatie hoort bij <b>${E.n}</b> (Z = ${E.Z}, ${cfgTxt(config(E.Z))})?`}));
+    const g=h("div",{class:"lewisopts"});const fb=h("p",{class:"fb"});let done=false;
+    shuffle(variants.slice(0,4)).forEach(n=>{const b=h("button",{type:"button",html:lewisCustom(E.s,n),"data-k":key(n)});b.addEventListener("click",()=>{if(done)return;done=true;const ok=key(n)===key(right);total++;if(ok)good++;sc.textContent=`${good}/${total}`;b.classList.add(ok?"right":"wrong");$$("button",g).forEach(x=>{if(x.dataset.k===key(right))x.classList.add("right");});
+      const pairs=right.filter(x=>x===2).length,single=right.filter(x=>x===1).length;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist! ":"Niet juist. ")+`${E.s} heeft ${v} valentie-elektron${v>1?"en":""}: ${pairs} elektronenpa${pairs===1?"ar":"ren"} en ${single} ongepaard${single===1?" elektron":"e elektronen"}.${isK&&v===2?" Twee elektronen op de K-schil teken je als een paar.":""}`;if(total>=4)markDone("ex-lewis");box.append(h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:gen},"Volgende")));});g.append(b);});
+    box.append(g,fb);
+  }
+  gen();
+})();
+
+sortEx("ex-tf1",{title:"Controle: waar of niet waar?",tag:"Controle 1",options:["waar","niet waar"],keep:true,items:[
+ {t:"Je kunt het aantal neutronen in een atoom berekenen uit het aantal elektronen en het massagetal.",a:"waar",why:"Aantal elektronen = Z, en neutronen = A − Z."},
+ {t:"De M-schil bezit maximaal 18 elektronen.",a:"waar",why:"2 · 3² = 18"},
+ {t:"De valentie-elektronen van <sub>11</sub>Na bevinden zich op de tweede schil.",a:"niet waar",why:"Na: K: 2, L: 8, M: 1. Het valentie-elektron zit op de derde schil (M)."},
+ {t:"De lewisnotatie van zwavel stel je voor door rond S 2 aparte puntjes en 2 streepjes te tekenen.",a:"waar",why:"S heeft 6 valentie-elektronen: 2 paren en 2 ongepaarde elektronen."},
+ {t:"Het massagetal kan kleiner zijn dan het atoomnummer.",a:"niet waar",why:"A = p + n, dus nooit kleiner dan Z."},
+ {t:"De atoomkern draagt nagenoeg alle massa van het atoom.",a:"waar"}]});
+
+/* ===================== 2 PSE ===================== */
+let pseHandler=null;
+function buildPSE(container,onPick){
+  const wrap=h("div",{class:"pse"});const g=h("div",{class:"grid"});
+  for(let c=1;c<=18;c++){const hd=h("div",{class:"hdr",style:`grid-column:${c};grid-row:1`},h("div",{},String(c)),h("div",{},ROMAN[c]));g.append(hd);}
+  EL.forEach(E=>{const r=E.row<=7?E.row+1:E.row+2;const b=h("button",{type:"button",class:"el "+E.cls,style:`grid-column:${E.col};grid-row:${r}`,"data-z":E.Z,"aria-label":`${E.n}, ${E.s}, atoomnummer ${E.Z}`},h("span",{},String(E.Z)),h("span",{class:"s"},E.s),h("span",{},E.arTxt||""));b.addEventListener("click",()=>onPick(E,b));g.append(b);});
+  g.append(h("div",{class:"gap",style:"grid-row:9"}));
+  g.append(h("div",{class:"hdr",style:"grid-column:1/4;grid-row:10;text-align:right;align-self:center"},"lanthaniden"),h("div",{class:"hdr",style:"grid-column:1/4;grid-row:11;text-align:right;align-self:center"},"actiniden"));
+  wrap.append(g);container.append(h("p",{class:"mini psehint"},"Tip: schuif het PSE opzij om alle groepen te zien."),wrap);return g;
+}
+(function pse(){
+  const box=$("#ex-pse");wsHead(box,"Het interactieve PSE","Klik op een element");
+  box.append(h("div",{class:"legend3"},h("span",{},h("i",{style:"background:var(--glass-soft)"}),"metalen"),h("span",{},h("i",{style:"background:var(--ok-soft)"}),"niet-metalen"),h("span",{},h("i",{style:"background:var(--warn-soft)"}),"edelgassen"),h("span",{class:"mini"},"Per vakje: atoomnummer, symbool, relatieve atoommassa")));
+  const info=h("div",{class:"pseinfo"},"Klik op een element voor meer informatie.");let n=0;
+  const g=buildPSE(box,(E,b)=>{$$(".el",g).forEach(x=>x.classList.remove("sel"));b.classList.add("sel");const v=valence(E);const c=E.Z<=18?config(E.Z):null;
+    info.innerHTML=`<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">${E.Z<=18?`<div class="bohr" style="width:150px">${bohrSvg(E.Z,E.Z)}</div>`:""}<div><div class="bigsym">${nucl(E.ar?Math.round(E.ar):"",E.Z,E.s)} <span style="font-size:1.1rem">${E.n}</span></div><dl class="facts">
+    <dt>atoomnummer Z</dt><dd>${E.Z}: ${E.Z} p<sup>+</sup> en ${E.Z} e<sup>−</sup></dd><dt>relatieve atoommassa</dt><dd>${E.arTxt||"onbekend"}</dd>
+    <dt>groep</dt><dd>${E.group?E.group+" of "+ROMAN[E.group]+(GNAME[E.group]?" ("+GNAME[E.group]+")":E.group>=3&&E.group<=12?" (nevengroep)":""):(E.row===9?"lanthaniden":"actiniden")}</dd><dt>periode</dt><dd>${E.period}${E.Z<=18?": "+E.period+" bezette schil"+(E.period>1?"len":""):""}</dd>
+    ${c?`<dt>configuratie</dt><dd>${cfgTxt(c)}</dd>`:""}${v!=null&&(E.Z<=18||(E.group&&(E.group<=2||E.group>=13)))?`<dt>valentie-elektronen</dt><dd>${v}</dd>`:""}
+    <dt>soort</dt><dd>${E.cls==="edel"?"edelgas, inert":E.s==="H"?"staat bij de metalen, gedraagt zich als niet-metaal":E.cls==="nmet"?"niet-metaal":"metaal"}</dd></dl>${E.Z<=18?`<div style="margin-top:6px">${lewisHtml(E.s,valence(E),E.Z<=2)}</div>`:""}</div></div>`;if(++n>=5)markDone("ex-pse");});
+  box.append(info);
+})();
+
+(function psetask(){
+  const box=$("#ex-psetask");
+  const T=[
+   ()=>{const E=pick(EL.filter(e=>e.Z<=54&&e.group&&(e.group<=2||e.group>=13)),1)[0];return{t:`Klik op het element in groep ${ROMAN[E.group]}, periode ${E.period}.`,ok:e=>e===E,sol:E,why:`Groep ${ROMAN[E.group]} is kolom ${E.group}; periode ${E.period} is rij ${E.period}.`};},
+   ()=>{const E=EL[rnd(3,18)-1];return{t:`Klik op het element met elektronenconfiguratie ${cfgTxt(config(E.Z))}.`,ok:e=>e===E,sol:E,why:`${config(E.Z).length} bezette schillen = periode ${E.period}; ${valence(E)} valentie-elektronen = groep ${ROMAN[E.group]}.`};},
+   ()=>{const E=EL[rnd(1,56)-1];return{t:`Klik op het element met atoomnummer ${E.Z}.`,ok:e=>e===E,sol:E,why:"Het atoomnummer staat links onderaan en is ook het rangnummer."};},
+   ()=>{const g=pick([1,2,17,18],1)[0];return{t:`Klik op een element uit de ${GNAME[g]}.`,ok:e=>e.group===g&&e.s!=="H",sol:EL.find(e=>e.group===g&&e.s!=="H"),why:`De ${GNAME[g]} staan in groep ${ROMAN[g]}.`};},
+   ()=>{const [Z,A]=pick(NUCS.filter(x=>x[0]<=36),1)[0];const E=EL[Z-1];return{t:`Een atoom heeft ${Z} e<sup>−</sup>, ${Z} p<sup>+</sup> en ${A-Z} n<sup>0</sup>. Klik op het element.`,ok:e=>e===E,sol:E,why:`Het aantal protonen (${Z}) is het atoomnummer.`};},
+   ()=>({t:"Klik op het element uit groep IIa met het minst aantal bezette schillen.",ok:e=>e.s==="Be",sol:BYSYM.Be,why:"Be staat bovenaan groep IIa, in periode 2."}),
+   ()=>({t:"Klik op het eerste element van groep 15.",ok:e=>e.s==="N",sol:BYSYM.N,why:"Groep 15 = Va. Bovenaan staat stikstof."}),
+   ()=>({t:"Klik op het element in de tweede periode en groep VIIa.",ok:e=>e.s==="F",sol:BYSYM.F,why:"Fluor."}),
+   ()=>({t:"Klik op een niet-metaal uit de derde periode.",ok:e=>e.period===3&&e.cls==="nmet",sol:BYSYM.S,why:"Si, P, S en Cl staan rechts van de scheidingslijn."}),
+   ()=>({t:"Klik op een metaal uit groep IIIa.",ok:e=>e.group===13&&e.cls==="met",sol:BYSYM.Al,why:"Behalve boor zijn de elementen van groep IIIa metalen."})];
+  let total=0,good=0,task;
+  const sc=wsHead(box,"Zoek op het PSE","Klikopdracht");const prompt=h("p",{class:"q",style:"font-weight:700"});const fb=h("p",{class:"fb"});let locked=false;
+  box.append(prompt);const g=buildPSE(box,(E,b)=>{if(locked)return;locked=true;const ok=task.ok(E);total++;if(ok)good++;sc.textContent=`${good}/${total}`;b.classList.add(ok?"hit":"miss");if(!ok){const s=$(`.el[data-z="${task.sol.Z}"]`,g);if(s)s.classList.add("hit");}fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?`Juist: ${E.n}. `:`Niet juist, dat is ${E.n}. Bv. ${task.sol.n} (${task.sol.s}) was juist. `)+task.why;if(total>=6)markDone("ex-psetask");nx.hidden=false;});
+  const nx=h("button",{class:"btn primary",type:"button",hidden:true,onclick:next},"Volgende opdracht");
+  function next(){$$(".el",g).forEach(x=>x.classList.remove("hit","miss"));locked=false;nx.hidden=true;fb.textContent="";task=pick(T,1)[0]();prompt.innerHTML=task.t;}
+  box.append(fb,h("div",{class:"btnrow"},nx));next();
+})();
+
+(function derive(){
+  const box=$("#ex-derive");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Plaats afleiden zonder PSE","Opdracht 10");sc.textContent=total?`${good}/${total}`:"";
+    const E=EL[rnd(3,18)-1];const c=config(E.Z);const v=valence(E);
+    box.append(h("p",{class:"col",html:`Een element heeft de elektronenconfiguratie <b>${cfgTxt(c)}</b>. Gebruik het PSE niet.`}));
+    const gs=h("select",{id:"der-g","aria-label":"groep"},h("option",{value:""},"groep …"),["Ia","IIa","IIIa","IVa","Va","VIa","VIIa","0"].map(x=>h("option",{value:x},x)));
+    const ps=h("select",{id:"der-p","aria-label":"periode"},h("option",{value:""},"periode …"),[1,2,3,4].map(x=>h("option",{value:x},String(x))));
+    const zi=numInput("der-z","4.5em");const ms=h("select",{id:"der-m","aria-label":"soort"},h("option",{value:""},"soort …"),["metaal","niet-metaal","edelgas"].map(x=>h("option",{value:x},x)));
+    const fb=h("p",{class:"fb"});
+    const btn=h("button",{class:"btn primary",type:"button",onclick:()=>{const soort=E.cls==="edel"?"edelgas":E.cls==="nmet"?"niet-metaal":"metaal";const r=[[gs,gs.value===ROMAN[E.group]],[ps,+ps.value===E.period],[zi,+zi.value===E.Z&&zi.value!==""],[ms,ms.value===soort]];let ok=true;r.forEach(([el,g])=>{el.className=g?"ok":"no";ok=ok&&g;});total++;if(ok)good++;sc.textContent=`${good}/${total}`;btn.disabled=true;
+      fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist! ":"Niet helemaal. ")+`Groepsnummer = aantal valentie-elektronen = ${v}, dus groep ${ROMAN[E.group]}. Periodenummer = aantal bezette schillen = ${c.length}. Z = ${c.join(" + ")} = ${E.Z}: dat is ${E.n} (${E.s}), een ${soort}.`;if(total>=3)markDone("ex-derive");}},"Controleer");
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},gs,ps,h("label",{},"Z = ",zi),ms,btn,h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe configuratie")),fb);
+  }
+  gen();
+})();
+
+(function pick2(){
+  const box=$("#ex-pick2");
+  const Q=[{t:"Beide atomen zijn chemisch inert.",o:["Na","Ne","Ar","Li","H"],a:["Ne","Ar"],w:"Edelgassen zijn inert."},
+   {t:"Beide atomen zijn metalen.",o:["Mg","Ar","Be","Cl","C"],a:["Mg","Be"],w:"Mg en Be staan links van de scheidingslijn."},
+   {t:"Beide atomen hebben gelijkaardige eigenschappen.",o:["Na","Mg","Li","Al","Si","P"],a:["Na","Li"],w:"Na en Li staan in dezelfde groep (Ia)."},
+   {t:"Beide atomen zijn niet-metalen.",o:["Li","H","Cl","Ne","Al","Be"],a:["H","Cl"],w:"Waterstof gedraagt zich als niet-metaal; Ne is een edelgas."},
+   {t:"Beide atomen komen in enkelvoudige stoffen voor als gassen.",o:["Mg","Cl","O","P","S","Be"],a:["Cl","O"],w:"Chloorgas (Cl₂) en zuurstofgas (O₂)."},
+   {t:"Beide atomen hebben 2 valentie-elektronen.",o:["Mg","He","Ca","O","C"],a:["Mg","Ca"],w:"Groep IIa. Helium heeft er ook 2, maar is een edelgas met een volle K-schil."},
+   {t:"Beide atomen staan in de derde periode.",o:["Na","Li","Cl","F","K"],a:["Na","Cl"],w:"Drie bezette schillen."},
+   {t:"Beide atomen zijn halogenen.",o:["F","O","Br","Ne","S"],a:["F","Br"],w:"Groep VIIa."}];
+  let order=shuffle(Q),i=0,good=0;
+  function show(){
+    const sc=wsHead(box,"Kies telkens twee atomen","Opdracht 11");
+    if(i>=order.length){sc.textContent=`${good}/${order.length}`;markDone("ex-pick2");box.append(h("p",{class:"q"},`Klaar: ${good}/${order.length} juist.`),h("button",{class:"btn primary",type:"button",onclick:()=>{order=shuffle(Q);i=0;good=0;show();}},"Opnieuw"));return;}
+    sc.textContent=`${i+1}/${order.length}`;const C=order[i];const sel=new Set();
+    box.append(h("p",{class:"q"},C.t));const g=h("div",{class:"pick2"});const fb=h("p",{class:"fb"});let done=false;
+    C.o.forEach(s=>{const b=h("button",{class:"opt",type:"button",style:"font-size:1.1rem;min-width:3em"},s);b.addEventListener("click",()=>{if(done)return;if(sel.has(s)){sel.delete(s);b.classList.remove("on");}else if(sel.size<2){sel.add(s);b.classList.add("on");}});g.append(b);});
+    box.append(g,h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:ev=>{if(done){i++;show();return;}if(sel.size<2){fb.className="fb badf";fb.textContent="Kies twee atomen.";return;}done=true;const ok=C.a.every(x=>sel.has(x));if(ok)good++;$$("button",g).forEach(b=>{b.classList.remove("on");if(C.a.includes(b.textContent))b.classList.add("right");else if(sel.has(b.textContent))b.classList.add("wrong");});fb.className="fb "+(ok?"good":"badf");fb.textContent=(ok?"Juist. ":"Niet juist. ")+C.w;ev.target.textContent="Volgende";}},"Controleer")),fb);
+  }
+  show();
+})();
+
+sortEx("ex-tf2",{title:"Controle: waar of niet waar?",tag:"Controle 2",options:["waar","niet waar"],keep:true,items:[
+ {t:"Een horizontale rij in het PSE heet een periode.",a:"waar"},
+ {t:"S en N hebben dezelfde chemische eigenschappen.",a:"niet waar",why:"S staat in groep VIa, N in groep Va."},
+ {t:"Het aantal valentie-elektronen van de halogenen bedraagt 6.",a:"niet waar",why:"Halogenen (groep VIIa) hebben 7 valentie-elektronen."},
+ {t:"Het element waterstof is gerangschikt bij de metalen en gedraagt zich daarom ook als een metaal.",a:"niet waar",why:"Waterstof gedraagt zich eerder als een niet-metaal."},
+ {t:"Het element Mg bevindt zich in periode 3 en groep IIa.",a:"waar"},
+ {t:"Groep VIa noem je ook groep 16.",a:"waar"},
+ {t:"Niet alle edelgassen hebben 8 elektronen op de buitenste schil.",a:"waar",why:"Helium heeft er maar 2."}]});
+
+/* ===================== 3 REKENEN ===================== */
+const FPOOL=["H2O","CO2","O2","NaCl","Ca(OH)2","Al2O3","Fe(OH)3","Mg3(PO4)2","MgSO4","Ba3(PO4)2","Al(OH)3","Fe(NO3)3","NH4Cl","CaCO3","C6H12O6","C12H22O11","H2SO4","NH3","KOH","Na2CO3","H2CO3","SrBr2","Fe2O3","MgO","C2H6O","CH4","HCl","N2","Cl2"];
+(function mr(){
+  const box=$("#ex-mr");let total=0,good=0;
+  function gen(own){
+    const sc=wsHead(box,"Relatieve moleculemassa berekenen","Rekenoefening");sc.textContent=total?`${good}/${total}`:"";
+    const F=pick(FPOOL,1)[0];const ans=Mr(F);
+    box.append(h("p",{class:"col",html:`Bereken M<sub>r</sub>(${fmt(F)}). Gebruik de A<sub>r</sub>-waarden uit het PSE (1 decimaal).`}));
+    const inp=numInput("mr-in","7em");const fb=h("p",{class:"fb"});const wk=h("div");let done=false;
+    const check=()=>{if(done)return;const v=parseSci(inp.value);if(isNaN(v)){fb.className="fb badf";fb.textContent="Typ een getal, bv. 74,1.";return;}done=true;total++;const ok=Math.abs(v-ans)<=0.15;if(ok)good++;inp.className=ok?"ok":"no";sc.textContent=`${good}/${total}`;fb.className="fb "+(ok?"good":"badf");fb.textContent=ok?"Juist!":"Niet juist. Bekijk de uitwerking.";wk.append(workBox(MrSteps(F)));if(total>=3)markDone("ex-mr");};
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},h("label",{html:"M<sub>r</sub> = "},inp),h("button",{class:"btn primary",type:"button",onclick:check},"Controleer"),h("button",{class:"btn",type:"button",onclick:()=>gen()},"Nieuwe formule")),fb,wk);
+    box.querySelector("label").append(inp);
+    // eigen formule
+    const own2=h("input",{type:"text",id:"mr-own",placeholder:"bv. Ca(OH)2",style:"width:10em",autocomplete:"off",spellcheck:"false"});const out=h("div");
+    box.append(h("p",{class:"mini",style:"margin-top:14px"},"Rekenhulp: typ zelf een formule en bekijk de uitwerking."),h("div",{class:"btnrow",style:"align-items:center"},own2,h("button",{class:"btn",type:"button",onclick:()=>{out.innerHTML="";try{const f=own2.value.trim();const c=parseFormula(f).counts;for(const e in c)if(!BYSYM[e]||!BYSYM[e].ar)throw 0;out.append(workBox(MrSteps(f)));}catch(e){out.append(h("p",{class:"fb badf"},"Die formule kan ik niet lezen. Let op hoofdletters, bv. NaCl of Ca(OH)2."));}}},"Bereken")),out);
+  }
+  gen();
+})();
+
+(function abs(){
+  const box=$("#ex-abs");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Absolute massa van een atoom of molecule","m = A_r · u");sc.textContent=total?`${good}/${total}`:"";
+    const useMol=Math.random()<.45;const F=useMol?pick(["H2O","CO2","O2","NH3","CH4","Ca(OH)2"],1)[0]:pick(["H","O","C","Fe","U","Cl","Na","Au","Mg"],1)[0];
+    const cnt=!useMol&&Math.random()<.3?rnd(2,9):1;const r=useMol?Mr(F):AR(F);const ans=cnt*r*1.66;// in 10^-27 kg
+    box.append(h("p",{class:"col",html:`Bereken de absolute massa van ${cnt>1?cnt+" atomen ":useMol?"1 molecule ":"1 atoom "}${fmt(F)}. Schrijf je antwoord als … · 10<sup>−27</sup> kg.`}));
+    const inp=numInput("abs-in","7em");const fb=h("p",{class:"fb"});let done=false;
+    const check=()=>{if(done)return;const v=parseSci(inp.value);if(isNaN(v)){fb.className="fb badf";fb.textContent="Typ een getal.";return;}done=true;total++;const ok=close(v,ans,0.012);if(ok)good++;inp.className=ok?"ok":"no";sc.textContent=`${good}/${total}`;fb.className="fb "+(ok?"good":"badf");
+      fb.innerHTML=(ok?"Juist! ":"Niet juist. ")+`m = ${useMol?"M<sub>r</sub>":"A<sub>r</sub>"} · u = ${dc(r)} · 1,66 · 10<sup>−27</sup> kg = ${dc(r*1.66)} · 10<sup>−27</sup> kg${cnt>1?`. Voor ${cnt} atomen: ${cnt} · ${dc(r*1.66)} · 10<sup>−27</sup> kg = ${dc(ans)} · 10<sup>−27</sup> kg = ${sci(ans*1e-27)} kg`:` = ${sci(ans*1e-27)} kg`}.`;if(total>=3)markDone("ex-abs");};
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    const lab=h("label",{});lab.innerHTML="m = ";lab.append(inp);lab.insertAdjacentHTML("beforeend"," · 10<sup>−27</sup> kg");
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},lab,h("button",{class:"btn primary",type:"button",onclick:check},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe opgave")),fb);
+  }
+  gen();
+})();
+
+(function conv(){
+  const box=$("#ex-conv");let total=0,good=0;
+  const SUB=[["H2O","water"],["CO2","koolstofdioxide"],["NaCl","keukenzout"],["Au","goud"],["Fe","ijzer"],["CaCO3","calciumcarbonaat"],["C6H12O6","druivensuiker"],["C12H22O11","kristalsuiker"],["NH3","ammoniak"],["Ag","zilver"],["O2","zuurstofgas"],["Mg","magnesium"]];
+  const KINDS=["m2n","n2m","n2N","N2n","m2N"];
+  function gen(){
+    const sc=wsHead(box,"Massa, mol en aantal deeltjes","Rekenoefening");sc.textContent=total?`${good}/${total}`:"";
+    box.append(h("p",{class:"mini"},h("span",{class:"ask",html:"Grote getallen typ je zo: 3,01·10^23 of 3,01e23. Je antwoord mag tot 2 % afwijken."})));
+    const [F,name]=pick(SUB,1)[0];const M=Mr(F);const kind=pick(KINDS,1)[0];const atom=/^[A-Z][a-z]?$/.test(F);const dl=atom?"atomen":"moleculen";
+    const nice=[0.2,0.25,0.5,1.5,2,2.5,3,0.1,0.05,4][rnd(0,9)];
+    let q,ans,uit,unit;const Ms=`M(${fmt(F)}) = ${dc(M)} g/mol`;
+    if(kind==="m2n"){const m=+(nice*M).toFixed(1)||1;q=`Bereken de hoeveelheid stof in ${dc(m)} g ${name} (${fmt(F)}).`;ans=m/M;unit="mol";uit=`${Ms}. n = m / M = ${dc(m)} g / ${dc(M)} g/mol = <b>${sci(ans,3).replace(" · 10<sup>0</sup>","")} mol</b>`;}
+    if(kind==="n2m"){q=`Bereken de massa van ${dc(nice,nice<0.1?2:2)} mol ${name} (${fmt(F)}).`;ans=nice*M;unit="g";uit=`${Ms}. m = n · M = ${dc(nice,2)} mol · ${dc(M)} g/mol = <b>${dc(ans,2)} g</b>`;}
+    if(kind==="n2N"){q=`Hoeveel ${dl} zitten er in ${dc(nice,2)} mol ${name} (${fmt(F)})?`;ans=nice*NA;unit=dl;uit=`N = n · N<sub>A</sub> = ${dc(nice,2)} mol · 6,022 · 10<sup>23</sup> 1/mol = <b>${sci(ans)}</b>`;}
+    if(kind==="N2n"){const N=nice*NA;q=`Een hoeveelheid ${name} (${fmt(F)}) bevat ${sci(N)} ${dl}. Hoeveel mol is dat?`;ans=nice;unit="mol";uit=`n = N / N<sub>A</sub> = ${sci(N)} / 6,022 · 10<sup>23</sup> 1/mol = <b>${dc(nice,2)} mol</b>`;}
+    if(kind==="m2N"){const m=+(nice*M).toFixed(1)||1;q=`Hoeveel ${dl} zitten er in ${dc(m)} g ${name} (${fmt(F)})?`;const n=m/M;ans=n*NA;unit=dl;uit=`${Ms}. n = m / M = ${dc(m)} g / ${dc(M)} g/mol = ${dc(n,3)} mol. N = n · N<sub>A</sub> = ${dc(n,3)} mol · 6,022 · 10<sup>23</sup> 1/mol = <b>${sci(ans)}</b>`;}
+    box.append(h("p",{class:"col",html:q}));const inp=numInput("conv-in","10em","antwoord");const fb=h("p",{class:"fb"});let done=false;
+    const check=()=>{if(done)return;const v=parseSci(inp.value);if(isNaN(v)){fb.className="fb badf";fb.textContent="Typ een getal, bv. 0,25 of 1,5·10^23.";return;}done=true;total++;const ok=close(v,ans,0.02);if(ok)good++;inp.className=ok?"ok":"no";sc.textContent=`${good}/${total}`;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist! ":"Niet juist. ")+uit;if(total>=4)markDone("ex-conv");};
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},inp,h("span",{},unit),h("button",{class:"btn primary",type:"button",onclick:check},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe opgave")),fb);
+  }
+  gen();
+})();
+
+const RX=[{e:"N2 + 3 H2 -> 2 NH3"},{e:"4 Fe + 3 O2 -> 2 Fe2O3"},{e:"O2 + 2 H2 -> 2 H2O"},{e:"2 Mg + O2 -> 2 MgO"},{e:"6 CO2 + 6 H2O -> C6H12O6 + 6 O2"},{e:"2 Na + 2 H2O -> 2 NaOH + H2"},{e:"C6H12O6 -> 2 C2H6O + 2 CO2"},{e:"C2H6O + O2 -> C2H4O2 + H2O"},{e:"CaCO3 -> CaO + CO2"},{e:"2 H2O -> 2 H2 + O2"}];
+(function ratio(){
+  const box=$("#ex-ratio");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Molverhoudingen invullen","Opdracht 20 en 21");sc.textContent=total?`${good}/${total}`:"";
+    const R=pick(RX.slice(0,7),1)[0];const E=parseEq(R.e);const sp=[...E.L,...E.R];const k=rnd(0,sp.length-1);const base=pick([0.5,1.5,2,2.5,3,4,5,6,7.5,10,12,15],1)[0];const factor=base/sp[k].c;
+    box.append(h("p",{class:"mini"},h("span",{class:"ask"},"De coëfficiënten geven de molverhouding. Vul het aantal mol in.")),h("div",{class:"eq",html:eqStr(E)}));
+    const row=h("div",{class:"btnrow",style:"align-items:center;font-family:var(--f-display)"});const I=[];
+    sp.forEach((s,i)=>{if(i>0)row.append(h("span",{class:"balsep",style:"font-size:1.1rem"},i===E.L.length?"⟶":"+"));const val=+(s.c*factor).toFixed(3);if(i===k){row.append(h("span",{html:`${fnum(val)} mol ${fmt(s.f)}`}));}else{const inp=numInput("rt-"+i,"4.5em");I.push([inp,val]);row.append(h("span",{},inp),h("span",{html:` mol ${fmt(s.f)}`}));}});
+    const fb=h("p",{class:"fb"});
+    box.append(row,h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:ev=>{let ok=true;I.forEach(([inp,v])=>{const g=Math.abs(parseSci(inp.value)-v)<0.011;inp.className=g?"ok":"no";ok=ok&&g;});total++;if(ok)good++;sc.textContent=`${good}/${total}`;ev.target.disabled=true;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=(ok?"Juist! ":"Niet juist. ")+`Gegeven: ${sp[k].c} mol ${fmt(sp[k].f)} hoort bij ${fnum(base)} mol, dus alles × ${fnum(factor)}: `+sp.map(s=>`${fnum(s.c*factor)} mol ${fmt(s.f)}`).join(", ")+".";if(total>=3)markDone("ex-ratio");}},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe opgave")),fb);
+  }
+  gen();
+})();
+
+(function stoich(){
+  const box=$("#ex-stoich");let total=0,good=0;
+  const P=[{e:"4 Fe + 3 O2 -> 2 Fe2O3",g:0,a:2,ctx:"Het roesten van ijzer:",m:[56,125,200,11.2]},
+   {e:"2 Mg + O2 -> 2 MgO",g:0,a:1,ctx:"Magnesium oxideert tot magnesiumoxide.",m:[8,12.15,24.3,4.86]},
+   {e:"2 H2 + O2 -> 2 H2O",g:0,a:1,ctx:"Waterstofgas verbrandt tot water.",m:[4,10,2,1]},
+   {e:"N2 + 3 H2 -> 2 NH3",g:0,a:1,ctx:"Ammoniak wordt bereid uit distikstof en diwaterstof.",m:[28,56,14,140]},
+   {e:"2 Na + 2 H2O -> 2 NaOH + H2",g:0,a:3,ctx:"Natrium reageert hevig met water.",m:[0.46,2.3,4.6,23]},
+   {e:"C6H12O6 -> 2 C2H6O + 2 CO2",g:1,a:0,ctx:"Alcoholische vergisting van druivensuiker.",m:[10.27,46,23,92]},
+   {e:"CaCO3 -> CaO + CO2",g:0,a:2,ctx:"Kalksteen ontleedt bij verhitting.",m:[100.1,50,150,25]},
+   {e:"2 Mg + O2 -> 2 MgO",g:1,a:2,ctx:"Magnesium verbrandt in zuurstofgas.",m:[3.2,16,8,32]}];
+  function gen(){
+    const sc=wsHead(box,"Stoichiometrisch rekenen in 4 stappen","Vraagstuk");sc.textContent=total?`${good}/${total}`:"";
+    const T=pick(P,1)[0];const E=parseEq(T.e);const sp=[...E.L,...E.R];const G=sp[T.g],A=sp[T.a];const mG=pick(T.m,1)[0];
+    const MG=Mr(G.f),MA=Mr(A.f);const nG=mG/MG;const nA=nG*A.c/G.c;const mA=nA*MA;
+    box.append(h("p",{class:"col",html:`${T.ctx} ${T.a>=E.L.length?`Hoeveel gram ${fmt(A.f)} ontstaat er uit ${fnum(mG)} g ${fmt(G.f)}?`:T.g>=E.L.length?`Hoeveel gram ${fmt(A.f)} is er nodig om ${fnum(mG)} g ${fmt(G.f)} te vormen?`:`Hoeveel gram ${fmt(A.f)} reageert er met ${fnum(mG)} g ${fmt(G.f)}?`}`}));
+    const inp=numInput("st-in","8em");const fb=h("p",{class:"fb"});const wk=h("div");let done=false;
+    const steps=`<span class="k">Stap 1</span> n(${fmt(G.f)}) = m / M = ${fnum(mG)} g / ${dc(MG)} g/mol = ${dc(nG,3)} mol<br><span class="k">Stap 2</span> ${eqStr(E)}<br><span class="k">Stap 3</span> ${G.c} mol ${fmt(G.f)} ⟶ ${A.c} mol ${fmt(A.f)}, dus ${dc(nG,3)} mol ${fmt(G.f)} ⟶ ${A.c}/${G.c} · ${dc(nG,3)} = ${dc(nA,3)} mol ${fmt(A.f)}<br><span class="k">Stap 4</span> m(${fmt(A.f)}) = n · M = ${dc(nA,3)} mol · ${dc(MA)} g/mol = <b>${dc(mA,mA<10?2:1)} g</b>`;
+    const check=()=>{if(done)return;const v=parseSci(inp.value);if(isNaN(v)){fb.className="fb badf";fb.textContent="Typ een getal.";return;}done=true;total++;const ok=close(v,mA,0.02);if(ok)good++;inp.className=ok?"ok":"no";sc.textContent=`${good}/${total}`;fb.className="fb "+(ok?"good":"badf");fb.textContent=ok?"Juist! Vergelijk met de uitwerking.":"Niet juist. Volg de uitwerking.";wk.append(workBox(steps));if(total>=3)markDone("ex-stoich");};
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+    box.append(h("div",{class:"btnrow",style:"align-items:center"},h("span",{html:`m(${fmt(A.f)}) =`}),inp,h("span",{},"g"),h("button",{class:"btn primary",type:"button",onclick:check},"Controleer"),h("button",{class:"btn",type:"button",onclick:()=>{if(!wk.firstChild)wk.append(workBox(`<span class="k">Tip</span> Bereken eerst het aantal mol ${fmt(G.f)}. M(${fmt(G.f)}) = ${dc(MG)} g/mol.`));}},"Tip"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuw vraagstuk")),fb,wk);
+  }
+  gen();
+})();
+
+sortEx("ex-tf3",{title:"Controle: waar of niet waar?",tag:"Controle 3",options:["waar","niet waar"],keep:true,items:[
+ {t:"De internationale atoommassa-eenheid stel je voor met het symbool u.",a:"waar"},
+ {t:"De absolute massa van een molecule bereken je door: M · u.",a:"niet waar",why:"m = M<sub>r</sub> · u, met de relatieve moleculemassa."},
+ {t:"Je kunt het aantal deeltjes berekenen door de massa van een stof uitgedrukt in gram te vermenigvuldigen met de constante van Avogadro.",a:"niet waar",why:"N = n · N<sub>A</sub>: je vermenigvuldigt de hoeveelheid stof in mol."},
+ {t:"100 gram water bevat 3,34 · 10<sup>24</sup> moleculen water.",a:"waar",why:"n = 100 g / 18,0 g/mol = 5,56 mol; N = 5,56 · 6,022 · 10<sup>23</sup> = 3,34 · 10<sup>24</sup>."},
+ {t:"Uit de reactie bij de ontleding van water kun je afleiden dat 1 mol water ontleedt in 1 mol waterstofgas en 1 mol zuurstofgas.",a:"niet waar",why:"2 H<sub>2</sub>O ⟶ 2 H<sub>2</sub> + O<sub>2</sub>: 1 mol water geeft 1 mol H<sub>2</sub> en 0,5 mol O<sub>2</sub>."}]});
+
+/* ===================== TEST ===================== */
+const FINAL=[
+ {q:"Wie stelde dat een atoom bestaat uit een atoomkern met daarrond een elektronenwolk?",opts:["Rutherford","Bohr","Avogadro","Mendelejev"],a:"Rutherford"},
+ {q:"Welke deeltjes zitten in de atoomkern?",opts:["protonen en neutronen","protonen en elektronen","alleen protonen","elektronen en neutronen"],a:"protonen en neutronen"},
+ {q:"Wat is de relatieve lading van een neutron?",opts:["0","+1","−1","+2"],a:"0"},
+ {q:"Het atoomnummer Z geeft …",opts:["het aantal protonen","het aantal neutronen","het aantal nucleonen","de massa van het atoom"],a:"het aantal protonen"},
+ {q:`Hoeveel neutronen heeft ${nucl(39,19,"K")}?`,opts:["20","19","39","58"],a:"20",why:"39 − 19 = 20"},
+ {q:`Welke samenstelling heeft ${nucl(16,8,"O")}?`,opts:["8 p⁺, 8 e⁻ en 8 n⁰","8 p⁺, 16 e⁻ en 8 n⁰","16 p⁺, 8 e⁻ en 8 n⁰","8 p⁺, 8 e⁻ en 16 n⁰"],a:"8 p⁺, 8 e⁻ en 8 n⁰"},
+ {q:"Een element met massagetal 45 heeft 3 neutronen meer dan protonen. Hoeveel protonen heeft het?",opts:["21","24","22","45"],a:"21",why:"(45 − 3) : 2 = 21"},
+ {q:"Isotopen zijn atomen van hetzelfde element met …",opts:["een verschillend aantal neutronen","een verschillend aantal protonen","een verschillend aantal elektronen","een andere lading"],a:"een verschillend aantal neutronen"},
+ {q:"Chloor heeft de isotopen ³⁵Cl en ³⁷Cl, en A<sub>r</sub> = 35,5. Hoeveel procent ³⁵Cl komt voor?",opts:["75 %","25 %","50 %","35,5 %"],a:"75 %"},
+ {q:"Wat is de elektronenconfiguratie van ₁₃Al?",opts:["K: 2  L: 8  M: 3","K: 2  L: 11","K: 3  L: 8  M: 2","K: 2  L: 8  M: 8"],a:"K: 2  L: 8  M: 3"},
+ {q:"Hoeveel valentie-elektronen heeft Si?",opts:["4","2","14","8"],a:"4"},
+ {q:"Wat is het buitenste volledig bezette energieniveau van Ar?",opts:["M-schil","L-schil","K-schil","N-schil"],a:"M-schil"},
+ {q:"Hoeveel elektronenparen heeft Cl in de lewisnotatie?",opts:["3","1","7","2"],a:"3",why:"7 valentie-elektronen: 3 paren en 1 ongepaard elektron."},
+ {q:"Wat is het kleinste element met 4 ongepaarde elektronen?",opts:["C","Be","Si","O"],a:"C"},
+ {q:"Waarom staan er in de eerste periode maar 2 elementen?",opts:["Ze hebben 1 bezette schil, en de K-schil kan maximaal 2 elektronen bevatten.","Er zijn maar 2 lichte elementen ontdekt.","Ze zijn allebei edelgassen.","Ze hebben geen neutronen."],a:"Ze hebben 1 bezette schil, en de K-schil kan maximaal 2 elektronen bevatten."},
+ {q:"Een element heeft de configuratie K: 2  L: 8  M: 5. In welke groep en periode staat het?",opts:["groep Va, periode 3","groep IIIa, periode 5","groep Va, periode 2","groep 15, periode 5"],a:"groep Va, periode 3"},
+ {q:"Het groepsnummer (Romeins cijfer) van een a-groep komt overeen met …",opts:["het aantal valentie-elektronen","het aantal schillen","het atoomnummer","het aantal neutronen"],a:"het aantal valentie-elektronen"},
+ {q:"Het periodenummer komt overeen met …",opts:["het aantal bezette schillen","het aantal valentie-elektronen","het massagetal","het aantal protonen"],a:"het aantal bezette schillen"},
+ {q:"Hoe noem je de elementen van groep VIIa?",opts:["halogenen","edelgassen","alkalimetalen","aardalkalimetalen"],a:"halogenen"},
+ {q:"Welk element is een edelgas?",opts:["Ne","Na","N","Ni"],a:"Ne"},
+ {q:"Welk element heeft soortgelijke eigenschappen als S?",opts:["O","Cl","P","Ar"],a:"O",why:"Allebei groep VIa."},
+ {q:"Elementen van dezelfde periode bevatten …",opts:["evenveel bezette schillen","evenveel valentie-elektronen","evenveel neutronen","dezelfde chemische eigenschappen"],a:"evenveel bezette schillen"},
+ {q:"De relatieve atoommassa van Ca bedraagt 40. Dat betekent dat 1 atoom Ca …",opts:["een 40 keer grotere massa heeft dan de atoommassa-eenheid u","40 gram weegt","40 elektronen bevat","40 deeltjes bevat"],a:"een 40 keer grotere massa heeft dan de atoommassa-eenheid u"},
+ {q:"Hoeveel bedraagt de atoommassa-eenheid u?",opts:["1,66 · 10<sup>−27</sup> kg","6,022 · 10<sup>23</sup> kg","1,602 · 10<sup>−19</sup> kg","1,66 · 10<sup>27</sup> kg"],a:"1,66 · 10<sup>−27</sup> kg"},
+ {q:"M<sub>r</sub>(Ca(OH)<sub>2</sub>) = …",opts:["74,1","57,1","58,1","114,1"],a:"74,1",why:"40,1 + 2 · 16,0 + 2 · 1,0 = 74,1"},
+ {q:"Wat is de molaire massa van H<sub>2</sub>CO<sub>3</sub>?",opts:["62,0 g/mol","29,0 g/mol","178,7 g/mol","61,0 g/mol"],a:"62,0 g/mol",why:"2 · 1,0 + 12,0 + 3 · 16,0 = 62,0"},
+ {q:"Wat is de constante van Avogadro?",opts:["6,022 · 10<sup>23</sup> 1/mol","1,66 · 10<sup>−27</sup> kg","6,022 · 10<sup>−23</sup> 1/mol","22,4 l/mol"],a:"6,022 · 10<sup>23</sup> 1/mol"},
+ {q:"Wat is de massa van 0,200 mol water?",opts:["3,60 g","18,0 g","0,0111 g","90,0 g"],a:"3,60 g",why:"m = n · M = 0,200 mol · 18,0 g/mol"},
+ {q:"Hoeveel deeltjes NaCl zitten er in 0,500 mol keukenzout?",opts:["3,01 · 10<sup>23</sup>","6,022 · 10<sup>23</sup>","1,20 · 10<sup>24</sup>","29,2"],a:"3,01 · 10<sup>23</sup>"},
+ {q:"Waar zitten de meeste atomen?",opts:["in 1,2 mol zilver","in 1,2 gram zilver"],keep:true,a:"in 1,2 mol zilver",why:"1,2 g zilver is maar 0,011 mol."},
+ {q:"Wat is stoichiometrie?",opts:["de verhouding waarin reagentia reageren en reactieproducten vormen","de leer van de atoommodellen","het balanceren van formules","het berekenen van een massagetal"],a:"de verhouding waarin reagentia reageren en reactieproducten vormen"},
+ {q:"N<sub>2</sub> + 3 H<sub>2</sub> ⟶ 2 NH<sub>3</sub>. Hoeveel mol NH<sub>3</sub> ontstaat uit 2 mol N<sub>2</sub>?",opts:["4 mol","2 mol","6 mol","1 mol"],a:"4 mol"},
+ {q:"Wat is stap 1 van de oplossingsstrategie bij stoichiometrisch rekenen?",opts:["Zet alle gegevens om in mol.","Schrijf de reactievergelijking.","Herleid naar gram.","Bereken de molverhouding."],a:"Zet alle gegevens om in mol."}];
+mcEx("ex-final",{title:"Toets: Bouw en eigenschappen van atomen",tag:"15 vragen",n:15,questions:FINAL});
+
+(function flash(){
+  const T=[["atoomkern","Kleine, centrale kern van het atoom met protonen en neutronen; bevat bijna alle massa."],["elektronenwolk","De ruimte rond de kern waarin de elektronen bewegen; bepaalt de grootte van het atoom."],["proton","Positief geladen deeltje in de kern (p⁺): relatieve massa 1, lading +1."],["elektron","Negatief geladen deeltje rond de kern (e⁻): relatieve massa 0, lading −1."],["neutron","Ongeladen deeltje in de kern (n⁰): relatieve massa 1, lading 0."],["nucleonen","Protonen en neutronen samen, ook kerndeeltjes genoemd."],["nuclide","Een atoom met een gegeven aantal protonen en neutronen."],["atoomnummer Z","Het aantal protonen; bepaalt de atoomsoort."],["massagetal A","Het aantal protonen plus neutronen."],["isotopen","Atomen van hetzelfde element met een verschillend aantal neutronen."],["energieniveau of schil","Een van de zeven niveaus (K tot Q) waarop elektronen rond de kern bewegen."],["elektronenconfiguratie","De verdeling van de elektronen over de schillen."],["valentie-elektronen","Elektronen op de buitenste bezette schil."],["lewisnotatie","Elektronenstipmodel: valentie-elektronen als stippen en streepjes rond het symbool."],["elektronenpaar of doublet","Twee elektronen samen, getekend als een streepje."],["ongepaard elektron","Eén elektron, getekend als een stip."],["PSE","Periodiek Systeem van de Elementen: de elementen geordend volgens stijgend atoomnummer."],["groep","Verticale kolom in het PSE."],["periode","Horizontale rij in het PSE; nummer = aantal bezette schillen."],["hoofdgroepen","De a-groepen en groep 0."],["nevengroepen","De b-groepen."],["edelgassen","Groep 0: stabiele elementen die niet reageren."],["inert","Reageert niet met andere stoffen."],["absolute massa m","De werkelijke massa, in kg."],["relatieve atoommassa Ar","Hoeveel keer de massa van een atoom groter is dan u; zonder eenheid."],["atoommassa-eenheid u","1,66 · 10⁻²⁷ kg: 1/12de van de massa van een ¹²C-atoom."],["relatieve moleculemassa Mr","De som van de relatieve atoommassa's in een molecule."],["hoeveelheid stof n","Uitgedrukt in mol."],["mol","Eenheid van hoeveelheid stof: 6,022 · 10²³ deeltjes."],["constante van Avogadro NA","6,022 · 10²³ deeltjes per mol."],["aantal deeltjes N","N = n · NA"],["molaire massa M","De massa in gram van 1 mol stof, in g/mol."],["stoichiometrie","De verhouding waarin reagentia reageren en reactieproducten vormen."],["molverhouding","De verhouding van de coëfficiënten in de reactievergelijking."]];
+  const box=$("#flash");let order=shuffle(T),i=0,back=false;
+  const card=h("div",{class:"card",tabindex:"0",role:"button","aria-label":"Draai de kaart om"});const cnt=h("span",{class:"mini"});
+  const draw=()=>{const [t,d]=order[i];card.innerHTML=back?`<div class="d">${d}</div>`:`<div class="t">${t}</div>`;cnt.textContent=`kaart ${i+1} van ${order.length}`;};
+  const flip=()=>{back=!back;draw();};card.addEventListener("click",flip);card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
+  box.append(card,h("div",{class:"btnrow",style:"align-items:center"},h("button",{class:"btn",type:"button",onclick:()=>{i=(i-1+order.length)%order.length;back=false;draw();}},"Vorige"),h("button",{class:"btn primary",type:"button",onclick:()=>{i=(i+1)%order.length;back=false;draw();}},"Volgende"),h("button",{class:"btn",type:"button",onclick:()=>{order=shuffle(T);i=0;back=false;draw();}},"Schudden"),cnt));draw();
+})();
+
+/* ===== Start ===== */
+const initial=(location.hash||"").slice(1)||state.tab||"atoom";
+showTab(initial,false);updateDots();
+window.addEventListener("hashchange",()=>showTab(location.hash.slice(1),false));
+
+</script>
+</body>
+</html>

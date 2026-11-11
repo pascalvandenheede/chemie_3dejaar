@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stoffen rondom ons 1u</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: periodic-table tiles as chapter navigation; reading column on clean lab paper; exercises sit on graph-paper "werkbladen". */
+:root{
+  --paper:#F6F8FA; --surface:#FFFFFF; --ink:#13293D; --muted:#557085; --line:#D5DEE7; --grid:#E6EDF3;
+  --glass:#1F6FA8; --glass-soft:#E3EFF8; --ghs:#D3222A; --ok:#1E7F4F; --ok-soft:#E1F3EA; --bad:#B42318; --bad-soft:#FCE8E6;
+  --warn:#8A5A00; --warn-soft:#FFF3D6; --tile:#13293D; --tile-ink:#FFFFFF;
+  --f-display:"Unbounded","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1A24; --surface:#14232F; --ink:#E3ECF4; --muted:#93AABD; --line:#2A3E4F; --grid:#1B2C3A;
+  --glass:#6AB3E6; --glass-soft:#16324A; --ghs:#FF5A5F; --ok:#5BD69A; --ok-soft:#123327; --bad:#FF8A80; --bad-soft:#3A1A1A;
+  --warn:#F4C46B; --warn-soft:#33290F; --tile:#E3ECF4; --tile-ink:#0E1A24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1A24; --surface:#14232F; --ink:#E3ECF4; --muted:#93AABD; --line:#2A3E4F; --grid:#1B2C3A;
+  --glass:#6AB3E6; --glass-soft:#16324A; --ghs:#FF5A5F; --ok:#5BD69A; --ok-soft:#123327; --bad:#FF8A80; --bad-soft:#3A1A1A;
+  --warn:#F4C46B; --warn-soft:#33290F; --tile:#E3ECF4; --tile-ink:#0E1A24; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0}
+h2{font-size:1.55rem;font-weight:700;margin-block:2.2rem .8rem}
+h3{font-size:1.08rem;font-weight:500;margin-block:1.6rem .5rem}
+p{margin:.5rem 0}
+.lead{font-size:1.12rem;max-width:62ch}
+.col{max-width:68ch}
+a{color:var(--glass)}
+sub{font-size:.72em;line-height:0}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--glass);outline-offset:2px}
+
+/* Header */
+header.top{padding-block:28px 10px}
+.hero{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.bigtile{width:118px;height:118px;flex:none;background:var(--tile);color:var(--tile-ink);border-radius:8px;position:relative;font-family:var(--f-display)}
+.bigtile .z{position:absolute;top:8px;left:10px;font-size:.85rem}
+.bigtile .sym{position:absolute;inset:0;display:grid;place-items:center;font-size:2.9rem;font-weight:700}
+.bigtile .nm{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:.62rem;letter-spacing:.04em}
+.hero h1{font-size:clamp(1.8rem,5vw,2.9rem);font-weight:700}
+.hero .sub{color:var(--muted);margin-top:.3rem}
+
+/* Tile navigation */
+nav.tiles{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding-block:10px}
+.tilerow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.tbtn{flex:none;width:86px;height:86px;border:2px solid var(--ink);border-radius:7px;background:var(--surface);cursor:pointer;position:relative;text-align:left;padding:0;font-family:var(--f-display)}
+.tbtn .z{position:absolute;top:5px;left:7px;font-size:.68rem;font-family:var(--f-body);font-weight:700}
+.tbtn .s{position:absolute;top:18px;left:0;right:0;text-align:center;font-size:1.6rem;font-weight:700}
+.tbtn .n{position:absolute;bottom:6px;left:2px;right:2px;text-align:center;font-size:.62rem;font-family:var(--f-body);line-height:1.15}
+.tbtn .dot{position:absolute;top:6px;right:7px;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.tbtn .dot.done{background:var(--ok)}
+.tbtn[aria-selected="true"]{background:var(--tile);color:var(--tile-ink);border-color:var(--tile)}
+.tbtn:hover{border-color:var(--glass)}
+.tbtn.vm{border-style:dashed}
+@media (max-width:560px){.tbtn{width:64px;height:64px}.tbtn .s{top:13px;font-size:1.2rem}.tbtn .n{font-size:.52rem;bottom:4px}.tbtn .z{font-size:.6rem;top:3px;left:5px}.tbtn .dot{top:4px;right:5px;width:7px;height:7px}body{font-size:16px}}
+
+main{padding-block:8px 60px}
+.panel[hidden]{display:none}
+
+/* Concepts */
+.def{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:4px 18px;margin:1rem 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.def dt{font-weight:700;color:var(--glass)}
+.def dd{margin:0 0 6px}
+@media (max-width:560px){.def{grid-template-columns:1fr}.def dd{margin-bottom:10px}}
+.kw{font-weight:700;color:var(--glass)}
+.note{background:var(--warn-soft);color:var(--ink);border-radius:var(--r);padding:12px 16px;margin:1rem 0;max-width:68ch}
+.note b.tag{color:var(--warn);margin-right:.4rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.two>*{min-width:0}
+.tablewrap{overflow-x:auto;margin:1rem 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted);font-size:.85rem}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+ul.clean{padding-left:1.1rem;margin:.4rem 0}
+ul.clean li{margin:.2rem 0}
+
+/* Worksheet (exercise) */
+.ws{--cell:22px;background-color:var(--surface);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:var(--cell) var(--cell);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 20px;margin:1.4rem 0}
+.ws>header{display:flex;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:.4rem}
+.ws>header .score{margin-left:auto}
+.ws h3{margin:0;font-size:1rem}
+.ws .tag{font-size:.8rem;color:var(--muted);font-weight:700}
+.ws .ask{background:var(--surface);display:inline;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.score{font-weight:700;font-variant-numeric:tabular-nums;color:var(--glass)}
+.btn{border:2px solid var(--ink);background:var(--surface);border-radius:999px;padding:5px 14px;cursor:pointer;font-weight:700;font-size:.92rem}
+.btn:hover{border-color:var(--glass);color:var(--glass)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--glass);border-color:var(--glass);color:var(--paper)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.opt{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.93rem}
+.opt:hover{border-color:var(--glass)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.opt:disabled{cursor:default}
+.items{display:grid;gap:8px;margin-top:10px}
+.item{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.item .lbl{flex:1 1 220px;min-width:0;font-weight:700}
+.item .opts{display:flex;gap:6px;flex-wrap:wrap}
+.fb{flex-basis:100%;font-size:.9rem;margin:0}
+.fb.good{color:var(--ok)} .fb.badf{color:var(--bad)}
+.mc .q{font-weight:700;font-size:1.05rem;margin:.4rem 0 .6rem;background:var(--surface)}
+.mc .opts{display:grid;gap:7px}
+.mc .opt{text-align:left;padding:9px 13px}
+.mc .why{background:var(--surface);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:.93rem}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 10px}
+.progress>i{display:block;height:100%;background:var(--glass);width:0;transition:width .3s}
+input[type=text],input[type=number],select{background:var(--surface);border:1.5px solid var(--line);border-radius:7px;padding:5px 9px;max-width:100%}
+input.ok,select.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.no,select.no{border-color:var(--bad);background:var(--bad-soft)}
+.mini{font-size:.86rem;color:var(--muted)}
+.pill{display:inline-block;border-radius:999px;padding:1px 10px;font-size:.82rem;font-weight:700}
+.pill.v{background:var(--glass-soft);color:var(--glass)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* Etiket */
+.etiket{background:#FFF27A;color:#111;border:3px solid #111;border-radius:4px;padding:10px 12px;max-width:440px;font-size:.82rem;line-height:1.35;position:relative}
+.etiket .hot{cursor:pointer;border-radius:4px;outline:2px dashed transparent;outline-offset:2px}
+.etiket .hot:hover,.etiket .hot.sel{outline-color:#1F6FA8}
+.etiket .hot.found{outline:2px solid #1E7F4F}
+.etiket .nm{font-family:var(--f-display);font-size:1.5rem;font-weight:700}
+.etiket .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.etiket svg{width:70px;height:70px}
+.etiket .foot{display:flex;justify-content:space-between;border-top:1px solid #111;margin-top:6px;padding-top:4px;font-weight:700}
+
+/* Pictograms & gear */
+.ghsgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:1rem 0}
+.ghsgrid figure{margin:0;text-align:center;font-size:.88rem}
+.ghsgrid svg{width:86px;height:86px}
+.gear{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:1rem 0}
+.gear button{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;font-size:.88rem;font-weight:700}
+.gear button:hover,.gear button.sel{border-color:var(--glass)}
+.gear svg{width:70px;height:70px;display:block;margin:0 auto 4px}
+.gearinfo{min-height:3.2em;background:var(--glass-soft);border-radius:8px;padding:10px 14px}
+svg .glass{fill:var(--glass-soft);stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+svg .ln{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+svg .liq{fill:var(--glass);opacity:.45;stroke:none}
+svg .solid{fill:var(--ink);stroke:none}
+
+/* Graph */
+.graph svg{width:100%;max-width:560px;height:auto;display:block}
+.graph .axis{stroke:var(--ink);stroke-width:2;fill:none}
+.graph text{fill:var(--ink);font-size:12px;font-family:var(--f-body)}
+.readout{font-weight:700;min-height:1.6em}
+.slider{width:100%;max-width:520px}
+.states{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:10px}
+.state{display:flex;justify-content:space-between;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:.92rem}
+.state b{font-size:.8rem;border-radius:999px;padding:0 8px}
+.st-vast{background:#D9DEE4;color:#2A3A48}
+.st-vloeibaar{background:#CFE6F7;color:#0E4C78}
+.st-gas{background:#FCEFB7;color:#6B5200}
+.therm{font-family:var(--f-display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+
+/* Particle boxes */
+.boxes{display:flex;gap:14px;flex-wrap:wrap}
+.pbox{width:220px;max-width:100%;aspect-ratio:1;background:var(--surface);border:2px solid var(--ink);border-top:none;border-radius:0 0 10px 10px}
+.pbox svg{width:100%;height:100%}
+
+/* Schema */
+.schema{display:grid;gap:6px;justify-items:center;text-align:center;margin-top:10px}
+.schema .node{background:var(--surface);border:1.5px solid var(--ink);border-radius:6px;padding:4px 12px;font-weight:700}
+.schema .arrow{color:var(--muted);font-size:.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.schema .split{display:flex;gap:30px;justify-content:center;flex-wrap:wrap}
+.schema .branch{display:grid;gap:6px;justify-items:center}
+
+/* Molecule viewer */
+.molrow{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.mol{display:flex;flex-wrap:wrap;gap:2px;max-width:150px;padding:6px;border:1.5px dashed var(--line);border-radius:12px;background:var(--surface)}
+.atom{width:20px;height:20px;border-radius:50%;border:1px solid #8A99A8;display:inline-block}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.88rem}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.countgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.countgrid label{display:flex;flex-direction:column;gap:3px;font-size:.88rem;font-weight:700;background:var(--surface);padding:6px 8px;border-radius:7px;border:1px solid var(--line)}
+
+/* Flashcards */
+.card{background:var(--surface);border:2px solid var(--ink);border-radius:12px;min-height:150px;display:grid;place-items:center;text-align:center;padding:20px;cursor:pointer;max-width:520px}
+.card .t{font-family:var(--f-display);font-size:1.3rem}
+.card .d{font-size:1.02rem}
+
+/* HP lookup */
+.hpres{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-top:10px;min-height:2.8em}
+.codebadge{display:inline-block;background:var(--tile);color:var(--tile-ink);border-radius:5px;padding:0 7px;font-weight:700;margin-right:6px;font-variant-numeric:tabular-nums}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem;margin:.6rem 0 0}
+.toc a{text-decoration:none;border-bottom:1px solid var(--line)}
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-block:18px 30px}
+</style>
+</head>
+<body style="position:relative">
+<a href="../index.html" style="position:absolute;top:8px;left:16px;font:700 .85rem/1 system-ui,sans-serif;color:var(--glass,#1F6FA8);text-decoration:none;z-index:30">← Alle thema's</a>
+<header class="top wrap">
+  <div class="hero">
+    <div class="bigtile" aria-hidden="true"><span class="z">3de jaar</span><span class="sym">1</span><span class="nm">THEMA</span></div>
+    <div>
+      <h1>Stoffen rondom ons</h1>
+      <p class="sub">Chemie 3de jaar (1 lesuur) · Thema 1 en het labovademecum. Lees de leerstof, oefen meteen en kijk je antwoord na.</p>
+    </div>
+  </div>
+</header>
+
+<nav class="tiles" aria-label="Hoofdstukken">
+  <div class="wrap tilerow" role="tablist">
+    <button class="tbtn" role="tab" data-tab="chemie" aria-selected="true"><span class="z">1</span><span class="dot"></span><span class="s">Ch</span><span class="n">Chemie</span></button>
+    <button class="tbtn" role="tab" data-tab="materie"><span class="z">2</span><span class="dot"></span><span class="s">Ma</span><span class="n">Materie</span></button>
+    <button class="tbtn" role="tab" data-tab="mengsels"><span class="z">3</span><span class="dot"></span><span class="s">Me</span><span class="n">Mengsels</span></button>
+    <button class="tbtn" role="tab" data-tab="zuiver"><span class="z">4</span><span class="dot"></span><span class="s">Zs</span><span class="n">Zuivere stoffen</span></button>
+    <button class="tbtn vm" role="tab" data-tab="vademecum"><span class="z">V</span><span class="dot"></span><span class="s">Vm</span><span class="n">Vademecum</span></button>
+    <button class="tbtn" role="tab" data-tab="test"><span class="z">T</span><span class="dot"></span><span class="s">Tj</span><span class="n">Test jezelf</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ 1 CHEMIE ============ -->
+<section class="panel" id="p-chemie" role="tabpanel">
+  <h2>1 Chemie</h2>
+  <p class="lead">De natuurwetenschappen kun je opsplitsen in biologie, fysica en chemie. Zonder chemie had je geen smartphones, medicijnen, gekleurde kleren of cola.</p>
+
+  <h3>1.1 Chemie in ons dagelijkse leven</h3>
+  <div class="col">
+  <p>In <span class="kw">chemie</span> bestudeer je:</p>
+  <ul class="clean">
+    <li>de samenstelling en bouw van materie;</li>
+    <li>de omzettingen in samenstelling en bouw van materie;</li>
+    <li>de energie-uitwisselingen die hiermee gepaard gaan.</li>
+  </ul>
+  <p><span class="kw">Materie</span> is de verzamelnaam voor alle stoffen.</p>
+  <p class="mini">Voorbeeld: turners gebruiken magnesiumoxide tegen zweethanden. Die stof krijg je door magnesiumlint te verbranden. Daarbij komen licht (stralingsenergie) en warmte (thermische energie) vrij.</p>
+  </div>
+
+  <div class="ws" id="ex-fyschem"></div>
+
+  <h3>1.2 Werken met chemische stoffen</h3>
+  <div class="col">
+  <p>Op de verpakking van een chemische stof staat een <span class="kw">etiket</span> met de naam van de stof, de formule, de bewaarplaats, de gevarenaanduidingen, de gevarenpictogrammen en de veiligheidsaanbevelingen.</p>
+  </div>
+  <dl class="def">
+    <dt>Gevarenpictogram</dt><dd>Symbool in een witte ruit met een rode rand. Waarschuwt voor het gevaar van de stof.</dd>
+    <dt>Signaalwoord</dt><dd>Een woord zoals <i>Gevaar</i> of <i>Waarschuwing</i> dat wijst op het gevaar.</dd>
+    <dt>Gevarenaanduiding (H-zin)</dt><dd>Beschrijft het risico van de stof. Code: letter H + drie cijfers. H komt van het Engelse <i>hazard</i> (gevaar).</dd>
+    <dt>Veiligheidsaanbeveling (P-zin)</dt><dd>Veiligheidsvoorschrift voor het omgaan met de stof. Code: letter P + drie cijfers. P komt van <i>precaution</i> (voorzorgsmaatregel).</dd>
+  </dl>
+  <div class="note"><b class="tag">Opgelet!</b>H- en P-zinnen zeggen niets over de gevaren die ontstaan als je verschillende stoffen samenvoegt.</div>
+
+  <div class="ws" id="ex-etiket"></div>
+  <div class="ws" id="ex-tf1"></div>
+</section>
+
+<!-- ============ 2 MATERIE ============ -->
+<section class="panel" id="p-materie" role="tabpanel" hidden>
+  <h2>2 Materie</h2>
+  <p class="lead">Materie omvat alles wat een massa heeft. Om materie te bestuderen maak je een onderscheid tussen voorwerpen en de stoffen waaruit ze bestaan.</p>
+
+  <h3>2.1 Voorwerpen versus stoffen</h3>
+  <dl class="def">
+    <dt>Voorwerpeigenschap</dt><dd>Eigenschap van het voorwerp zelf: vorm, grootte, massa, volume …</dd>
+    <dt>Stofeigenschap</dt><dd>Eigenschap van de stof waaruit het voorwerp bestaat: kleur, oplosbaarheid, brandbaarheid …</dd>
+  </dl>
+  <div class="tablewrap col"><table>
+    <tr><th>Voorwerp: basketbal</th><th>Stof: rubber</th></tr>
+    <tr><td>bolvormig · omtrek 75 cm · massa 570 g</td><td>elastisch · licht vervormbaar · smeltpunt 180 °C · niet oplosbaar in water</td></tr>
+  </table></div>
+  <p class="col">De oorsprong van een stof heeft geen invloed op haar eigenschappen: rubber uit de fabriek heeft dezelfde eigenschappen als rubber van de rubberboom.</p>
+
+  <div class="ws" id="ex-vs"></div>
+
+  <h3>2.2 Soorten stofeigenschappen</h3>
+  <dl class="def">
+    <dt>Waarneembare stofeigenschap</dt><dd>Neem je waar met je zintuigen: uitzicht, smaak, geur … Om het uitzicht te beschrijven gebruik je: kristallijn, amorf, viskeus (stroperig), mat, glanzend, kleur(loos), vast, vloeibaar, gasvormig, deeltjesgrootte.</dd>
+    <dt>Meetbare stofeigenschap</dt><dd>Bepaal je met meettoestellen: kookpunt, smeltpunt, oplosbaarheid in water, massadichtheid …</dd>
+    <dt>Massadichtheid</dt><dd>De constante verhouding tussen de massa en het volume van een stof: ρ = m / V (bv. in g/cm³). Elke stof heeft een eigen massadichtheid.</dd>
+  </dl>
+  <div class="ws" id="ex-eig"></div>
+  <div class="ws" id="ex-therm"></div>
+  <div class="ws" id="ex-dens"></div>
+  <div class="ws" id="ex-odd"></div>
+</section>
+
+<!-- ============ 3 MENGSELS ============ -->
+<section class="panel" id="p-mengsels" role="tabpanel" hidden>
+  <h2>3 Mengsels</h2>
+  <p class="lead">In een mengsel vind je steeds meerdere stoffen terug. Elke stof is dan een bestanddeel of component van het mengsel.</p>
+  <nav class="toc"><a href="#m31">3.1 Mengsels indelen</a><a href="#m32">3.2 Mengsels of zuivere stoffen</a><a href="#m33">3.3 Scheidingstechnieken</a></nav>
+
+  <h3 id="m31">3.1 Mengsels indelen</h3>
+  <p class="col">Je deelt mengsels in op basis van <b>deeltjesgrootte</b>.</p>
+  <div class="two">
+    <div>
+      <p><span class="kw">Heterogeen mengsel</span>: je kunt minstens één bestanddeel onderscheiden met het blote oog of een vergrootglas (deeltjes minstens 10<sup>−7</sup> m).</p>
+      <div class="tablewrap"><table>
+        <tr><th>Aggregatietoestand</th><th>Naam</th><th>Voorbeeld</th></tr>
+        <tr><td>vaste stof + vaste stof</td><td><b>grof mengsel</b></td><td>zand met schelpen</td></tr>
+        <tr><td>vaste stof + vloeistof</td><td><b>suspensie</b></td><td>smoothie</td></tr>
+        <tr><td>vloeistof + vloeistof</td><td><b>emulsie</b></td><td>vinaigrette</td></tr>
+        <tr><td>vaste stof + gas</td><td><b>rook</b></td><td>schoorsteenrook</td></tr>
+      </table></div>
+    </div>
+    <div>
+      <p><span class="kw">Homogeen mengsel</span>: je kunt de bestanddelen niet onderscheiden, ook niet met een vergrootglas. Is het volledig doorzichtig, dan is het een <span class="kw">oplossing</span>: een vaste stof, vloeistof of gas opgelost in een vloeistof.</p>
+      <div class="tablewrap"><table>
+        <tr><th>Aggregatietoestand</th><th>Naam</th><th>Voorbeeld</th></tr>
+        <tr><td>vaste stof + vloeistof</td><td><b>oplossing</b></td><td>mineraalwater</td></tr>
+        <tr><td>vloeistof + vloeistof</td><td><b>oplossing</b></td><td>tafelazijn</td></tr>
+        <tr><td>gas + vloeistof</td><td><b>oplossing</b></td><td>gesloten fles bruiswater</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="ws" id="ex-mix"></div>
+
+  <h3 id="m32">3.2 Mengsels van zuivere stoffen onderscheiden</h3>
+  <dl class="def">
+    <dt>Zuivere stof</dt><dd>Bestaat uit één stof en kenmerkt zich door specifieke stofeigenschappen.</dd>
+    <dt>Mengsel</dt><dd>Bestaat uit verschillende bestanddelen.</dd>
+    <dt>Deeltjesmodel</dt><dd>Elk bestanddeel wordt voorgesteld door één soort figuur. Staan er meerdere figuren door elkaar, dan is het een mengsel.</dd>
+    <dt>Fysische constanten</dt><dd>Kookpunt, smeltpunt, oplosbaarheid, kleur, brandbaarheid, hardheid, massadichtheid … Bijvoorbeeld keukenzout: oplosbaarheid 360 g/l, wit, 2,17 g/cm³, kookpunt 1465 °C, smeltpunt 801 °C.</dd>
+  </dl>
+  <div class="ws" id="ex-particles"></div>
+  <p class="col">Met het blote oog zie je niet altijd of iets een zuivere stof of een homogeen mengsel is. Stel daarom een <b>temperatuur-tijdgrafiek</b> op. Bij een zuivere stof blijft de temperatuur constant tijdens het koken of smelten: dat is het <b>kookpunt</b> en <b>smeltpunt</b> (gedestilleerd water: 100 °C en 0 °C bij normale luchtdruk). Bij een mengsel verandert de temperatuur tijdens de faseovergang: dat is een <b>kooktraject</b> of <b>smelttraject</b>. Koken en smelten zijn <span class="kw">fysische verschijnselen</span>: er ontstaan geen nieuwe stoffen.</p>
+  <div class="ws" id="ex-graph"></div>
+  <div class="ws" id="ex-graphquiz"></div>
+
+  <h3 id="m33">3.3 Mengsels scheiden met scheidingstechnieken</h3>
+  <p class="col">Om mengsels te scheiden in zuivere stoffen gebruik je <span class="kw">scheidingstechnieken</span>. Het verschil in stofeigenschappen en het soort mengsel bepalen welke techniek je gebruikt. Scheidingstechnieken zijn fysische processen: de stofeigenschappen veranderen niet. Heterogene mengsels zijn meestal gemakkelijker te scheiden dan homogene.</p>
+  <p class="col">Voorbeelden van scheidingstechnieken zijn zeven, filtreren, decanteren en in- of uitdampen.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Techniek</th><th>Toepasbaar bij</th><th>Stofeigenschap</th><th>Hoe werkt het?</th><th>Voorbeelden</th></tr>
+    <tr><td><b>zeven</b></td><td>heterogene mengsels</td><td>deeltjesgrootte</td><td>Bestanddelen met een grotere diameter dan de gaatjes blijven op de zeef achter. Wat door de zeef valt, is kleiner dan de gaatjes.</td><td>stenen scheiden van zand, bloem zeven</td></tr>
+    <tr><td><b>filtreren</b></td><td>heterogene mengsels</td><td>deeltjesgrootte</td><td>Vaste deeltjes die groter zijn dan de poriën blijven op de filter achter: het <b>residu</b>. Wat door de filter gaat, is het <b>filtraat</b>.</td><td>koffiedik scheiden van koffie-extract, theezakje, afzuigkap, stofmasker</td></tr>
+    <tr><td><b>decanteren</b> (met scheitrechter)</td><td>heterogene mengsels</td><td>massadichtheid</td><td>Suspensies: de vloeistof afgieten. Emulsies: met een scheitrechter.</td><td>olie- en watermengsel, resten in wijn laten bezinken en dan afgieten</td></tr>
+    <tr><td><b>in- of uitdampen</b></td><td>homogene mengsels</td><td>kooktemperatuur</td><td>De stof met het laagste kookpunt wordt gasvormig. De bestanddelen met een hoger kookpunt blijven achter. Is de achterblijvende stof vast, dan spreek je van kristalliseren.</td><td>zout water uitdampen, zout winnen uit zeewater</td></tr>
+  </table></div>
+  <div class="ws" id="ex-sep"></div>
+  <div class="ws" id="ex-schema"></div>
+  <div class="ws" id="ex-concept"></div>
+  <div class="ws" id="ex-tf3"></div>
+</section>
+
+<!-- ============ 4 ZUIVERE STOFFEN ============ -->
+<section class="panel" id="p-zuiver" role="tabpanel" hidden>
+  <h2>4 Zuivere stoffen</h2>
+  <p class="lead">Bij fysische verschijnselen ontstaan geen nieuwe stoffen. Bij <span class="kw">chemische reacties</span> verkrijg je wel nieuwe stoffen met andere stofeigenschappen.</p>
+  <nav class="toc"><a href="#z41">4.1 Indelen</a><a href="#z42">4.2 Metalen, niet-metalen, edelgassen</a><a href="#z43">4.3 Modellen</a><a href="#z44">4.4 Symbolen</a><a href="#z45">4.5 Formules</a></nav>
+
+  <h3 id="z41">4.1 Zuivere stoffen indelen</h3>
+  <dl class="def">
+    <dt>Enkelvoudige stof</dt><dd>Zuivere stof die je niet verder kunt ontleden.</dd>
+    <dt>Samengestelde stof</dt><dd>Zuivere stof die je kunt ontleden in andere (zuivere) stoffen door energie toe te voegen (thermische energie, elektrische energie …).</dd>
+    <dt>Analyse of ontleding</dt><dd>Reactie waarbij uit één zuivere stof meerdere stoffen ontstaan.</dd>
+    <dt>Synthese</dt><dd>Reactie waarbij enkelvoudige stoffen reageren tot samengestelde stoffen.</dd>
+  </dl>
+  <div class="tablewrap"><table>
+    <tr><th>Reactie</th><th>Voor de reactie</th><th>Na de reactie</th><th>Soort</th></tr>
+    <tr><td>suiker verhitten (thermolyse)</td><td>suiker: kristallijne witte vaste stof</td><td>koolstof (zwarte amorfe vaste stof) + water</td><td><span class="pill v">analyse</span></td></tr>
+    <tr><td>water onder stroom zetten (elektrolyse)</td><td>water: kleurloze vloeistof</td><td>waterstofgas + zuurstofgas (twee kleurloze gassen)</td><td><span class="pill v">analyse</span></td></tr>
+    <tr><td>waterstofgas verbranden</td><td>waterstofgas + zuurstofgas</td><td>water</td><td><span class="pill v">synthese</span></td></tr>
+  </table></div>
+  <div class="ws" id="ex-fc"></div>
+
+  <h3 id="z42">4.2 Enkelvoudige stoffen indelen</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Groep</th><th>Eigenschappen</th><th>Voorbeelden</th></tr>
+    <tr><td><b>metalen</b></td><td>Vast bij kamertemperatuur (behalve kwik), metaalglans, geleiden stroom en warmte goed. Een aantal is magnetisch.</td><td>aluminium, ijzer, koper, goud, zilver, tin</td></tr>
+    <tr><td><b>niet-metalen</b></td><td>Een aantal is gasvormig bij kamertemperatuur, andere zijn vast. Dibroom is het enige niet-metaal dat vloeibaar is bij kamertemperatuur.</td><td>zuurstofgas, waterstofgas, stikstofgas, silicium, koolstof, dijood</td></tr>
+    <tr><td><b>edelgassen</b></td><td>Gasvormig en inert: ze reageren niet met andere stoffen.</td><td>helium (ballonvulling), neon (rood licht), argon (blauw licht)</td></tr>
+  </table></div>
+  <div class="ws" id="ex-groups"></div>
+
+  <h3 id="z43">4.3 Zuivere stoffen voorstellen met modellen</h3>
+  <dl class="def">
+    <dt>Molecule</dt><dd>Kleinste deeltje van een stof dat nog alle eigenschappen van die stof bezit.</dd>
+    <dt>Atoom</dt><dd>Kleinst mogelijke deeltje waaruit een stof is opgebouwd. Een afzonderlijk atoom heeft niet meer de eigenschappen van de stof.</dd>
+    <dt>Atoomsoort of element</dt><dd>Elke soort atoom krijgt een vaste kleur in het molecuulmodel.</dd>
+  </dl>
+  <div class="legend" id="legend"></div>
+  <p class="col">Moleculen van <b>samengestelde stoffen</b> bestaan uit verschillende atoomsoorten. Moleculen van <b>enkelvoudige stoffen</b> bestaan uit één atoomsoort. Bij een analyse vallen moleculen uit elkaar en vormen de atomen nieuwe moleculen; bij een synthese worden moleculen van enkelvoudige stoffen gecombineerd tot moleculen van een samengestelde stof.</p>
+  <div class="ws" id="ex-box"></div>
+
+  <h3 id="z44">4.4 Atoomsoorten symbolisch voorstellen</h3>
+  <p class="col">Elke atoomsoort heeft een symbool, gevormd door de beginletter van de Latijnse naam. Afspraken:</p>
+  <ul class="clean col"><li>een symbool begint steeds met een <b>hoofdletter</b>;</li><li>de eventuele tweede letter is een <b>kleine letter</b>.</li></ul>
+  <div class="note"><b class="tag">Opgelet!</b>Co (kobalt) en CO (koolstofmonoxide: 1 atoom C en 1 atoom O) zijn iets totaal anders. Let dus op hoofdletters!</div>
+  <div class="ws" id="ex-sym"></div>
+
+  <h3 id="z45">4.5 Moleculen symbolisch voorstellen</h3>
+  <dl class="def">
+    <dt>Index</dt><dd>Geeft aan hoe vaak dezelfde atoomsoort in één molecule voorkomt. Je schrijft hem rechts onderaan het symbool. Index 1 schrijf je niet.</dd>
+    <dt>Coëfficiënt</dt><dd>Het aantal moleculen. Je schrijft hem vóór de brutoformule: 3 H<sub>2</sub>O = 3 moleculen water.</dd>
+    <dt>Brutoformule</dt><dd>Symbolen van de aanwezige elementen met hun aantal. Enkelvoudige stof: E<sub>x</sub> (bv. O<sub>2</sub>). Samengestelde stof: E<sub>x</sub>E'<sub>y</sub> (bv. H<sub>2</sub>O).</dd>
+    <dt>Haakjes</dt><dd>Groeperen atoomsoorten. 1 molecule Al(OH)<sub>3</sub> bevat 1 atoom Al, 3 atomen O en 3 atomen H.</dd>
+    <dt>IUPAC-benaming</dt><dd>De namen van de elementen met een Grieks telwoord voor het aantal atomen. Komt een atoomsoort maar één keer voor, dan schrijf je <i>mono</i> niet.</dd>
+    <dt>Triviale naam</dt><dd>Naam uit het dagelijkse leven, bv. ozon voor trizuurstof.</dd>
+  </dl>
+  <div class="tablewrap"><table>
+    <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr>
+    <tr><td>mono</td><td>di</td><td>tri</td><td>tetra</td><td>penta</td><td>hexa</td><td>hepta</td><td>octa</td><td>nona</td><td>deca</td></tr>
+  </table></div>
+  <div class="tablewrap"><table>
+    <tr><th>Brutoformule</th><th>IUPAC-benaming</th><th>Triviale naam</th><th>Soort</th></tr>
+    <tr><td>H<sub>2</sub></td><td>diwaterstof</td><td>waterstofgas</td><td>enkelvoudig</td></tr>
+    <tr><td>O<sub>2</sub></td><td>dizuurstof</td><td>zuurstofgas</td><td>enkelvoudig</td></tr>
+    <tr><td>N<sub>2</sub></td><td>distikstof</td><td>stikstofgas</td><td>enkelvoudig</td></tr>
+    <tr><td>O<sub>3</sub></td><td>trizuurstof</td><td>ozon</td><td>enkelvoudig</td></tr>
+    <tr><td>H<sub>2</sub>O</td><td>/</td><td>water</td><td>samengesteld</td></tr>
+    <tr><td>CO<sub>2</sub></td><td>koolstofdioxide</td><td>koolzuurgas</td><td>samengesteld</td></tr>
+  </table></div>
+  <div class="ws" id="ex-mol"></div>
+  <div class="ws" id="ex-iupac"></div>
+  <div class="ws" id="ex-tf4"></div>
+</section>
+
+<!-- ============ VADEMECUM ============ -->
+<section class="panel" id="p-vademecum" role="tabpanel" hidden>
+  <h2>Vademecum: veilig en verantwoord in een labo werken</h2>
+  <nav class="toc"><a href="#v31">3.1 Labovoorschriften</a><a href="#v32">3.2 Veiligheidsvoorzieningen</a><a href="#vpict">Gevarenpictogrammen</a><a href="#vhp">H- en P-zinnen</a><a href="#v33">3.3 Labomateriaal</a></nav>
+
+  <h3 id="v31">3.1 Labovoorschriften</h3>
+  <div class="two">
+    <ul class="clean">
+      <li>Ga enkel onder begeleiding van een leerkracht binnen in het labo.</li>
+      <li>Eten en drinken is verboden.</li>
+      <li>Berg horloges, juwelen, smartphones … op, bv. in je jas of boekentas.</li>
+      <li>Jassen en boekentassen liggen veilig weggeborgen. Enkel schrijfgerief en werkboek zijn toegelaten.</li>
+      <li>Gebruik indien nodig persoonlijke beschermingsmiddelen: labojas, veiligheidsbril, handschoenen …</li>
+      <li>Bind lange haren samen.</li>
+      <li>Beperk heen-en-weergeloop tijdens een onderzoek.</li>
+      <li>Houd de werktafel steeds droog en proper.</li>
+      <li>Wees zuinig met producten.</li>
+    </ul>
+    <ul class="clean">
+      <li>Proeven van stoffen is verboden. Ruiken mag enkel indien noodzakelijk en volgens de richtlijnen van de leerkracht.</li>
+      <li>Sluit een fles zo snel mogelijk weer af.</li>
+      <li>Sorteer het afval volgens de richtlijnen van de leerkracht.</li>
+      <li>Verwittig onmiddellijk de leerkracht bij elk onverwacht voorval.</li>
+      <li>Laat het materiaal en je werkplek proper achter.</li>
+      <li>Verlaat het labo pas nadat je leerkracht je werktafel heeft gecontroleerd.</li>
+    </ul>
+  </div>
+  <p><b>Het gebruik van chemische producten</b></p>
+  <ul class="clean col">
+    <li>Lees aandachtig het etiket. Zoek de betekenis van de gevarenpictogrammen en de H- en P-zinnen op.</li>
+    <li>Neem een fles steeds bij de buik, nooit bij de hals.</li>
+    <li>Raak een product nooit aan met je handen.</li>
+    <li>Zorg bij het gieten dat het etiket naar boven gericht is. Afdruipende vloeistof kan het etiket onleesbaar maken.</li>
+    <li>Plaats de dop omgekeerd op de werktafel om vlekken te voorkomen. Sluit de fles af met de bijhorende dop.</li>
+  </ul>
+  <div class="ws" id="ex-safe"></div>
+
+  <h3 id="v32">3.2 Veiligheidsvoorzieningen</h3>
+  <div class="two">
+    <div>
+      <p><b>Materiaal</b>: brandblusapparaat, branddeken, EHBO-koffer, emmer zand, labojas en handschoenen, nooddouche, noodstop, oogdouche, trekkast, veiligheidsbril, afvalbeheer.</p>
+      <p><b>Reddingsborden</b> (groen): AED, EHBO, nooddouche, nooduitgang, oogdouche.</p>
+      <p><b>Brandbestrijdingstekens</b> (rood): blusslang, brandblusapparaat, branddeken, noodstop.</p>
+    </div>
+    <div>
+      <p><b>Nuttige telefoonnummers</b></p>
+      <div class="tablewrap"><table>
+        <tr><td>medische spoeddienst</td><td class="num"><b>112</b></td></tr>
+        <tr><td>brandweer</td><td class="num"><b>112</b></td></tr>
+        <tr><td>politie</td><td class="num"><b>101</b></td></tr>
+        <tr><td>Antigifcentrum</td><td class="num"><b>070 245 245</b></td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="ws" id="ex-nood"></div>
+
+  <h3 id="vpict">Gevarenpictogrammen</h3>
+  <div class="ghsgrid" id="ghsgrid"></div>
+  <div class="ws" id="ex-ghs"></div>
+
+  <h3 id="vhp">H- en P-zinnen</h3>
+  <div class="two">
+    <div>
+      <p><b>H-zinnen</b> wijzen op gevaar. Het eerste cijfer is de gevarenklasse:</p>
+      <ul class="clean"><li><b>H2</b>xx: fysische gevaren</li><li><b>H3</b>xx: gevaren voor de gezondheid</li><li><b>H4</b>xx: gevaren voor het milieu</li></ul>
+      <p class="mini">Gevarenaanduidingen die enkel in de EU-wetgeving staan, krijgen de code EUHxxx.</p>
+    </div>
+    <div>
+      <p><b>P-zinnen</b> geven veiligheidsinstructies. Het eerste cijfer is de groep:</p>
+      <ul class="clean"><li><b>P1</b>xx: algemeen</li><li><b>P2</b>xx: voorkomen</li><li><b>P3</b>xx: reageren</li><li><b>P4</b>xx: opslaan</li><li><b>P5</b>xx: afvalbeheer</li></ul>
+    </div>
+  </div>
+  <div class="ws" id="ex-hp"></div>
+  <div class="ws" id="ex-hpclass"></div>
+
+  <h3 id="v33">3.3 Labomateriaal</h3>
+  <p class="mini">Klik op een stuk materiaal om te zien waarvoor je het gebruikt.</p>
+  <div class="gear" id="gear"></div>
+  <div class="gearinfo" id="gearinfo">Kies een stuk labomateriaal.</div>
+  <div class="ws" id="ex-gear"></div>
+</section>
+
+<!-- ============ TEST ============ -->
+<section class="panel" id="p-test" role="tabpanel" hidden>
+  <h2>Test jezelf</h2>
+  <p class="lead">Een toets van 15 vragen, telkens willekeurig gekozen uit het hele thema en het vademecum. Doe hem zo vaak je wilt.</p>
+  <div class="ws" id="ex-final"></div>
+  <h3>Flitskaarten: nieuwe begrippen</h3>
+  <p class="mini">Lees het begrip, zeg de betekenis luidop en draai dan de kaart om.</p>
+  <div id="flash"></div>
+</section>
+
+</main>
+<footer class="wrap">Gebaseerd op de cursus Chemie, Thema 1 “Stoffen rondom ons” en het labovademecum. Je vooruitgang wordt enkel in deze browser bewaard.</footer>
+<script>
+/* ===== Bron: labovademecum p. 19-24 ===== */
+const H = {
+"H200":"Instabiele, ontplofbare stof.","H201":"Ontplofbare stof; gevaar voor massa-explosie.","H202":"Ontplofbare stof; ernstig gevaar voor scherfwerking.","H203":"Ontplofbare stof; gevaar voor brand, luchtdrukwerking of scherfwerking.","H204":"Gevaar voor brand of scherfwerking.","H205":"Gevaar voor massa-explosie bij brand.",
+"H220":"Zeer licht ontvlambaar gas.","H221":"Ontvlambaar gas.","H222":"Zeer licht ontvlambare aerosol.","H223":"Ontvlambare aerosol.","H224":"Zeer licht ontvlambare vloeistof en damp.","H225":"Licht ontvlambare vloeistof en damp.","H226":"Ontvlambare vloeistof en damp.","H228":"Ontvlambare vaste stof.",
+"H240":"Ontploffingsgevaar bij verwarming.","H241":"Brand- of ontploffingsgevaar bij verwarming.","H242":"Brandgevaar bij verwarming.","H250":"Vat spontaan vlam bij blootstelling aan lucht.","H251":"Vatbaar voor zelfverhitting: kan vlam vatten.","H252":"In grote hoeveelheden vatbaar voor zelfverhitting; kan vlam vatten.",
+"H260":"In contact met water komen ontvlambare gassen vrij die spontaan kunnen ontbranden.","H261":"In contact met water komen ontvlambare gassen vrij.","H270":"Kan brand veroorzaken of bevorderen; oxiderend.","H271":"Kan brand of ontploffingen veroorzaken; sterk oxiderend.","H272":"Kan brand bevorderen; oxiderend.",
+"H280":"Bevat gas onder druk; kan ontploffen bij verwarming.","H281":"Bevat sterk gekoeld gas; kan cryogene brandwonden of letsel veroorzaken.","H290":"Kan bijtend zijn voor metalen.",
+"H300":"Dodelijk bij inslikken.","H301":"Giftig bij inslikken.","H302":"Schadelijk bij inslikken.","H304":"Kan dodelijk zijn als de stof bij inslikken in de luchtwegen terechtkomt.","H310":"Dodelijk bij contact met de huid.","H311":"Giftig bij contact met de huid.","H312":"Schadelijk bij contact met de huid.",
+"H314":"Veroorzaakt ernstige brandwonden.","H315":"Veroorzaakt huidirritatie.","H317":"Kan een allergische huidreactie veroorzaken.","H318":"Veroorzaakt ernstig oogletsel.","H319":"Veroorzaakt ernstige oogirritatie.",
+"H330":"Dodelijk bij inademing.","H331":"Giftig bij inademing.","H332":"Schadelijk bij inademing.","H334":"Kan bij inademing allergie- of astmasymptomen of ademhalingsmoeilijkheden veroorzaken.","H335":"Kan irritatie van de luchtwegen veroorzaken.","H336":"Kan slaperigheid of duizeligheid veroorzaken.",
+"H340":"Kan genetische schade veroorzaken (aan te vullen door fabrikant).","H341":"Verdacht van het veroorzaken van genetische schade (aan te vullen door fabrikant).","H350":"Kan kanker veroorzaken (aan te vullen door fabrikant).","H350I":"Kan kanker veroorzaken bij inademing.","H351":"Verdacht van het veroorzaken van kanker (aan te vullen door fabrikant).",
+"H360":"Kan de vruchtbaarheid of het ongeboren kind schaden (aan te vullen door fabrikant).","H360D":"Kan het ongeboren kind schaden.","H360DF":"Kan het ongeboren kind schaden. Kan mogelijk de vruchtbaarheid schaden.","H360F":"Kan de vruchtbaarheid schaden.","H360FD":"Kan de vruchtbaarheid schaden. Kan het ongeboren kind schaden.",
+"H361":"Kan mogelijk de vruchtbaarheid of het ongeboren kind schaden (aan te vullen door fabrikant).","H361D":"Kan mogelijk het ongeboren kind schaden.","H361F":"Kan mogelijk de vruchtbaarheid schaden.","H361FD":"Kan mogelijk de vruchtbaarheid schaden. Kan mogelijk het ongeboren kind schaden.","H362":"Kan schadelijk zijn via de borstvoeding.",
+"H370":"Veroorzaakt schade aan organen (aan te vullen door fabrikant).","H371":"Kan schade aan organen veroorzaken (aan te vullen door fabrikant).","H372":"Veroorzaakt schade aan organen bij langdurige of herhaalde blootstelling (aan te vullen door fabrikant).","H373":"Kan schade aan organen veroorzaken bij langdurige of herhaalde blootstelling (aan te vullen door fabrikant).",
+"H400":"Zeer giftig voor in het water levende organismen.","H410":"Zeer giftig voor in het water levende organismen, met langdurige gevolgen.","H411":"Giftig voor in het water levende organismen, met langdurige gevolgen.","H412":"Schadelijk voor in het water levende organismen, met langdurige gevolgen.","H413":"Kan langdurige schadelijke gevolgen voor in het water levende organismen hebben.",
+"EUH001":"In droge toestand ontplofbaar.","EUH006":"Ontplofbaar met en zonder lucht.","EUH014":"Reageert heftig met water.","EUH018":"Kan bij gebruik een ontvlambaar / ontplofbaar damp-luchtmengsel vormen.","EUH019":"Kan ontplofbare peroxiden vormen.","EUH029":"Vormt giftig gas in contact met water.","EUH031":"Vormt giftig gas in contact met zuren.","EUH032":"Vormt zeer giftig gas in contact met zuren.","EUH044":"Ontploffingsgevaar bij verwarming in afgesloten toestand.","EUH059":"Gevaarlijk voor de ozonlaag.","EUH066":"Herhaalde blootstelling kan een droge of een gebarsten huid veroorzaken.","EUH070":"Giftig bij oogcontact.","EUH071":"Bijtend voor de luchtwegen.",
+"EUH201":"Bevat lood. Mag niet worden gebruikt voor voorwerpen waarin kinderen kunnen bijten of waaraan kinderen kunnen zuigen.","EUH201A":"Let op! Bevat lood.","EUH202":"Cyanoacrylaat. Gevaarlijk. Kleeft binnen enkele seconden aan huid en oogleden. Buiten het bereik van kinderen houden.","EUH203":"Bevat zeswaardig chroom. Kan een allergische reactie veroorzaken.","EUH204":"Bevat isocyanaten. Kan een allergische reactie veroorzaken.","EUH205":"Bevat epoxyverbindingen. Kan een allergische reactie veroorzaken.","EUH206":"Let op! Niet in combinatie met andere producten gebruiken. Er kunnen gevaarlijke gassen (chloor) vrijkomen.","EUH207":"Let op! Bevat cadmium. Bij het gebruik ontwikkelen zich gevaarlijke dampen. Zie de aanwijzingen van de fabrikant. Neem de veiligheidsvoorschriften in acht.","EUH208":"Bevat (naam van de sensibiliserende stof). Kan een allergische reactie veroorzaken.","EUH209":"Kan bij gebruik licht ontvlambaar worden.","EUH209A":"Kan bij gebruik ontvlambaar worden.","EUH210":"Veiligheidsinformatieblad op verzoek verkrijgbaar.","EUH401":"Volg de gebruiksaanwijzing om gevaar voor de menselijke gezondheid en het milieu te voorkomen."
+};
+const P = {
+"P101":"Bij het inwinnen van medisch advies, de verpakking of het etiket ter beschikking houden.","P102":"Buiten het bereik van kinderen houden.","P103":"Alvorens te gebruiken het etiket lezen.",
+"P201":"Alvorens te gebruiken de speciale aanwijzingen raadplegen.","P202":"Pas gebruiken nadat u alle veiligheidsvoorschriften heeft gelezen en begrepen.","P210":"Verwijderd houden van warmte / vonken / open vuur / hete oppervlakken. — Niet roken.","P211":"Niet in een open vuur of op andere ontstekingsbronnen spuiten.","P220":"Van kleding / … / brandbare stoffen verwijderd houden / bewaren.","P221":"Vermenging met brandbare stoffen … absoluut vermijden.","P222":"Contact met de lucht vermijden.","P223":"Contact met water vermijden in verband met een heftige reactie en een mogelijke wolkbrand.","P230":"Vochtig houden met …","P231":"Onder inert gas werken.","P231+P232":"Onder inert gas werken. Tegen vocht beschermen.","P232":"Tegen vocht beschermen.","P233":"In goed gesloten verpakking bewaren.","P234":"Uitsluitend in de oorspronkelijke verpakking bewaren.","P235":"Koel bewaren.","P235+P410":"Koel bewaren. Tegen zonlicht beschermen.",
+"P240":"Opslag- en opvangreservoir aarden.","P241":"Explosieveilige elektrische / ventilatie- / verlichtings- / … apparatuur gebruiken.","P242":"Uitsluitend vonkvrij gereedschap gebruiken.","P243":"Voorzorgsmaatregelen treffen tegen ontladingen van statische elektriciteit.","P244":"Reduceerventielen vrij van olie en vet houden.","P250":"Malen / schokken / … / wrijving vermijden.","P251":"Houder onder druk: ook na gebruik niet doorboren of verbranden.","P260":"Stof / rook / gas / nevel / damp / spuitnevel niet inademen.","P261":"Inademing van stof / rook / gas / nevel / damp / spuitnevel vermijden.","P262":"Contact met de ogen, de huid of de kleding vermijden.","P263":"Bij zwangerschap of borstvoeding aanraking vermijden.","P264":"Na het werken met dit product … grondig wassen.","P270":"Niet eten, drinken of roken tijdens het gebruik van dit product.","P271":"Alleen buiten of in een goed geventileerde ruimte gebruiken.","P272":"Verontreinigde werkkleding mag de werkruimte niet verlaten.","P273":"Voorkom lozing in het milieu.","P280":"Beschermende handschoenen / beschermende kleding / oogbescherming / gelaatsbescherming dragen.","P281":"De nodige persoonlijke beschermingsuitrusting gebruiken.","P282":"Koude-isolerende handschoenen / gelaatsbescherming / oogbescherming dragen.","P283":"Vuur- / vlambestendige / brandwerende kleding dragen.","P284":"Adembescherming dragen.","P285":"Bij ontoereikende ventilatie een geschikte adembescherming dragen.",
+"P301":"Na inslikken:","P301+P310":"Na inslikken: onmiddellijk een antigifcentrum of een arts raadplegen.","P301+P312":"Na inslikken: bij onwel voelen een antigifcentrum of een arts raadplegen.","P301+P330+P331":"Na inslikken: de mond spoelen — geen braken opwekken.","P302":"Bij contact met de huid:","P302+P334":"Bij contact met de huid: in koud water onderdompelen / nat verband aanbrengen.","P302+P350":"Bij contact met de huid: voorzichtig wassen met veel water en zeep.","P302+P352":"Bij contact met de huid: met veel water en zeep wassen.","P303":"Bij contact met de huid (of het haar):","P303+P361+P353":"Bij contact met de huid (of het haar): verontreinigde kleding onmiddellijk uittrekken — huid met water afspoelen / afdouchen.","P304":"Na inademing:","P304+P340":"Na inademing: het slachtoffer in de frisse lucht brengen en laten rusten in een houding die het ademen vergemakkelijkt.","P304+P341":"Na inademing: bij ademhalingsmoeilijkheden het slachtoffer in de frisse lucht brengen en laten rusten in een houding die het ademen vergemakkelijkt.","P305":"Bij contact met de ogen:","P305+P351+P338":"Bij contact met de ogen: voorzichtig afspoelen met water gedurende een aantal minuten. Contactlenzen verwijderen, indien mogelijk. Blijven spoelen.","P306":"Na morsen op kleding:","P306+P360":"Na morsen op kleding: verontreinigde kleding en huid onmiddellijk met veel water afspoelen en pas daarna kleding uittrekken.","P307":"Na blootstelling:","P307+P311":"Na blootstelling: een antigifcentrum of een arts raadplegen.","P308":"Na (mogelijke) blootstelling:","P308+P313":"Na (mogelijke) blootstelling: een arts raadplegen.","P309":"Na blootstelling of bij onwel voelen:","P309+P311":"Na blootstelling of bij onwel voelen: een antigifcentrum of een arts raadplegen.",
+"P310":"Onmiddellijk een antigifcentrum of een arts raadplegen.","P311":"Een antigifcentrum of een arts raadplegen.","P312":"Bij onwel voelen een antigifcentrum of een arts raadplegen.","P313":"Een arts raadplegen.","P314":"Bij onwel voelen een arts raadplegen.","P315":"Onmiddellijk een arts raadplegen.","P320":"Specifieke behandeling dringend vereist (zie … op dit etiket).","P321":"Specifieke behandeling vereist (zie … op dit etiket).","P322":"Specifieke maatregelen (zie … op dit etiket).","P330":"De mond spoelen.","P331":"Geen braken opwekken.","P332":"Bij huidirritatie:","P332+P313":"Bij huidirritatie: een arts raadplegen.","P333":"Bij huidirritatie of uitslag:","P333+P313":"Bij huidirritatie of uitslag: een arts raadplegen.","P334":"In koud water onderdompelen / nat verband aanbrengen.","P335":"Losse deeltjes van de huid afvegen.","P335+P334":"Losse deeltjes van de huid afvegen. In koud water onderdompelen / nat verband aanbrengen.","P336":"Bevroren lichaamsdelen met lauw water ontdooien. Niet wrijven op de betrokken plaatsen.","P337":"Bij aanhoudende oogirritatie:","P337+P313":"Bij aanhoudende oogirritatie: een arts raadplegen.","P338":"Contactlenzen verwijderen, indien mogelijk. Blijven spoelen.",
+"P340":"Het slachtoffer in de frisse lucht brengen en laten rusten in een houding die het ademen vergemakkelijkt.","P341":"Bij ademhalingsmoeilijkheden het slachtoffer in de frisse lucht brengen en laten rusten in een houding die het ademen vergemakkelijkt.","P342":"Bij ademhalingssymptomen:","P342+P311":"Bij ademhalingssymptomen: een antigifcentrum of een arts raadplegen.","P350":"Voorzichtig wassen met veel water en zeep.","P351":"Voorzichtig afspoelen met water gedurende een aantal minuten.","P352":"Met veel water en zeep wassen.","P353":"Huid met water afspoelen / afdouchen.","P360":"Verontreinigde kleding en huid onmiddellijk met veel water afspoelen en pas daarna kleding uittrekken.","P361":"Verontreinigde kleding onmiddellijk uittrekken.","P362":"Verontreinigde kleding uittrekken en wassen alvorens deze opnieuw te gebruiken.","P363":"Verontreinigde kleding wassen alvorens deze opnieuw te gebruiken.",
+"P370":"In geval van brand:","P370+P376":"In geval van brand: het lek dichten als dat veilig kan worden gedaan.","P370+P378":"In geval van brand: blussen met …","P370+P380":"In geval van brand: evacueren.","P370+P380+P375":"In geval van brand: evacueren. Op afstand blussen wegens ontploffingsgevaar.","P371":"In geval van grote brand en grote hoeveelheden:","P371+P380+P375":"In geval van grote brand en grote hoeveelheden: evacueren. Op afstand blussen wegens ontploffingsgevaar.","P372":"Ontploffingsgevaar in geval van brand.","P373":"Niet blussen wanneer het vuur de ontplofbare stoffen bereikt.","P374":"Met normale voorzorgen vanaf een redelijke afstand blussen.","P375":"Op afstand blussen wegens ontploffingsgevaar.","P376":"Het lek dichten als dat veilig kan worden gedaan.","P377":"Brand door lekkend gas: niet blussen, tenzij het lek veilig kan worden gedicht.","P378":"Blussen met …","P380":"Evacueren.","P381":"Alle ontstekingsbronnen wegnemen als dat veilig kan worden gedaan.","P390":"Gelekte / gemorste stof opnemen om materiële schade te vermijden.","P391":"Gelekte / gemorste stof opruimen.",
+"P401":"… bewaren.","P402":"Op een droge plaats bewaren.","P402+P404":"Op een droge plaats bewaren. In gesloten verpakking bewaren.","P403":"Op een goed geventileerde plaats bewaren.","P403+P233":"Op een goed geventileerde plaats bewaren. In goed gesloten verpakking bewaren.","P403+P235":"Op een goed geventileerde plaats bewaren. Koel bewaren.","P404":"In gesloten verpakking bewaren.","P405":"Achter slot bewaren.","P406":"In corrosiebestendige / … houder met corrosiebestendige binnenbekleding bewaren.","P407":"Ruimte laten tussen stapels / pallets.","P410":"Tegen zonlicht beschermen.","P410+P403":"Tegen zonlicht beschermen. Op een goed geventileerde plaats bewaren.","P410+P412":"Tegen zonlicht beschermen. Niet blootstellen aan temperaturen boven 50 °C / 122 °F.","P411":"Bij maximaal … °C / … °F bewaren.","P411+P235":"Bij maximaal … °C / … °F bewaren. Koel bewaren.","P412":"Niet blootstellen aan temperaturen boven 50 °C / 122 °F.","P413":"Bulkmateriaal, indien meer dan … kg / … lbs, bij temperaturen van maximaal … °C bewaren.","P420":"Gescheiden van ander materiaal bewaren.","P422":"Onder … bewaren.","P501":"Inhoud / verpakking afvoeren naar …"
+};
+
+/* Kleurcode atoommodellen (cursus p. 33) */
+const ATOMCOL = {C:"#1d1d1f",H:"#f4f4f4",O:"#d62828",N:"#2f6fdb",S:"#f2c80f",P:"#7b4fc9",Cl:"#3aa53a",F:"#3aa53a",Br:"#3aa53a",I:"#3aa53a",He:"#9fd8ea",Ne:"#9fd8ea",Ar:"#9fd8ea"};
+const METAL = "#7d8790";
+function atomColor(s){return ATOMCOL[s]||METAL;}
+
+/* Elementen (synthese p. 50) */
+const ELEMENTS = [["aluminium","Al"],["argon","Ar"],["arseen","As"],["barium","Ba"],["beryllium","Be"],["boor","B"],["broom","Br"],["cadmium","Cd"],["calcium","Ca"],["chloor","Cl"],["chroom","Cr"],["fluor","F"],["fosfor","P"],["goud","Au"],["helium","He"],["ijzer","Fe"],["jood","I"],["kalium","K"],["kobalt","Co"],["koolstof","C"],["koper","Cu"],["krypton","Kr"],["kwik","Hg"],["lithium","Li"],["lood","Pb"],["magnesium","Mg"],["mangaan","Mn"],["natrium","Na"],["neon","Ne"],["nikkel","Ni"],["platina","Pt"],["silicium","Si"],["stikstof","N"],["tin","Sn"],["uraan","U"],["waterstof","H"],["zilver","Ag"],["zink","Zn"],["zuurstof","O"],["zwavel","S"]];
+
+/* Smelt- en kookpunten (opdracht 7) in °C */
+const PHASES = [["water",0,100],["aceton",-94.8,56.5],["azijnzuur",16.6,117.9],["chloorgas",-101.0,-34.6],["ether",-116.0,34.6],["ethanol",-114.4,78.4],["fluorgas",-219.6,-188.1],["glycerol",20.0,290.0],["goud",1064.4,2808.0],["kwik",-38.9,356.6],["lood",327.5,1740.0],["magnesium",648.8,1107.0],["platina",1772.0,3827.0],["propaan",-189.0,-42.0],["waterstofgas",-259.3,-252.8],["ijzer",1535.0,2750.0],["zink",419.6,907.0]];
+
+/* ===== Gevarenpictogrammen (getekend, vereenvoudigd) ===== */
+const GHS = {
+ ontvlambaar:{name:"ontvlambaar",art:'<path d="M50 24c3 9 13 13 13 25 0 9-6 15-13 15s-13-6-13-14c0-6 4-9 6-14 1 5 3 7 5 7-1-7 0-13 2-19z" fill="#111"/><path d="M50 50c2 4 5 6 5 10a5 5 0 0 1-10 0c0-4 3-6 5-10z" fill="#fff"/><rect x="31" y="68" width="38" height="5" fill="#111"/>'},
+ oxiderend:{name:"oxiderend, brandbevorderend",art:'<path d="M50 20c2 7 10 10 10 19 0 4-2 6-4 7a14 12 0 0 0-12 0c-2-1-4-3-4-7 0-6 3-8 5-12 1 4 2 5 4 5-1-5 0-9 1-12z" fill="#111"/><ellipse cx="50" cy="56" rx="13" ry="11" fill="none" stroke="#111" stroke-width="6"/><rect x="31" y="70" width="38" height="5" fill="#111"/>'},
+ explosief:{name:"explosief, ontplofbaar",art:'<circle cx="46" cy="56" r="11" fill="#111"/><g stroke="#111" stroke-width="3" stroke-linecap="round"><path d="M57 45l9-9M60 52l12-3M58 60l11 5M48 42l1-12M40 44l-6-9M36 58l-10 4M52 68l3 9M64 40l4-1"/></g><g fill="#111"><rect x="66" y="30" width="5" height="5" transform="rotate(20 68 32)"/><rect x="72" y="56" width="4" height="6"/><rect x="26" y="40" width="5" height="4"/></g>'},
+ gas:{name:"gassen onder druk",art:'<g transform="rotate(-25 50 55)"><rect x="24" y="47" width="46" height="16" rx="8" fill="#111"/><rect x="69" y="51" width="7" height="8" rx="2" fill="#111"/></g>'},
+ corrosief:{name:"corrosief, bijtend",art:'<g fill="#111"><rect x="28" y="22" width="7" height="22" rx="2" transform="rotate(-35 31 33)"/><rect x="60" y="22" width="7" height="22" rx="2" transform="rotate(35 63 33)"/><circle cx="37" cy="47" r="2.2"/><circle cx="38" cy="54" r="2.2"/><circle cx="60" cy="47" r="2.2"/><circle cx="59" cy="54" r="2.2"/><path d="M24 66h18l2-4 2 4h-22z"/><rect x="24" y="64" width="22" height="5"/><path d="M53 63c4 0 6-2 12-2 6 0 9 3 9 6v3H53z"/></g>'},
+ giftig:{name:"toxisch, giftig",art:'<g fill="#111"><ellipse cx="50" cy="40" rx="12" ry="11"/><rect x="44" y="47" width="12" height="8" rx="2"/><g stroke="#111" stroke-width="5" stroke-linecap="round"><path d="M32 58l36 13M68 58L32 71"/></g></g><circle cx="45" cy="40" r="3.5" fill="#fff"/><circle cx="55" cy="40" r="3.5" fill="#fff"/>'},
+ uitroep:{name:"sensibiliserend, irriterend, schadelijk",art:'<rect x="45" y="24" width="10" height="33" rx="4" fill="#111"/><circle cx="50" cy="67" r="6" fill="#111"/>'},
+ gezondheid:{name:"lange termijn gezondheidsgevaarlijk",art:'<circle cx="50" cy="31" r="8" fill="#111"/><path d="M30 74c0-17 8-30 20-30s20 13 20 30z" fill="#111"/><path d="M50 50l3 7 7 1-6 4 2 7-6-4-6 4 2-7-6-4 7-1z" fill="#fff"/>'},
+ milieu:{name:"milieugevaarlijk",art:'<g stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"><path d="M36 64V32M36 42l-8-7M36 40l7-8M36 50l-8-4M36 48l8-3"/><path d="M24 66h52"/></g><path d="M50 58c6-5 14-5 20 0-6 5-14 5-20 0zM70 58l6-4v8z" fill="#111"/>'}
+};
+function ghsSvg(k){return '<svg viewBox="0 0 100 100" role="img" aria-label="'+GHS[k].name+'"><path d="M50 5L95 50L50 95L5 50Z" fill="#fff" stroke="#D3222A" stroke-width="7" stroke-linejoin="round"/>'+GHS[k].art+'</svg>';}
+
+/* ===== Labomateriaal (getekend) ===== */
+const GEAR = [
+ {n:"erlenmeyer",f:"Kolf met platte bodem en smalle hals. Je gebruikt hem bv. om te filtreren, omdat er makkelijk een trechter op past.",s:'<path class="glass" d="M42 14h16v26l20 40c2 5-1 8-6 8H28c-5 0-8-3-6-8l20-40z"/><path class="liq" d="M30 68h40l6 13c1 3-1 5-4 5H28c-3 0-5-2-4-5z"/>'},
+ {n:"maatbeker",f:"Zeer stabiel en makkelijk te hanteren. Je kunt er geen vloeistofhoeveelheid nauwkeurig mee bepalen.",s:'<path class="glass" d="M24 16h52v66c0 4-3 6-6 6H30c-3 0-6-2-6-6z"/><path class="ln" d="M24 16l-4-4"/><path class="liq" d="M26 52h48v30c0 3-2 4-4 4H30c-2 0-4-1-4-4z"/><path class="ln" d="M60 30h10M64 42h6M60 54h10M64 66h6"/>'},
+ {n:"maatcilinder",f:"Hiermee bepaal je het volume van een vloeistof nauwkeurig.",s:'<path class="glass" d="M40 8h20v76H40z"/><path class="ln" d="M28 88h44"/><path class="liq" d="M42 44h16v38H42z"/><path class="ln" d="M52 18h6M54 26h4M52 34h6M54 42h4M52 50h6M54 58h4M52 66h6M54 74h4"/>'},
+ {n:"trechter",f:"Gebruik je meestal samen met een filtreerpapier. Bestaat in kunststof, glas of blik.",s:'<path class="glass" d="M18 18h64L56 52v34H44V52z"/>'},
+ {n:"gegradueerde pipet",f:"Hiermee zuig je kleine hoeveelheden vloeistof nauwkeurig op en verplaats je ze.",s:'<path class="glass" d="M46 6h8v76l-4 12-4-12z"/><path class="ln" d="M50 20h4M50 30h4M50 40h4M50 50h4M50 60h4M50 70h4"/>'},
+ {n:"volpipet",f:"Pipet met een verdikking in het midden. Je zuigt er één welbepaald volume vloeistof heel nauwkeurig mee op.",s:'<path class="glass" d="M47 6h6v26c8 2 10 8 10 14s-2 12-10 14v24l-3 10-3-10V60c-8-2-10-8-10-14s2-12 10-14z"/><path class="ln" d="M44 20h12"/>'},
+ {n:"proefbuis",f:"Hierin bewaar je kleine hoeveelheden van een vaste stof of een vloeistof. Zet hem in een proefbuisrek.",s:'<path class="glass" d="M40 8h20v70a10 10 0 0 1-20 0z"/><path class="liq" d="M42 56h16v22a8 8 0 0 1-16 0z"/>'},
+ {n:"roerstaaf",f:"Gebruik je om mengsels te roeren.",s:'<rect class="glass" x="47" y="6" width="6" height="88" rx="3" transform="rotate(25 50 50)"/>'},
+ {n:"stamper met mortier",f:"Hiermee vermaal je stoffen tot poeder.",s:'<path class="glass" d="M14 50h72c0 20-16 34-36 34S14 70 14 50z"/><rect class="glass" x="52" y="10" width="12" height="52" rx="6" transform="rotate(30 58 36)"/>'},
+ {n:"bunsenbrander",f:"Hiermee verwarm je stoffen met een gasvlam.",s:'<path class="ln" d="M30 88h40"/><path class="glass" d="M44 36h12v52H44z"/><path class="ln" d="M56 74h14"/><path d="M50 8c4 8 8 12 8 19a8 8 0 0 1-16 0c0-7 4-11 8-19z" style="fill:var(--glass);opacity:.7"/>'},
+ {n:"kolf met ronde bodem",f:"Kolf die je gelijkmatig kunt verwarmen. Een destilleerkolf heeft daarnaast een zijbuis.",s:'<path class="glass" d="M44 8h12v34a24 24 0 1 1-12 0z"/><path class="liq" d="M28 66h44a22 22 0 0 1-44 0z"/>'},
+ {n:"maatkolf",f:"Kolf met één maatstreep op de hals: daarmee maak je precies één welbepaald volume.",s:'<path class="glass" d="M45 6h10v52c12 4 18 12 18 20 0 6-4 10-10 10H37c-6 0-10-4-10-10 0-8 6-16 18-20z"/><path class="ln" d="M42 28h16"/>'},
+ {n:"scheitrechter",f:"Hiermee decanteer je emulsies: de vloeistof met de grootste massadichtheid laat je onderaan weglopen.",s:'<path class="glass" d="M50 10c18 10 26 26 26 34 0 10-14 16-22 26v16h-8V70c-8-10-22-16-22-26 0-8 8-24 26-34z"/><path class="ln" d="M40 78h20"/><path class="liq" d="M28 44h44c0 8-12 14-20 24h-4c-8-10-20-16-20-24z"/>'},
+ {n:"horlogeglas",f:"Ondiep, gebogen glaasje om een kleine hoeveelheid stof op te leggen of te laten indampen.",s:'<path class="glass" d="M10 46q40 26 80 0q-40 12-80 0z"/>'},
+ {n:"petrischaal",f:"Ondiep schaaltje met deksel.",s:'<rect class="glass" x="12" y="44" width="76" height="20" rx="6"/><path class="ln" d="M12 52h76"/>'},
+ {n:"thermometer",f:"Hiermee meet je de temperatuur.",s:'<rect class="glass" x="44" y="6" width="12" height="74" rx="6"/><circle cx="50" cy="84" r="9" style="fill:var(--ghs)"/><path d="M50 30v52" style="stroke:var(--ghs);stroke-width:4"/>'},
+ {n:"spuitfles",f:"Fles waarmee je een straaltje (gedestilleerd) water kunt spuiten, bv. om te spoelen.",s:'<path class="glass" d="M32 36h36v46c0 4-3 6-6 6H38c-4 0-6-2-6-6z"/><path class="ln" d="M44 36V26h12v10M50 26V12h14l4 6"/>'},
+ {n:"statief",f:"Stevige voet met staaf waaraan je materiaal vastmaakt met een klem en noot.",s:'<path class="ln" d="M40 10v74M24 86h46"/><path class="ln" d="M40 34h28M64 28v12"/>'},
+ {n:"driepikkel met draadnet",f:"Hierop plaats je een recipiënt boven de bunsenbrander.",s:'<path class="ln" d="M20 30h60M30 30l-8 56M70 30l8 56M50 30v56"/><path class="ln" d="M24 24h52" stroke-dasharray="3 3"/>'}
+];
+
+/* ===== Helpers ===== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs||{})){if(k==="class")e.className=v;else if(k==="html")e.innerHTML=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?"":v);}for(const k of kids.flat()){if(k==null||k===false)continue;e.append(k instanceof Node?k:document.createTextNode(k));}return e;}
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=(a,n)=>shuffle(a).slice(0,n);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const fmt=s=>String(s).replace(/([A-Za-z\)])(\d+)/g,'$1<sub>$2</sub>');
+const KEY="chemie-t1-1u-v1";
+let state={done:{},tab:"chemie"};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&typeof s==="object")state=Object.assign(state,s);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function markDone(id){state.done[id]=true;save();updateDots();}
+function updateDots(){$$(".tbtn").forEach(b=>{const p=$("#p-"+b.dataset.tab);const ids=$$(".ws",p).map(w=>w.id);const done=ids.length&&ids.every(i=>state.done[i]);b.querySelector(".dot").classList.toggle("done",!!done);b.querySelector(".dot").title=done?"Alle oefeningen gemaakt":"";});}
+function wsHead(box,title,tag){box.innerHTML="";const sc=h("span",{class:"score"});box.append(h("header",{},h("h3",{},title),h("span",{class:"tag"},tag||"Oefening"),sc));return sc;}
+const norm=s=>String(s).trim().toLowerCase().replace(/\s+/g," ").replace(/[‐–—]/g,"-");
+
+/* ===== Tabs ===== */
+function showTab(name,push){if(!$("#p-"+name))name="chemie";$$(".panel").forEach(p=>p.hidden=p.id!=="p-"+name);$$(".tbtn").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name?"true":"false"));state.tab=name;save();if(push){try{history.replaceState(null,"","#"+name);}catch(e){location.hash=name;}window.scrollTo({top:0});}}
+$$(".tbtn").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab,true)));
+$$(".toc a").forEach(a=>a.addEventListener("click",ev=>{ev.preventDefault();const t=$(a.getAttribute("href"));if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}));
+
+/* ===== Generic: sorteeroefening (per item een keuze) ===== */
+function sortEx(id,cfg){
+  const box=$("#"+id);if(!box)return;
+  function build(){
+    const sc=wsHead(box,cfg.title,cfg.tag);
+    if(cfg.intro)box.append(h("p",{class:"mini"},h("span",{class:"ask"},cfg.intro)));
+    const list=h("div",{class:"items"});box.append(list);
+    let answered=0,first=0;const items=cfg.keep?cfg.items:shuffle(cfg.items);
+    const upd=()=>{sc.textContent=answered===items.length?`${first}/${items.length} in één keer juist`:`${answered}/${items.length}`;};
+    items.forEach(it=>{
+      const acc=[].concat(it.a);let tries=0;
+      const fb=h("p",{class:"fb"});const opts=h("div",{class:"opts"});
+      if(cfg.select){const sel=h("select",{"aria-label":"kies"},h("option",{value:""},"kies …"),(it.options||cfg.options).map(o=>h("option",{value:o},o)));sel.addEventListener("change",()=>{if(!sel.value)return;tries++;if(acc.includes(sel.value)){sel.className="ok";sel.disabled=true;fb.className="fb good";fb.innerHTML=(tries===1?"Juist! ":"Ja, nu klopt het. ")+(it.why||"");answered++;if(tries===1)first++;upd();if(answered===items.length)markDone(id);}else{sel.className="no";fb.className="fb badf";fb.innerHTML=it.hint||"Niet juist. Probeer opnieuw.";}});opts.append(sel);}
+      else (it.options||cfg.options).forEach(o=>{const b=h("button",{class:"opt",type:"button"},o);b.addEventListener("click",()=>{tries++;if(acc.includes(o)){b.classList.add("right");$$("button",opts).forEach(x=>x.disabled=true);fb.className="fb good";fb.innerHTML=(tries===1?"Juist! ":"Ja, nu klopt het. ")+(it.why||"");answered++;if(tries===1)first++;upd();if(answered===items.length){markDone(id);}}else{b.classList.add("wrong");b.disabled=true;fb.className="fb badf";fb.innerHTML=it.hint||"Niet juist. Probeer opnieuw.";}});opts.append(b);});
+      list.append(h("div",{class:"item"},h("span",{class:"lbl",html:it.t}),opts,fb));
+    });
+    upd();
+    box.append(h("div",{class:"btnrow"},h("button",{class:"btn",type:"button",onclick:build},"Opnieuw (andere volgorde)")));
+  }
+  build();
+}
+
+/* ===== Generic: meerkeuzereeks ===== */
+function mcEx(id,cfg){
+  const box=$("#"+id);if(!box)return;
+  function start(){
+    const sc=wsHead(box,cfg.title,cfg.tag);
+    if(cfg.intro)box.append(h("p",{class:"mini"},h("span",{class:"ask"},cfg.intro)));
+    const qs=(typeof cfg.questions==="function"?cfg.questions():(cfg.n?pick(cfg.questions,cfg.n):shuffle(cfg.questions)));
+    const bar=h("div",{class:"progress"},h("i"));const area=h("div",{class:"mc"});box.append(bar,area);
+    let i=0,score=0;const wrongs=[];
+    function show(){
+      bar.firstChild.style.width=(i/qs.length*100)+"%";sc.textContent=`vraag ${Math.min(i+1,qs.length)}/${qs.length} · score ${score}`;
+      area.innerHTML="";
+      if(i>=qs.length){
+        markDone(id);
+        const pct=Math.round(score/qs.length*100);
+        area.append(h("p",{class:"q"},`Klaar! Je score: ${score}/${qs.length} (${pct}%).`),h("p",{},pct>=80?"Sterk gedaan. Je beheerst dit onderdeel.":pct>=50?"Goed op weg. Bekijk de vragen die fout liepen nog eens.":"Lees de leerstof nog eens rustig na en probeer opnieuw."));
+        if(wrongs.length){area.append(h("p",{class:"mini"},"Om te herhalen:"),h("ul",{class:"clean"},wrongs.map(w=>h("li",{html:w}))));}
+        area.append(h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:start},"Nieuwe reeks")));
+        return;
+      }
+      const q=qs[i];const opts=q.keep?q.opts:shuffle(q.opts);
+      if(q.svg)area.append(h("div",{html:q.svg,style:"width:110px;height:110px;margin-bottom:6px"}));
+      if(q.graph)area.append(h("div",{class:"graph",html:q.graph}));
+      area.append(h("p",{class:"q",html:q.q}));
+      const og=h("div",{class:"opts"});const why=h("div",{class:"why",hidden:true});
+      const next=h("button",{class:"btn primary",type:"button",hidden:true,onclick:()=>{i++;show();}},i===qs.length-1?"Toon resultaat":"Volgende vraag");
+      opts.forEach(o=>{const b=h("button",{class:"opt",type:"button",html:o});b.addEventListener("click",()=>{const ok=o===q.a;$$("button",og).forEach(x=>{x.disabled=true;if(x.innerHTML===b.innerHTML&&!ok)x.classList.add("wrong");});$$("button",og).forEach(x=>{if(x.dataset.v===q.a)x.classList.add("right");});if(ok)score++;else wrongs.push(q.q+" → "+q.a);why.hidden=false;why.innerHTML=(ok?"<b>Juist.</b> ":"<b>Niet juist.</b> Het juiste antwoord is: "+q.a+". ")+(q.why||"");sc.textContent=`vraag ${i+1}/${qs.length} · score ${score}`;next.hidden=false;next.focus();});b.dataset.v=o;og.append(b);});
+      area.append(og,why,h("div",{class:"btnrow"},next));
+    }
+    show();
+  }
+  start();
+}
+
+/* ===================== 1 CHEMIE ===================== */
+sortEx("ex-fyschem",{title:"Fysica of chemie?",intro:"Bij welke wetenschap hoort het onderzoek? Denk aan de regel: veranderen de stoffen, dan is het chemie.",options:["fysica","chemie"],items:[
+ {t:"Onderzoeken hoe snel een geneesmiddel door het lichaam wordt opgenomen",a:"fysica",why:"De stof verandert niet."},
+ {t:"Onderzoeken hoe snel een geneesmiddel in het lichaam wordt afgebroken",a:"chemie",why:"De stoffen worden afgebroken: er ontstaan nieuwe stoffen."},
+ {t:"Onderzoeken hoe snel het lichaam de afbraakproducten verwijdert",a:"fysica",why:"De stof verandert niet."},
+ {t:"Magnesium verbranden tot magnesiumoxide",a:"chemie",why:"Er ontstaat een nieuwe stof."},
+ {t:"De wrijving tussen een snowboard en de sneeuw meten",a:"fysica",why:"Wrijving is een begrip uit de fysica."},
+ {t:"Een wind- en waterdichte stof voor jassen ontwikkelen",a:"chemie",why:"Je ontwikkelt een nieuwe stof met nieuwe eigenschappen."}]});
+
+(function etiket(){
+  const box=$("#ex-etiket");
+  const parts={naam:["naam van het product","Salpeterzuur: de naam van de stof."],formule:["formule van het product","HNO₃: de chemische formule."],signaal:["signaalwoord","Gevaar: waarschuwt dat de stof gevaarlijk is."],picto:["gevarenpictogram(men)","Oxiderend (vlam boven cirkel) en corrosief (bijtend)."],hzin:["gevarenaanduiding(en)","H272: kan brand bevorderen; oxiderend. H314: veroorzaakt ernstige brandwonden."],pzin:["veiligheidsaanbevelingen","P-zinnen zoals P280: beschermende handschoenen en oogbescherming dragen."]};
+  function build(){
+    const sc=wsHead(box,"Het etiket van salpeterzuur","Zoek op het etiket");
+    const order=shuffle(Object.keys(parts));let k=0,first=0,tries=0;
+    const prompt=h("p",{class:"q",style:"font-weight:700"});const info=h("p",{class:"fb"});
+    const lab=h("div",{class:"etiket"},
+      h("div",{class:"row"},h("div",{},h("div",{class:"nm hot","data-p":"naam"},"Salpeterzuur"),h("div",{class:"hot","data-p":"formule",style:"font-weight:700;display:inline-block",html:"HNO<sub>3</sub>"})),h("div",{style:"text-align:right"},h("div",{style:"font-size:.7rem"},"CAS 7697-37-2"),h("div",{class:"hot","data-p":"signaal",style:"color:#C00;font-weight:700;display:inline-block"},"Gevaar"))),
+      h("div",{class:"hot","data-p":"picto",style:"display:inline-flex;gap:4px;margin:6px 0",html:ghsSvg("oxiderend")+ghsSvg("corrosief")}),
+      h("div",{class:"hot","data-p":"hzin",style:"margin-bottom:4px"},"H272-314 Kan brand bevorderen; oxiderend. Veroorzaakt ernstige brandwonden en oogletsel."),
+      h("div",{class:"hot","data-p":"pzin"},"P260-280-301+330+331-305+351+338 Stof/rook/gas/nevel/damp/spuitnevel niet inademen. Beschermende handschoenen en oogbescherming dragen. NA INSLIKKEN: de mond spoelen — GEEN braken opwekken. BIJ CONTACT MET DE OGEN: voorzichtig afspoelen met water gedurende een aantal minuten. Contactlenzen verwijderen, indien mogelijk. Blijven spoelen."),
+      h("div",{class:"foot"},h("span",{},"WGK 1"),h("span",{},"Mr: 63,01"),h("span",{},"Mijn school")));
+    function ask(){if(k<order.length){prompt.textContent="Klik op: "+parts[order[k]][0];}else{prompt.textContent="Alles gevonden! Klik nu op een onderdeel om de uitleg te lezen.";sc.textContent=`${first}/${order.length} in één keer juist`;markDone("ex-etiket");}}
+    $$(".hot",lab).forEach(el=>el.addEventListener("click",()=>{const p=el.dataset.p;if(k>=order.length){$$(".hot",lab).forEach(x=>x.classList.remove("sel"));el.classList.add("sel");info.className="fb good";info.textContent=parts[p][0]+": "+parts[p][1];return;}tries++;if(p===order[k]){if(tries===1)first++;tries=0;el.classList.add("found");info.className="fb good";info.textContent="Juist! "+parts[p][1];k++;sc.textContent=`${k}/${order.length}`;ask();}else{info.className="fb badf";info.textContent="Dat is: "+parts[p][0]+". Zoek verder.";}}));
+    box.append(prompt,lab,info,h("div",{class:"btnrow"},h("button",{class:"btn",type:"button",onclick:build},"Opnieuw")));
+    sc.textContent=`0/${order.length}`;ask();
+  }
+  build();
+})();
+
+sortEx("ex-tf1",{title:"Controle: waar of niet waar?",tag:"Controle 1",options:["waar","niet waar"],keep:true,items:[
+ {t:"In de lessen chemie bestudeer je onder andere de bouw en samenstelling van materie.",a:"waar"},
+ {t:"Hoe je om moet gaan met een chemische stof, lees je af op de H-zinnen van het etiket.",a:"niet waar",why:"Dat staat in de P-zinnen (veiligheidsaanbevelingen). H-zinnen beschrijven het gevaar."},
+ {t:"Om uit te zoeken over welke chemische stof het gaat, kun je ervan proeven.",a:"niet waar",why:"Proeven van stoffen is in het labo altijd verboden."},
+ {t:"De gevarenpictogrammen staan in een rode ruit met een witte rand.",a:"niet waar",why:"Omgekeerd: een witte ruit met een rode rand."}]});
+
+/* ===================== 2 MATERIE ===================== */
+sortEx("ex-vs",{title:"Voorwerp of stof?",options:["voorwerp","stof"],items:[
+ {t:"ballon",a:"voorwerp"},{t:"knikker",a:"voorwerp"},{t:"hout",a:"stof"},{t:"stoel",a:"voorwerp"},{t:"kraantjeswater",a:"stof",why:"Kraantjeswater is materie zonder vaste vorm: het is een stof (eigenlijk een mengsel van stoffen)."},{t:"heliumgas",a:"stof"},{t:"ijzer",a:"stof"},{t:"katoen",a:"stof"},{t:"bureau",a:"voorwerp"},{t:"glas",a:"stof"},{t:"lestafel",a:"voorwerp"},{t:"rubber",a:"stof"}]});
+
+sortEx("ex-eig",{title:"Welke soort eigenschap?",intro:"Is het een voorwerpeigenschap, een waarneembare stofeigenschap of een meetbare stofeigenschap?",options:["voorwerpeigenschap","waarneembare stofeigenschap","meetbare stofeigenschap"],items:[
+ {t:"vorm",a:"voorwerpeigenschap"},{t:"massa",a:"voorwerpeigenschap"},{t:"volume",a:"voorwerpeigenschap"},{t:"omtrek van 75 cm",a:"voorwerpeigenschap"},
+ {t:"kleur",a:"waarneembare stofeigenschap",why:"Je ziet de kleur met je ogen."},{t:"geur",a:"waarneembare stofeigenschap"},{t:"smaak",a:"waarneembare stofeigenschap"},{t:"glanzend",a:"waarneembare stofeigenschap"},{t:"kristallijn",a:"waarneembare stofeigenschap"},
+ {t:"kookpunt",a:"meetbare stofeigenschap",why:"Je meet het met een thermometer."},{t:"smeltpunt",a:"meetbare stofeigenschap"},{t:"massadichtheid",a:"meetbare stofeigenschap"},{t:"oplosbaarheid in water",a:"meetbare stofeigenschap"}]});
+
+(function therm(){
+  const box=$("#ex-therm");const sc=wsHead(box,"Vast, vloeibaar of gas?","Interactief");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Versleep de thermometer. Ligt de temperatuur onder het smeltpunt, dan is de stof vast. Tussen smeltpunt en kookpunt is ze vloeibaar. Boven het kookpunt is ze een gas.")));
+  const t=h("div",{class:"therm"});const sl=h("input",{type:"range",min:-273,max:3000,step:1,value:20,class:"slider",id:"thermslider","aria-label":"Temperatuur in graden Celsius"});
+  const presets=h("div",{class:"btnrow"},[["−200 °C",-200],["kamertemperatuur (20 °C)",20],["100 °C",100],["1000 °C",1000]].map(([l,v])=>h("button",{class:"btn",type:"button",onclick:()=>{sl.value=v;upd();}},l)));
+  const grid=h("div",{class:"states"});box.append(t,sl,presets,grid);
+  const cells=PHASES.map(([n,m,k])=>{const b=h("b");const row=h("div",{class:"state",title:`smeltpunt ${String(m).replace(".",",")} °C · kookpunt ${String(k).replace(".",",")} °C`},h("span",{},n),b);grid.append(row);return{m,k,b};});
+  function upd(){const T=+sl.value;t.textContent=T+" °C";cells.forEach(c=>{const s=T<c.m?"vast":T<c.k?"vloeibaar":"gas";c.b.textContent=s;c.b.className="st-"+s;});}
+  sl.addEventListener("input",upd);upd();
+  box.append(h("p",{class:"mini"},"Tip: houd je muis op een stof om het smelt- en kookpunt te zien."));
+  const q=h("div",{id:"ex-therm-q"});box.append(q);
+  sc.textContent="";
+  const mk=(n,val)=>n+" ("+String(val).replace(".",",")+" °C)";
+  // vragen
+  const qbox=h("div",{class:"mc"});q.append(qbox);
+  const QS=[
+   {q:"Welke stof heeft het laagste smeltpunt?",opts:["waterstofgas","fluorgas","propaan","ether"],a:"waterstofgas",why:"Waterstofgas smelt bij −259,3 °C."},
+   {q:"Welke stof heeft het hoogste kookpunt?",opts:["platina","goud","ijzer","lood"],a:"platina",why:"Platina kookt bij 3827 °C."},
+   {q:"Rangschik volgens toenemend kookpunt: aceton, water, ethanol.",opts:["aceton &lt; ethanol &lt; water","ethanol &lt; aceton &lt; water","water &lt; ethanol &lt; aceton","aceton &lt; water &lt; ethanol"],a:"aceton &lt; ethanol &lt; water",why:"56,5 °C &lt; 78,4 °C &lt; 100 °C."},
+   {q:"Welk metaal is vloeibaar bij kamertemperatuur?",opts:["kwik","lood","zink","magnesium"],a:"kwik",why:"Kwik smelt al bij −38,9 °C en kookt pas bij 356,6 °C."},
+   {q:"De stof met het hoogste / laagste smeltpunt smelt het eerst bij opwarmen?",opts:["de stof met het laagste smeltpunt","de stof met het hoogste smeltpunt"],a:"de stof met het laagste smeltpunt",why:"Die temperatuur bereik je als eerste."}];
+  let i=0,score=0;
+  function show(){qbox.innerHTML="";if(i>=QS.length){qbox.append(h("p",{class:"q"},`Klaar: ${score}/${QS.length} juist.`),h("button",{class:"btn",type:"button",onclick:()=>{i=0;score=0;show();}},"Opnieuw"));markDone("ex-therm");return;}
+   const Q=QS[i];qbox.append(h("p",{class:"q",html:`Vraag ${i+1}/${QS.length}. `+Q.q}));const og=h("div",{class:"opts"});const why=h("div",{class:"why",hidden:true});
+   shuffle(Q.opts).forEach(o=>{const b=h("button",{class:"opt",type:"button",html:o});b.addEventListener("click",()=>{$$("button",og).forEach(x=>x.disabled=true);const ok=o===Q.a;b.classList.add(ok?"right":"wrong");if(ok)score++;why.hidden=false;why.innerHTML=(ok?"<b>Juist.</b> ":"<b>Niet juist.</b> ")+Q.why;nx.hidden=false;});og.append(b);});
+   const nx=h("button",{class:"btn primary",type:"button",hidden:true,onclick:()=>{i++;show();}},"Volgende");qbox.append(og,why,h("div",{class:"btnrow"},nx));}
+  show();
+})();
+
+(function dens(){
+  const box=$("#ex-dens");wsHead(box,"Zinken, zweven of drijven?","Rekenen");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask",html:"Water heeft een massadichtheid van 1,00 g/cm³. Is ρ<sub>stof</sub> kleiner, dan drijft het voorwerp. Is ρ gelijk, dan zweeft het. Is ρ groter, dan zinkt het."})));
+  const m=h("input",{type:"number",id:"dens-m",value:"27",min:"0",step:"any",style:"width:7em"});const v=h("input",{type:"number",id:"dens-v",value:"10",min:"0",step:"any",style:"width:7em"});const out=h("p",{class:"readout"});
+  const calc=()=>{const M=parseFloat(m.value),V=parseFloat(v.value);if(!(M>0&&V>0)){out.textContent="Vul een massa en een volume groter dan 0 in.";return;}const r=M/V;const s=Math.abs(r-1)<0.005?"zweeft":r<1?"drijft":"zinkt";out.innerHTML=`ρ = m / V = ${String(M).replace(".",",")} g / ${String(V).replace(".",",")} cm³ = <b>${r.toFixed(2).replace(".",",")} g/cm³</b>, dus het voorwerp <b>${s}</b> in water.`;};
+  m.addEventListener("input",calc);v.addEventListener("input",calc);
+  box.append(h("div",{class:"btnrow",style:"align-items:center"},h("label",{},"massa m (g) ",m),h("label",{},"volume V (cm³) ",v)),out);calc();
+  const sub=h("div",{id:"ex-dens-s"});box.append(sub);
+  const items=[["kurken stop",0.25,"drijven"],["koperen buisje",8.96,"zinken"],["glazen knikker",2.50,"zinken"],["stukje kaars",0.90,"drijven"],["ijzeren spijker",7.86,"zinken"],["gouden ring",19.31,"zinken"],["blokje ijs",0.92,"drijven"]];
+  const list=h("div",{class:"items"});sub.append(h("p",{class:"mini",style:"margin-top:14px"},h("span",{class:"ask"},"Voorspel voor elk voorwerp:")),list);let n=0;
+  items.forEach(([t,r,a])=>{const fb=h("p",{class:"fb"});const og=h("div",{class:"opts"});["drijven","zweven","zinken"].forEach(o=>{const b=h("button",{class:"opt",type:"button"},o);b.addEventListener("click",()=>{if(o===a){b.classList.add("right");$$("button",og).forEach(x=>x.disabled=true);fb.className="fb good";fb.textContent=`Juist: ${String(r.toFixed(2)).replace(".",",")} ${r<1?"<":">"} 1,00 g/cm³.`;n++;if(n===items.length)markDone("ex-dens");}else{b.classList.add("wrong");b.disabled=true;fb.className="fb badf";fb.textContent="Vergelijk ρ met 1,00 g/cm³.";}});og.append(b);});list.append(h("div",{class:"item"},h("span",{class:"lbl",html:`${t} <span class="mini">ρ = ${r.toFixed(2).replace(".",",")} g/cm³</span>`}),og,fb));});
+})();
+
+mcEx("ex-odd",{title:"Wat hoort er niet thuis?",tag:"Test jezelf",questions:[
+ {q:"vorm – grootte – brandbaarheid – volume",opts:["vorm","grootte","brandbaarheid","volume"],a:"brandbaarheid",why:"Brandbaarheid is een stofeigenschap, geen voorwerpeigenschap."},
+ {q:"kast – plastic – roestvrij staal – hout",opts:["kast","plastic","roestvrij staal","hout"],a:"kast",why:"Een kast is een voorwerp, de rest zijn stoffen."},
+ {q:"gas – vloeibaar – vast – damp",opts:["gas","vloeibaar","vast","damp"],a:"damp",why:"Damp is de naam van een vloeistof in gasvorm. De rest zijn aggregatietoestanden."},
+ {q:"water – olie – azijn – glas",opts:["water","olie","azijn","glas"],a:"glas",why:"Glas is een vaste stof. De rest zijn vloeistoffen."},
+ {q:"Welke stof is gemeenschappelijk: vensterglas – spiegel – lamp – glazen vaas?",opts:["glas","metaal","plastic","zand"],a:"glas"},
+ {q:"Welke stof is gemeenschappelijk: elektriciteitsdraad – geldstuk van 10 en 50 cent – bovenleiding van de trein?",opts:["koper","ijzer","aluminium","goud"],a:"koper"},
+ {q:"Welke stof is gemeenschappelijk: aluminiumfolie – raamprofiel – mountainbike – ladder?",opts:["aluminium","staal","koper","zink"],a:"aluminium"}]});
+
+/* ===================== 3 MENGSELS ===================== */
+sortEx("ex-mix",{title:"Welk soort mengsel?",intro:"Geef de specifieke naam. Kijk naar de aggregatietoestanden van de bestanddelen.",options:["grof mengsel","suspensie","emulsie","rook","oplossing"],items:[
+ {t:"zand met schelpen",a:"grof mengsel",why:"vaste stof + vaste stof"},{t:"smoothie",a:"suspensie",why:"vaste stof + vloeistof, heterogeen"},{t:"vinaigrette",a:"emulsie",why:"vloeistof + vloeistof, heterogeen"},{t:"schoorsteenrook",a:"rook",why:"kleine vaste stofdeeltjes in een gas"},
+ {t:"mineraalwater",a:"oplossing",why:"vaste stoffen (mineralen) opgelost in een vloeistof"},{t:"tafelazijn",a:"oplossing",why:"vloeistof + vloeistof, homogeen"},{t:"gesloten fles bruiswater",a:"oplossing",why:"gas opgelost in een vloeistof"},
+ {t:"zand in water",a:"suspensie"},{t:"olie en water",a:"emulsie"},{t:"suikerwater",a:"oplossing"},{t:"geperst sinaasappelsap",a:"suspensie",why:"vaste stukjes vruchtvlees in een vloeistof"},{t:"zeezand",a:"grof mengsel"}]});
+
+(function particles(){
+  const box=$("#ex-particles");const sc=wsHead(box,"Deeltjesmodel: zuivere stof of mengsel?","Interactief");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Eén soort figuur = één stof. Kijk goed: verschillende figuren betekenen verschillende stoffen.")));
+  const SH=[(x,y)=>`<polygon points="${x},${y-9} ${x+9},${y+7} ${x-9},${y+7}" fill="#4A7BC8"/>`,(x,y)=>`<rect x="${x-7}" y="${y-7}" width="14" height="14" fill="#B5446E"/>`,(x,y)=>`<circle cx="${x}" cy="${y}" r="8" fill="#E2A93B"/>`,(x,y)=>`<polygon points="${x-9},${y} ${x},${y-9} ${x+9},${y} ${x},${y+9}" fill="#3E9C6B"/>`];
+  const wrap=h("div",{class:"boxes"});const fb=h("p",{class:"fb"});const og=h("div",{class:"btnrow"});box.append(wrap,og,fb);
+  let round=0,score=0,ans;
+  function gen(){fb.textContent="";wrap.innerHTML="";const kinds=Math.random()<.45?1:rnd(2,3);const sel=pick([0,1,2,3],kinds);ans=kinds===1?"zuivere stof":"mengsel";let svg='<svg viewBox="0 0 200 200">';const pts=[];for(let i=0;i<14;i++){let x,y,t=0;do{x=rnd(18,182);y=rnd(18,182);t++;}while(pts.some(p=>Math.hypot(p[0]-x,p[1]-y)<26)&&t<60);pts.push([x,y]);const s=kinds===1?sel[0]:sel[i%kinds];svg+=SH[s](x,y);}svg+="</svg>";wrap.append(h("div",{class:"pbox",html:svg}));og.innerHTML="";["zuivere stof","mengsel"].forEach(o=>og.append(h("button",{class:"opt",type:"button",onclick:ev=>{const ok=o===ans;$$("button",og).forEach(b=>b.disabled=true);ev.target.classList.add(ok?"right":"wrong");if(ok)score++;round++;fb.className="fb "+(ok?"good":"badf");fb.textContent=(ok?"Juist: ":"Niet juist: ")+(ans==="mengsel"?`er staan ${kinds} soorten figuren door elkaar, dus een mengsel.`:"er is maar één soort figuur, dus een zuivere stof.");sc.textContent=`${score}/${round}`;if(round>=5)markDone("ex-particles");og.append(h("button",{class:"btn primary",type:"button",onclick:gen},"Volgende doos"));}},o)));}
+  gen();
+})();
+
+/* Temperatuur-tijdgrafiek */
+function curve(kind,dir,a,b){ // returns path points in 400x240 box; a,b = y-levels of plateau start/end
+  const x0=50,x1=380;let pts;
+  if(kind==="zuiver"){pts=[[x0,205],[150,a],[270,a],[x1,40]];}else{pts=[[x0,205],[140,a],[280,b],[x1,40]];}
+  if(dir==="koelen")pts=pts.map(([x,y])=>[x0+x1-x,y]).reverse();
+  return pts;
+}
+function graphSvg(kind,dir,a,b,labels){
+  const p=curve(kind,dir,a,b);const d="M"+p.map(q=>q.join(",")).join("L");
+  const lo=kind==="zuiver"?a:Math.max(a,b),hi=kind==="zuiver"?a:Math.min(a,b);
+  let bands=`<rect x="50" y="20" width="330" height="${hi-20}" fill="#FCEFB7" opacity=".75"/><rect x="50" y="${lo}" width="330" height="${215-lo}" fill="#CFE6F7" opacity=".85"/>`;
+  if(kind!=="zuiver")bands+=`<rect x="50" y="${hi}" width="330" height="${lo-hi}" fill="#BFDDB0" opacity=".85"/>`;
+  bands+=`<path d="M50 ${hi}H380${kind!=="zuiver"?`M50 ${lo}H380`:""}" stroke="#13293D" stroke-dasharray="5 4" fill="none"/>`;
+  let lab="";
+  if(labels){lab=kind==="zuiver"?`<text x="384" y="${a+4}" style="font-size:11px">kookpunt</text>`:`<text x="384" y="${(a+b)/2+4}" style="font-size:11px">kooktraject</text>`;lab+=`<text x="300" y="${hi-6}" style="font-size:11px">gas</text><text x="300" y="${Math.min(205,lo+16)}" style="font-size:11px">vloeistof</text>`;}
+  return `<svg viewBox="0 0 450 250" role="img" aria-label="temperatuur-tijdgrafiek">${bands}<path class="axis" d="M50 12V215H392"/><path d="M50 8l-4 8h8zM398 215l-8-4v8z" style="fill:var(--ink)"/><text x="10" y="20">T (°C)</text><text x="392" y="236">tijd (s)</text><path id="cv" d="${d}" stroke="#D3222A" stroke-width="3" fill="none"/>${lab}<circle id="dotc" r="6" cx="${p[0][0]}" cy="${p[0][1]}" fill="#D3222A" stroke="#fff" stroke-width="2"/></svg>`;
+}
+(function graph(){
+  const box=$("#ex-graph");wsHead(box,"Opwarmen: zuivere stof of mengsel","Interactief");
+  let kind="zuiver";const g=h("div",{class:"graph"});const ro=h("p",{class:"readout"});
+  const tg=h("div",{class:"btnrow"});const play=h("button",{class:"btn primary",type:"button"},"Start opwarmen");
+  ["zuivere stof","mengsel"].forEach(l=>tg.append(h("button",{class:"btn",type:"button",onclick:()=>{kind=l==="mengsel"?"meng":"zuiver";draw();}},"Toon "+l)));tg.append(play);
+  box.append(tg,g,ro);let raf;
+  function draw(){cancelAnimationFrame(raf);g.innerHTML=graphSvg(kind,"warmen",kind==="zuiver"?110:125,kind==="zuiver"?110:95,true);ro.textContent=kind==="zuiver"?"Zuivere stof: tijdens het koken blijft de temperatuur constant (kookpunt).":"Mengsel: tijdens het koken stijgt de temperatuur verder (kooktraject).";}
+  play.addEventListener("click",()=>{const path=$("#cv",g),dot=$("#dotc",g);const L=path.getTotalLength();let t0=null;const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const step=ts=>{if(!t0)t0=ts;const f=reduce?1:Math.min(1,(ts-t0)/4500);const P=path.getPointAtLength(f*L);dot.setAttribute("cx",P.x);dot.setAttribute("cy",P.y);
+      const lo=kind==="zuiver"?110:125,hi=kind==="zuiver"?110:95;let s;if(P.y>lo+0.5)s="vloeistof: de temperatuur stijgt";else if(P.y<hi-0.5)s="gas: de temperatuur stijgt weer";else s=kind==="zuiver"?"de stof kookt: vloeistof + gas, temperatuur blijft gelijk":"het mengsel kookt: vloeistof + gas, temperatuur stijgt toch";ro.textContent=s;if(f<1)raf=requestAnimationFrame(step);};
+    cancelAnimationFrame(raf);raf=requestAnimationFrame(step);markDone("ex-graph");});
+  draw();
+})();
+mcEx("ex-graphquiz",{title:"Lees de grafiek",tag:"Oefening",intro:"Is de onderzochte stof een zuivere stof of een mengsel?",questions:()=>{const out=[];for(let i=0;i<5;i++){const kind=Math.random()<.5?"zuiver":"meng";const dir=Math.random()<.5?"warmen":"koelen";const a=rnd(95,140),b=a-rnd(25,45);out.push({q:(dir==="warmen"?"Je warmt een onbekende vloeistof op.":"Je koelt een onbekende vloeistof af.")+" Zuivere stof of mengsel?",svg:null,graph:graphSvg(kind,dir,kind==="zuiver"?a:a,b,false),opts:["zuivere stof","mengsel"],keep:true,a:kind==="zuiver"?"zuivere stof":"mengsel",why:kind==="zuiver"?"Tijdens de faseovergang blijft de temperatuur constant: een kookpunt of smeltpunt.":`Tijdens de faseovergang verandert de temperatuur: een ${dir==="warmen"?"kooktraject":"smelt- of kooktraject"}. Dat wijst op een mengsel.`});}return out;}});
+
+sortEx("ex-sep",{select:true,title:"Welke scheidingstechniek?",intro:"Kies de scheidingstechniek. De uitleg vertelt op welke stofeigenschap ze steunt.",options:["zeven","filtreren","decanteren","in- of uitdampen"],items:[
+ {t:"stenen uit zand halen",a:"zeven",why:"steunt op deeltjesgrootte"},{t:"zand met schelpen",a:"zeven",why:"steunt op deeltjesgrootte"},{t:"bloem zeven",a:"zeven",why:"steunt op deeltjesgrootte"},{t:"zand en water",a:"filtreren",why:"steunt op deeltjesgrootte"},{t:"kleideeltjes die zweven in water",a:"filtreren",why:"steunt op deeltjesgrootte"},{t:"krijtwatermengsel",a:"filtreren",why:"steunt op deeltjesgrootte"},{t:"koffiedik scheiden van koffie",a:"filtreren",why:"steunt op deeltjesgrootte"},
+ {t:"olie en azijn",a:"decanteren",why:"met een scheitrechter, steunt op massadichtheid"},{t:"bezinksel in een fles wijn",a:"decanteren",why:"steunt op massadichtheid"},{t:"zout winnen uit zeewater",a:"in- of uitdampen",why:"steunt op kooktemperatuur"},{t:"zout water",a:"in- of uitdampen",why:"steunt op kooktemperatuur"}]});
+
+(function schema(){
+  const box=$("#ex-schema");const TECH=["zeven","filtreren","decanteren","in- of uitdampen"];const PROP=["deeltjesgrootte","massadichtheid","kooktemperatuur"];
+  const R=[["zand met schelpen","zeven","deeltjesgrootte","zand + schelpen"],["krijtwatermengsel","filtreren","deeltjesgrootte","krijt + water"],["zout water","in- of uitdampen","kooktemperatuur","zout + water"],["olie en water","decanteren","massadichtheid","olie + water"],["zand in water","filtreren","deeltjesgrootte","zand + water"]];
+  function build(){
+    const sc=wsHead(box,"Van mengsel naar zuivere stoffen","Test jezelf 19");
+    box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Kies voor elk mengsel de scheidingstechniek (boven de pijl) en de stofeigenschap waarop ze steunt (onder de pijl).")));
+    const rows=[];const list=h("div",{class:"items"});
+    R.forEach((r,i)=>{const t=h("select",{id:"sch-t"+i,"aria-label":"scheidingstechniek"},h("option",{value:""},"techniek …"),TECH.map(x=>h("option",{},x)));const p=h("select",{id:"sch-p"+i,"aria-label":"stofeigenschap"},h("option",{value:""},"stofeigenschap …"),PROP.map(x=>h("option",{},x)));
+      rows.push([t,p,r]);list.append(h("div",{class:"item"},h("span",{class:"lbl"},r[0]),h("span",{style:"display:grid;gap:4px;justify-items:center"},t,h("span",{"aria-hidden":"true"},"⟶"),p),h("span",{style:"font-weight:700"},r[3])));});
+    const fb=h("p",{class:"fb"});
+    box.append(list,h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:()=>{let ok=0,n=0;rows.forEach(([t,p,r])=>{[[t,r[1]],[p,r[2]]].forEach(([s,a])=>{n++;const g=s.value===a;s.className=g?"ok":"no";if(g)ok++;});});sc.textContent=`${ok}/${n}`;fb.className="fb "+(ok===n?"good":"badf");fb.textContent=ok===n?"Helemaal juist!":"Nog niet alles juist. Rood = verbeteren. Zeven en filtreren steunen op deeltjesgrootte, decanteren op massadichtheid, in- of uitdampen op kooktemperatuur.";if(ok===n)markDone("ex-schema");}},"Controleer"),h("button",{class:"btn",type:"button",onclick:build},"Opnieuw")),fb);
+  }
+  build();
+})();
+
+(function concept(){
+  const box=$("#ex-concept");const W=["mengsel","zuivere stof","heterogeen","homogeen","suspensie","grof mengsel","emulsie","oplossing"];
+  const SLOTS=[["s1",["mengsel","zuivere stof"]],["s2",["mengsel","zuivere stof"]],["s3",["heterogeen","homogeen"]],["s4",["heterogeen","homogeen"]],["s5",["suspensie","grof mengsel","emulsie"]],["s6",["suspensie","grof mengsel","emulsie"]],["s7",["suspensie","grof mengsel","emulsie"]],["s8","oplossing"]];
+  function build(){
+    const sc=wsHead(box,"Begrippenschema: materie","Opdracht 10");
+    box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Vul het schema aan met: mengsel, zuivere stof, heterogeen, homogeen, suspensie, grof mengsel, emulsie, oplossing.")));
+    const S={};const mk=k=>{S[k]=h("select",{id:"cm-"+k,"aria-label":"begrip"},h("option",{value:""},"…"),W.map(x=>h("option",{},x)));return S[k];};
+    const row=(lbl,...kids)=>h("div",{class:"item"},h("span",{class:"lbl",style:"flex:0 1 200px"},lbl),h("div",{class:"opts",style:"align-items:center"},kids));
+    const sch=h("div",{class:"items"},
+      row("materie ⟶",mk("s1"),h("span",{class:"mini"},"⟵ mengen / scheiden ⟶"),mk("s2")),
+      row("een mengsel is ⟶",mk("s3"),h("span",{},"of"),mk("s4")),
+      row("heterogeen mengsel ⟶",mk("s5"),mk("s6"),mk("s7")),
+      row("homogeen mengsel ⟶",mk("s8")));
+    const fb=h("p",{class:"fb"});
+    box.append(sch,h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:()=>{let ok=0;const used=new Set();SLOTS.forEach(([k,a])=>{const v=S[k].value;const g=Array.isArray(a)?a.includes(v)&&!used.has(v):v===a;if(g&&Array.isArray(a))used.add(v);S[k].className=g?"ok":"no";if(g)ok++;});sc.textContent=`${ok}/${SLOTS.length}`;fb.className="fb "+(ok===SLOTS.length?"good":"badf");fb.textContent=ok===SLOTS.length?"Juist! Een mengsel is heterogeen (suspensie, grof mengsel, emulsie) of homogeen (oplossing). Door scheiden krijg je zuivere stoffen.":"Nog niet alles juist. Materie splitst in mengsels en zuivere stoffen; mengsels in heterogeen en homogeen.";if(ok===SLOTS.length)markDone("ex-concept");}},"Controleer"),h("button",{class:"btn",type:"button",onclick:build},"Opnieuw")),fb);
+  }
+  build();
+})();
+
+sortEx("ex-tf3",{title:"Controle: waar of niet waar?",tag:"Controle 3",options:["waar","niet waar"],keep:true,items:[
+ {t:"Heterogene mengsels zijn mengsels waarbij de verschillende bestanddelen niet visueel waar te nemen zijn.",a:"niet waar",why:"Bij heterogene mengsels kun je minstens één bestanddeel wel zien."},
+ {t:"Suspensies zijn homogene mengsels waarbij een vaste stof opgelost is in een vloeistof.",a:"niet waar",why:"Een suspensie is heterogeen: vaste deeltjes zweven in de vloeistof."},
+ {t:"Kraantjeswater is een oplossing van water en verschillende mineralen.",a:"waar"},
+ {t:"Een mengsel waarbij gasdeeltjes met andere gasdeeltjes gemengd zijn, is na een tijd steeds homogeen.",a:"waar"},
+ {t:"Homogene mengsels kun je niet scheiden met de scheidingstechniek filtreren.",a:"waar",why:"De deeltjes zijn te klein, ze gaan door de filter."},
+ {t:"Zuivere stoffen kun je herkennen aan hun specifieke voorwerpeigenschappen.",a:"niet waar",why:"Aan hun specifieke stofeigenschappen."},
+ {t:"Decanteren, filtreren en zeven zijn scheidingstechnieken die gebruikt worden om heterogene mengsels te scheiden in zuivere stoffen.",a:"waar"},
+ {t:"Bij zuivere stoffen zie je een duidelijk kooktraject tijdens het koken.",a:"niet waar",why:"Een zuivere stof heeft een kookpunt: de temperatuur blijft constant."},
+ {t:"Gedestilleerd water kun je scheiden in zuivere stoffen door de scheidingstechniek kristalliseren.",a:"niet waar",why:"Gedestilleerd water is al een zuivere stof."},
+ {t:"Scheidingstechnieken zijn chemische reacties.",a:"niet waar",why:"Het zijn fysische processen: er ontstaan geen nieuwe stoffen."}]});
+
+/* ===================== 4 ZUIVERE STOFFEN ===================== */
+sortEx("ex-fc",{title:"Fysisch of chemisch verschijnsel?",intro:"Ontstaan er nieuwe stoffen? Dan is het een chemische reactie.",options:["fysisch","chemisch"],items:[
+ {t:"het bevriezen van vijverwater",a:"fysisch"},{t:"de elektrolyse van water",a:"chemisch",why:"Er ontstaan waterstofgas en zuurstofgas."},{t:"decanteren van een mengsel van olie en water",a:"fysisch",why:"Een scheidingstechniek is een fysisch proces."},{t:"het uitzetten van kwik in een thermometer",a:"fysisch"},{t:"suiker verhitten tot er koolstof en water ontstaan",a:"chemisch"},{t:"water koken",a:"fysisch",why:"De ruimte tussen de watermoleculen wordt groter, maar de moleculen veranderen niet."},{t:"waterstofgas verbranden",a:"chemisch",why:"Er ontstaat water: synthese."},{t:"zout oplossen in water",a:"fysisch"},{t:"magnesium verbranden",a:"chemisch"}]});
+
+sortEx("ex-groups",{title:"Metaal, niet-metaal of edelgas?",options:["metaal","niet-metaal","edelgas"],items:[
+ {t:"ijzer",a:"metaal"},{t:"koper",a:"metaal"},{t:"kwik",a:"metaal",why:"Het enige metaal dat vloeibaar is bij kamertemperatuur."},{t:"goud",a:"metaal"},{t:"aluminium",a:"metaal"},{t:"tin",a:"metaal"},
+ {t:"zuurstofgas",a:"niet-metaal"},{t:"koolstof",a:"niet-metaal"},{t:"dibroom",a:"niet-metaal",why:"Het enige niet-metaal dat vloeibaar is bij kamertemperatuur."},{t:"silicium",a:"niet-metaal"},{t:"stikstofgas",a:"niet-metaal"},
+ {t:"helium",a:"edelgas"},{t:"neon",a:"edelgas"},{t:"argon",a:"edelgas"}]});
+
+/* Legende kleurcode */
+(function(){const L=$("#legend");[["koolstof (C)","C"],["waterstof (H)","H"],["zuurstof (O)","O"],["stikstof (N)","N"],["zwavel (S)","S"],["fosfor (P)","P"],["metalen (Na, K, Mg …)","Na"],["halogenen (F, Cl, Br, I)","Cl"]].forEach(([t,s])=>L.append(h("span",{},h("i",{class:"atom",style:`background:${atomColor(s)}`}),t)));})();
+
+/* Doos met moleculen */
+const SPEC={
+ H2:{f:"H2",at:[["H",-7,0],["H",7,0]],e:true},O2:{f:"O2",at:[["O",-9,0],["O",9,0]],e:true},N2:{f:"N2",at:[["N",-9,0],["N",9,0]],e:true},Cl2:{f:"Cl2",at:[["Cl",-9,0],["Cl",9,0]],e:true},He:{f:"He",at:[["He",0,0]],e:true},O3:{f:"O3",at:[["O",-14,6],["O",0,-6],["O",14,6]],e:true},
+ H2O:{f:"H2O",at:[["O",0,0],["H",-10,8],["H",10,8]],e:false},CO2:{f:"CO2",at:[["O",-17,0],["C",0,0],["O",17,0]],e:false},NH3:{f:"NH3",at:[["N",0,0],["H",-11,7],["H",11,7],["H",0,-12]],e:false},HCl:{f:"HCl",at:[["H",-9,0],["Cl",8,0]],e:false},CH4:{f:"CH4",at:[["C",0,0],["H",-11,-9],["H",11,-9],["H",-11,9],["H",11,9]],e:false}};
+const RAD={H:6,He:8,C:9,N:9,O:9,Cl:10};
+function molSvg(list){let s='<svg viewBox="0 0 220 220">';const pts=[];list.forEach(k=>{let x,y,t=0;do{x=rnd(30,190);y=rnd(30,190);t++;}while(pts.some(p=>Math.hypot(p[0]-x,p[1]-y)<42)&&t<80);pts.push([x,y]);const a=Math.random()*Math.PI*2,c=Math.cos(a),sn=Math.sin(a);SPEC[k].at.forEach(([e,dx,dy])=>{const X=x+dx*c-dy*sn,Y=y+dx*sn+dy*c;s+=`<circle cx="${X.toFixed(1)}" cy="${Y.toFixed(1)}" r="${RAD[e]||9}" fill="${atomColor(e)}" stroke="#8A99A8" stroke-width="1.2"/>`;});});return s+"</svg>";}
+(function box(){
+  const box=$("#ex-box");let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Wat zit er in de doos?","Molecuulmodellen");sc.textContent=total?`${good}/${total} dozen helemaal juist`:"";
+    box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Bestudeer de moleculen. Gelijke moleculen = dezelfde stof.")));
+    const kinds=rnd(1,3);const sp=pick(Object.keys(SPEC),kinds);const list=[];sp.forEach(k=>{for(let i=0,n=rnd(2,4);i<n;i++)list.push(k);});
+    const ans={stoffen:kinds,enk:sp.filter(k=>SPEC[k].e).length,sam:sp.filter(k=>!SPEC[k].e).length,el:new Set(sp.flatMap(k=>SPEC[k].at.map(a=>a[0]))).size,zm:kinds===1?"zuivere stof":"mengsel"};
+    const zm=h("select",{id:"box-zm"},h("option",{value:""},"kies …"),h("option",{},"zuivere stof"),h("option",{},"mengsel"));
+    const inp=k=>h("input",{type:"number",min:"0",id:"box-"+k,style:"width:5em"});const I={stoffen:inp("stoffen"),enk:inp("enk"),sam:inp("sam"),el:inp("el")};
+    const fb=h("p",{class:"fb"});
+    box.append(h("div",{class:"two"},h("div",{class:"pbox",style:"border-top:2px solid var(--ink);border-radius:10px",html:molSvg(shuffle(list))}),h("div",{class:"countgrid",style:"align-content:start"},h("label",{},"zuivere stof of mengsel?",zm),h("label",{},"aantal soorten stoffen",I.stoffen),h("label",{},"aantal enkelvoudige stoffen",I.enk),h("label",{},"aantal samengestelde stoffen",I.sam),h("label",{},"aantal atoomsoorten",I.el))));
+    box.append(h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:()=>{let ok=true;const z=zm.value===ans.zm;zm.className=z?"ok":"no";ok=ok&&z;for(const k in I){const g=+I[k].value===ans[k]&&I[k].value!=="";I[k].className=g?"ok":"no";ok=ok&&g;}total++;if(ok)good++;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=ok?"Alles juist!":`Nog niet helemaal. Oplossing: ${ans.zm}, ${ans.stoffen} soort(en) stoffen (${sp.map(fmt).join(", ")}), ${ans.enk} enkelvoudig, ${ans.sam} samengesteld, ${ans.el} atoomsoort(en).`;if(total>=3)markDone("ex-box");$$("button",box).find(b=>b.textContent==="Controleer").disabled=true;}},"Controleer"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe doos")),fb);
+  }
+  gen();
+})();
+
+/* Symbolen */
+(function sym(){
+  const box=$("#ex-sym");
+  function start(){
+    const sc=wsHead(box,"Elementen en hun symbool","Typoefening");
+    box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Typ het symbool of de naam. Let op hoofdletters en kleine letters!")));
+    const qs=pick(ELEMENTS,10).map(([n,s])=>Math.random()<.6?{q:`Symbool van <b>${n}</b>?`,a:s,type:"s",n,s}:{q:`Naam van <b>${s}</b>?`,a:n,type:"n",n,s});
+    let i=0,score=0;const area=h("div",{class:"mc"});const bar=h("div",{class:"progress"},h("i"));box.append(bar,area);
+    function show(){bar.firstChild.style.width=(i/qs.length*100)+"%";area.innerHTML="";sc.textContent=`${score}/${qs.length}`;
+      if(i>=qs.length){markDone("ex-sym");area.append(h("p",{class:"q"},`Klaar: ${score}/10 juist.`),h("button",{class:"btn primary",type:"button",onclick:start},"Nieuwe reeks"));return;}
+      const Q=qs[i];const inp=h("input",{type:"text",id:"sym-in",autocomplete:"off",autocapitalize:"off",spellcheck:"false",style:"width:12em"});const fb=h("p",{class:"fb"});let done=false;
+      const nx=h("button",{class:"btn",type:"button",hidden:true,onclick:()=>{i++;show();}},"Volgende");
+      const check=()=>{if(done){i++;show();return;}const v=inp.value.trim();if(!v)return;done=true;let ok;if(Q.type==="s"){ok=v===Q.s;if(!ok&&v.toLowerCase()===Q.s.toLowerCase()){fb.className="fb badf";fb.innerHTML=`Bijna! De letters kloppen, maar let op de hoofdletter: <b>${Q.s}</b>. Een symbool begint met een hoofdletter, de tweede letter is klein.`;}}else ok=norm(v)===Q.n;
+        if(ok){score++;fb.className="fb good";fb.innerHTML=`Juist: ${Q.n} = <b>${Q.s}</b>.`;inp.className="ok";}else{inp.className="no";if(!fb.innerHTML){fb.className="fb badf";fb.innerHTML=`Niet juist: ${Q.n} = <b>${Q.s}</b>.`;}}sc.textContent=`${score}/${qs.length}`;nx.hidden=false;};
+      inp.addEventListener("keydown",e=>{if(e.key==="Enter")check();});
+      area.append(h("p",{class:"q",html:`${i+1}. ${Q.q}`}),h("div",{class:"btnrow",style:"align-items:center"},inp,h("button",{class:"btn primary",type:"button",onclick:check},"Controleer"),nx),fb);inp.focus({preventScroll:true});}
+    show();
+  }
+  start();
+})();
+
+/* Formules ontleden */
+function parseFormula(str){
+  str=str.replace(/\s+/g," ").trim();let coef=1;const m=str.match(/^(\d+)\s*(.*)$/);if(m){coef=+m[1];str=m[2];}
+  let i=0;function group(){const c={};while(i<str.length&&str[i]!==")"){let part={};if(str[i]==="("){i++;part=group();i++;}else{const mm=str.slice(i).match(/^[A-Z][a-z]?/);if(!mm)throw new Error("bad");part={[mm[0]]:1};i+=mm[0].length;}const d=str.slice(i).match(/^\d+/);let k=1;if(d){k=+d[0];i+=d[0].length;}for(const e in part)c[e]=(c[e]||0)+part[e]*k;}return c;}
+  const counts=group();if(i!==str.length)throw new Error("bad");return{coef,counts,f:str};
+}
+(function mol(){
+  const box=$("#ex-mol");const POOL=["5 H2SO4","3 CO2","2 H2O","4 (NH4)2CO3","3 C6H12O6","2 Ca(OH)2","Al(OH)3","3 O2","2 O3","3 P4","4 NH3","2 NaCl","3 CaSO4","2 SiO2","3 N2O5","HClO4","2 KNO3","3 H3PO4","2 Na2SO4","CH4","CaCl2","KOH","4 O2","5 H2O"];
+  const NM={H:"waterstof",O:"zuurstof",C:"koolstof",N:"stikstof",S:"zwavel",P:"fosfor",Na:"natrium",Cl:"chloor",Ca:"calcium",K:"kalium",Si:"silicium",Al:"aluminium"};
+  let total=0,good=0;
+  function gen(){
+    const sc=wsHead(box,"Lees de formule","Molecuulteller");sc.textContent=total?`${good}/${total} formules helemaal juist`:"";
+    const F=POOL[rnd(0,POOL.length-1)];const P=parseFormula(F);const els=Object.keys(P.counts);const perMol=els.reduce((s,e)=>s+P.counts[e],0);
+    box.append(h("p",{class:"q",style:"font-size:1.8rem;font-family:var(--f-display)",html:fmt(F)}));
+    const show=h("div",{hidden:true});const mols=h("div",{class:"molrow"});for(let k=0;k<P.coef;k++){const d=h("div",{class:"mol"});els.forEach(e=>{for(let j=0;j<P.counts[e];j++)d.append(h("i",{class:"atom",title:e,style:`background:${atomColor(e)}`}));});mols.append(d);}show.append(mols,h("p",{class:"mini"},"Elk omkaderd groepje is één molecule. De kleuren volgen de kleurcode."));
+    const inp=k=>h("input",{type:"number",min:"0",id:"mol-"+k,style:"width:5em"});
+    const I={mol:inp("mol"),el:inp("el"),per:inp("per"),tot:inp("tot")};const per={};const grid=h("div",{class:"countgrid"},h("label",{},"aantal moleculen",I.mol),h("label",{},"aantal elementen (atoomsoorten)",I.el),h("label",{},"atomen in 1 molecule",I.per),h("label",{},"atomen in totaal",I.tot));
+    els.forEach(e=>{per[e]=inp("e-"+e);grid.append(h("label",{},`totaal atomen ${e} (${NM[e]||e})`,per[e]));});
+    const fb=h("p",{class:"fb"});
+    box.append(grid,h("div",{class:"btnrow"},h("button",{class:"btn primary",type:"button",onclick:ev=>{const ans={mol:P.coef,el:els.length,per:perMol,tot:perMol*P.coef};let ok=true;for(const k in I){const g=I[k].value!==""&&+I[k].value===ans[k];I[k].className=g?"ok":"no";ok=ok&&g;}els.forEach(e=>{const g=per[e].value!==""&&+per[e].value===P.counts[e]*P.coef;per[e].className=g?"ok":"no";ok=ok&&g;});total++;if(ok)good++;if(total>=3)markDone("ex-mol");ev.target.disabled=true;show.hidden=false;fb.className="fb "+(ok?"good":"badf");fb.innerHTML=ok?"Alles juist!":`Oplossing: ${P.coef} molecule(n), ${els.length} elementen, ${perMol} atomen per molecule, ${perMol*P.coef} atomen in totaal (${els.map(e=>P.counts[e]*P.coef+" "+e).join(", ")}). Denk eraan: de coëfficiënt vermenigvuldig je met alles, de index enkel met het symbool (of de groep tussen haakjes) ervoor.`;}},"Controleer"),h("button",{class:"btn",type:"button",onclick:()=>{show.hidden=!show.hidden;}},"Toon model"),h("button",{class:"btn",type:"button",onclick:gen},"Nieuwe formule")),fb,show);
+  }
+  gen();
+})();
+
+mcEx("ex-iupac",{title:"Namen van stoffen",tag:"Meerkeuze",questions:[
+ {q:"Wat is de IUPAC-benaming van O<sub>3</sub>?",opts:["trizuurstof","ozon","dizuurstof","triozon"],a:"trizuurstof",why:"tri = 3. Ozon is de triviale naam."},
+ {q:"Wat is de triviale naam van O<sub>3</sub>?",opts:["ozon","zuurstofgas","trizuurstof","koolzuurgas"],a:"ozon"},
+ {q:"Wat is de IUPAC-benaming van N<sub>2</sub>?",opts:["distikstof","stikstofgas","monostikstof","tetrastikstof"],a:"distikstof",why:"di = 2. Stikstofgas is de triviale naam."},
+ {q:"Wat is de IUPAC-benaming van P<sub>4</sub>?",opts:["tetrafosfor","pentafosfor","trifosfor","difosfor"],a:"tetrafosfor",why:"tetra = 4."},
+ {q:"Wat is de IUPAC-benaming van CO<sub>2</sub>?",opts:["koolstofdioxide","monokoolstofdioxide","dikoolstofoxide","koolzuurgas"],a:"koolstofdioxide",why:"C komt één keer voor, dus geen mono. Koolzuurgas is de triviale naam."},
+ {q:"Welke formule hoort bij diwaterstof?",opts:["H<sub>2</sub>","2 H","H<sub>2</sub>O","H"],a:"H<sub>2</sub>",why:"1 molecule met 2 atomen waterstof. 2 H zijn twee losse atomen."},
+ {q:"Wat betekent 2 S<sub>2</sub>?",opts:["2 moleculen dizwavel, die elk bestaan uit 2 atomen zwavel","2 atomen zwavel","4 moleculen zwavel","1 molecule met 4 atomen zwavel"],a:"2 moleculen dizwavel, die elk bestaan uit 2 atomen zwavel"},
+ {q:"Wat betekent S<sub>8</sub>?",opts:["1 molecule octazwavel, die bestaat uit 8 atomen zwavel","8 atomen zwavel","8 moleculen zwavel","1 atoom zwavel met massa 8"],a:"1 molecule octazwavel, die bestaat uit 8 atomen zwavel"},
+ {q:"Welk Grieks telwoord staat voor 6?",opts:["hexa","hepta","penta","octa"],a:"hexa"},
+ {q:"Welke brutoformule hoort bij 3 moleculen van een stof uit 2 stikstofatomen en 5 zuurstofatomen?",opts:["3 N<sub>2</sub>O<sub>5</sub>","N<sub>3</sub>O<sub>5</sub>","2 N<sub>3</sub>O<sub>5</sub>","3 N<sub>5</sub>O<sub>2</sub>"],a:"3 N<sub>2</sub>O<sub>5</sub>"}]});
+
+sortEx("ex-tf4",{title:"Controle: waar of niet waar?",tag:"Controle 4",options:["waar","niet waar"],keep:true,items:[
+ {t:"Enkelvoudige stoffen bestaan uit verschillende elementen.",a:"niet waar",why:"Ze bestaan uit één atoomsoort."},
+ {t:"Zuurstofgas is een synoniem van het giftige ozon.",a:"niet waar",why:"Zuurstofgas is O<sub>2</sub>, ozon is O<sub>3</sub>."},
+ {t:"Samengestelde stoffen kun je ontleden in enkelvoudige stoffen.",a:"waar"},
+ {t:"De elektrolyse van water is een analyse van water met behulp van elektrische energie.",a:"waar"},
+ {t:"Bij 3 H<sub>2</sub>O is 3 de index.",a:"niet waar",why:"3 is de coëfficiënt (aantal moleculen). 2 is de index."},
+ {t:"In één molecule Al(OH)<sub>3</sub> zitten 3 atomen waterstof en 1 atoom zuurstof.",a:"niet waar",why:"De 3 geldt voor de hele groep OH: 3 atomen zuurstof en 3 atomen waterstof."},
+ {t:"De thermolyse van suiker is een voorbeeld van een chemische reactie.",a:"waar"}]});
+
+/* ===================== VADEMECUM ===================== */
+sortEx("ex-safe",{title:"Veilig of onveilig?",options:["veilig","onveilig"],items:[
+ {t:"Je draagt je labojas open.",a:"onveilig"},{t:"Je bindt je lange haren samen.",a:"veilig"},{t:"Je neemt een fles bij de hals.",a:"onveilig",why:"Neem een fles altijd bij de buik."},{t:"Je legt de dop omgekeerd op de werktafel.",a:"veilig"},{t:"Je proeft even om te weten welke stof het is.",a:"onveilig",why:"Proeven is altijd verboden."},{t:"Je giet met het etiket naar boven.",a:"veilig",why:"Zo blijft het etiket leesbaar."},{t:"Je smartphone ligt op de werktafel.",a:"onveilig"},{t:"Je leunt op de labotafel.",a:"onveilig"},{t:"Je draagt een veiligheidsbril.",a:"veilig"},{t:"Je meldt een gebroken proefbuis meteen aan de leerkracht.",a:"veilig"},{t:"Je drinkt een slokje water uit je eigen flesje.",a:"onveilig",why:"Eten en drinken is verboden in het labo."},{t:"Je laat een gemorst product liggen tot het einde van de les.",a:"onveilig"}]});
+
+sortEx("ex-nood",{select:true,title:"Welke veiligheidsvoorziening gebruik je?",options:["oogdouche","nooddouche","branddeken","brandblusapparaat","EHBO-koffer","noodstop"],items:[
+ {t:"Er spat zuur in je oog.",a:"oogdouche"},{t:"Je kleding staat in brand.",a:["nooddouche","branddeken"],why:"Gebruik de nooddouche of doof met de branddeken."},{t:"Je haar vat vuur aan de bunsenbrander.",a:["nooddouche","branddeken"]},{t:"Er komt veel zwavelzuur op je kleding.",a:"nooddouche",why:"Spoel kleding en huid onmiddellijk met veel water."},{t:"Je snijdt je aan gebroken glaswerk.",a:"EHBO-koffer"},{t:"De gaskraan lekt of er is een elektrisch probleem aan de labotafels.",a:"noodstop",why:"De noodstop sluit gas en stroom af."},{t:"Er ontstaat een brandje in de afvalbak.",a:["brandblusapparaat","branddeken"]}]});
+
+(function(){const g=$("#ghsgrid");Object.keys(GHS).forEach(k=>g.append(h("figure",{},h("div",{html:ghsSvg(k)}),h("figcaption",{},GHS[k].name))));})();
+mcEx("ex-ghs",{title:"Herken het gevarenpictogram",tag:"Meerkeuze",questions:()=>shuffle(Object.keys(GHS)).map(k=>{const others=pick(Object.keys(GHS).filter(x=>x!==k),3).map(x=>GHS[x].name);return{q:"Wat betekent dit pictogram?",svg:ghsSvg(k),opts:[GHS[k].name,...others],a:GHS[k].name};})});
+
+(function hp(){
+  const box=$("#ex-hp");wsHead(box,"H- en P-zinnen opzoeken","Zoeker");
+  box.append(h("p",{class:"mini"},h("span",{class:"ask"},"Typ een code, bv. H318, P102 of P301+330+331, en druk op Enter.")));
+  const inp=h("input",{type:"text",id:"hp-in",placeholder:"bv. H240",autocomplete:"off",style:"width:14em"});const res=h("div",{class:"hpres"});
+  const cls=c=>{if(/^EUH/.test(c))return"EU-gevarenaanduiding";if(c[0]==="H")return{2:"gevarenklasse 2: fysische gevaren",3:"gevarenklasse 3: gevaren voor de gezondheid",4:"gevarenklasse 4: gevaren voor het milieu"}[c[1]]||"";return{1:"groep 1: algemeen",2:"groep 2: voorkomen",3:"groep 3: reageren",4:"groep 4: opslaan",5:"groep 5: afvalbeheer"}[c[1]]||"";};
+  function look(raw){
+    let s=String(raw).toUpperCase().replace(/\s+/g,"");if(!s){res.textContent="";return;}
+    const parts=s.split("+").filter(Boolean);let L=parts[0].match(/^(EUH|H|P)/);if(!L){res.innerHTML="Een code begint met H, P of EUH, bv. H314.";return;}L=L[1];
+    const codes=parts.map(p=>/^(EUH|H|P)/.test(p)?p:L+p);const key=codes.join("+");const D=L==="P"?P:H;
+    if(D[key]){res.innerHTML=`<span class="codebadge">${key}</span>${D[key]}<div class="mini">${cls(codes[0])}</div>`;return;}
+    const miss=codes.filter(c=>!D[c]);if(miss.length){res.innerHTML=`${miss.join(", ")} staat niet in het vademecum. Controleer de code.`;return;}
+    res.innerHTML=codes.map(c=>`<div><span class="codebadge">${c}</span>${D[c]}</div>`).join("")+`<div class="mini">${cls(codes[0])}</div>`;
+  }
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter")look(inp.value);});inp.addEventListener("input",()=>{if(/^(EUH|H|P)\d{3}/i.test(inp.value.trim()))look(inp.value);});
+  const ex=h("div",{class:"btnrow"},["H240","H318","P102","P222","P301+330+331","H400","P410"].map(c=>h("button",{class:"opt",type:"button",onclick:()=>{inp.value=c;look(c);markDone("ex-hp");}},c)));
+  box.append(h("div",{class:"btnrow",style:"align-items:center"},inp,h("button",{class:"btn primary",type:"button",onclick:()=>{look(inp.value);markDone("ex-hp");}},"Zoek op")),ex,res);
+})();
+mcEx("ex-hpclass",{title:"Gevaar of voorzorg? Welke klasse?",tag:"Meerkeuze",questions:()=>{const hk=Object.keys(H).filter(k=>/^H\d{3}$/.test(k)),pk=Object.keys(P).filter(k=>/^P\d{3}$/.test(k));const out=[];
+  pick(hk,4).forEach(c=>out.push({q:`<span class="codebadge">${c}</span> ${H[c]}<br>Tot welke gevarenklasse behoort deze H-zin?`,opts:["fysische gevaren","gevaren voor de gezondheid","gevaren voor het milieu"],keep:true,a:{2:"fysische gevaren",3:"gevaren voor de gezondheid",4:"gevaren voor het milieu"}[c[1]],why:`Het eerste cijfer is ${c[1]}.`}));
+  pick(pk,4).forEach(c=>out.push({q:`<span class="codebadge">${c}</span> ${P[c]}<br>Tot welke groep behoort deze P-zin?`,opts:["algemeen","voorkomen","reageren","opslaan","afvalbeheer"],keep:true,a:{1:"algemeen",2:"voorkomen",3:"reageren",4:"opslaan",5:"afvalbeheer"}[c[1]],why:`Het eerste cijfer is ${c[1]}.`}));
+  out.push({q:"Waar komt de letter H vandaan?",opts:["<i>hazard</i>: gevaar","<i>help</i>: hulp","<i>heat</i>: warmte","<i>health</i>: gezondheid"],a:"<i>hazard</i>: gevaar"});
+  out.push({q:"Waar komt de letter P vandaan?",opts:["<i>precaution</i>: voorzorgsmaatregel","<i>product</i>","<i>poison</i>: gif","<i>protection</i>: bescherming"],a:"<i>precaution</i>: voorzorgsmaatregel"});
+  return shuffle(out);}});
+
+(function gear(){
+  const g=$("#gear"),info=$("#gearinfo");
+  GEAR.forEach(it=>{const b=h("button",{type:"button",html:`<svg viewBox="0 0 100 100" aria-hidden="true">${it.s}</svg>${it.n}`});b.addEventListener("click",()=>{$$("button",g).forEach(x=>x.classList.remove("sel"));b.classList.add("sel");info.innerHTML=`<b>${it.n}</b>: ${it.f}`;});g.append(b);});
+})();
+mcEx("ex-gear",{title:"Welk labomateriaal is het?",tag:"Meerkeuze",questions:()=>{const names=GEAR.map(g=>g.n);return shuffle(GEAR).slice(0,8).map(it=>({q:"Welk labomateriaal is dit?",svg:`<svg viewBox="0 0 100 100" style="width:110px;height:110px">${it.s}</svg>`,opts:[it.n,...pick(names.filter(n=>n!==it.n),3)],a:it.n,why:it.f}));}});
+
+/* ===================== TEST ===================== */
+const FINAL=[
+ {q:"Wat is materie?",opts:["de verzamelnaam voor alle stoffen","alles wat je kunt zien","alle vaste stoffen","alle voorwerpen in een labo"],a:"de verzamelnaam voor alle stoffen"},
+ {q:"Wat bestudeer je in chemie niet?",opts:["de beweging van een fiets","de samenstelling en bouw van materie","de omzettingen in samenstelling en bouw van materie","de energie-uitwisselingen daarbij"],a:"de beweging van een fiets"},
+ {q:"Wat vind je op een etiket bij de veiligheidsaanbevelingen?",opts:["P-zinnen","H-zinnen","het signaalwoord","de formule"],a:"P-zinnen"},
+ {q:"Welke code hoort bij gevaren voor het milieu?",opts:["H4xx","H2xx","H3xx","P4xx"],a:"H4xx"},
+ {q:"Welke eigenschap is een meetbare stofeigenschap?",opts:["massadichtheid","kleur","vorm","geur"],a:"massadichtheid"},
+ {q:"Een stukje kaars heeft ρ = 0,90 g/cm³. Wat gebeurt er in water?",opts:["het drijft","het zinkt","het zweeft","het lost op"],a:"het drijft",why:"0,90 g/cm³ is kleiner dan 1,00 g/cm³."},
+ {q:"Vinaigrette is een …",opts:["emulsie","suspensie","oplossing","rook"],a:"emulsie"},
+ {q:"Een mengsel van een vaste stof en een vloeistof waarin je de vaste deeltjes ziet, is een …",opts:["suspensie","emulsie","oplossing","grof mengsel"],a:"suspensie"},
+ {q:"Lucht is een …",opts:["homogeen mengsel","heterogeen mengsel","enkelvoudige stof","samengestelde stof"],a:"homogeen mengsel"},
+ {q:"Hoe herken je een zuivere stof in een temperatuur-tijdgrafiek?",opts:["de temperatuur blijft constant tijdens het koken","de temperatuur stijgt tijdens het koken","er is een kooktraject","de grafiek is een rechte lijn"],a:"de temperatuur blijft constant tijdens het koken"},
+ {q:"Om het kookpunt van kraantjeswater te verhogen …",opts:["voeg je extra zout toe","verwarm je de oplossing","voeg je extra water toe","neem je een groter volume"],a:"voeg je extra zout toe"},
+ {q:"Op welke stofeigenschap steunt in- of uitdampen?",opts:["kooktemperatuur","deeltjesgrootte","massadichtheid","oplosbaarheid"],a:"kooktemperatuur"},
+ {q:"Op welke stofeigenschap steunt decanteren?",opts:["massadichtheid","deeltjesgrootte","kooktemperatuur","kleur"],a:"massadichtheid"},
+ {q:"Schoorsteenrook is een …",opts:["rook","emulsie","oplossing","suspensie"],a:"rook",why:"Kleine vaste stofdeeltjes in een gas."},
+ {q:"Op welke stofeigenschap steunt filtreren?",opts:["deeltjesgrootte","kookpunt","massadichtheid","adsorptievermogen"],a:"deeltjesgrootte"},
+ {q:"Wat noem je de stof die bij filtreren op de filter achterblijft?",opts:["residu","filtraat","bezinksel","oplossing"],a:"residu"},
+ {q:"Een mengsel van zand en water kan je niet scheiden met …",opts:["zeven","decanteren","filtreren","in- of uitdampen"],a:"zeven",why:"De zandkorrels gaan door de gaatjes van een zeef."},
+ {q:"Wat is een scheidingstechniek voor een homogeen mengsel?",opts:["in- of uitdampen","zeven","filtreren","decanteren"],a:"in- of uitdampen"},
+ {q:"We verwarmen suiker. Er ontstaan waterdamp en zwarte koolstof. Wat is correct?",opts:["We tonen aan dat suiker een samengestelde stof is.","Dit is een scheidingstechniek.","We tonen aan dat suiker een enkelvoudige stof is.","We tonen aan dat suiker een mengsel is van koolstof en water."],a:"We tonen aan dat suiker een samengestelde stof is."},
+ {q:"Welke bewering is correct?",opts:["Samengestelde stoffen kunnen via analyse omgezet worden in andere stoffen, met andere stofeigenschappen.","Suiker, water en zuurstofgas zijn samengestelde stoffen.","Zuurstofgas, waterstofgas en suiker zijn enkelvoudige stoffen.","Enkelvoudige stoffen kunnen ontbinden in andere stoffen."],a:"Samengestelde stoffen kunnen via analyse omgezet worden in andere stoffen, met andere stofeigenschappen."},
+ {q:"Door de elektrolyse van een natriumchlorideoplossing toon je aan dat …",opts:["natriumchloride een samengestelde stof is","natrium een samengestelde stof is","chloorgas een samengestelde stof is","natrium een enkelvoudige stof is"],a:"natriumchloride een samengestelde stof is"},
+ {q:"Waterstofgas en zuurstofgas reageren tot water. Dat is een …",opts:["synthese","analyse","scheidingstechniek","fysisch verschijnsel"],a:"synthese"},
+ {q:"Welke stof is een edelgas?",opts:["argon","zuurstofgas","stikstofgas","dibroom"],a:"argon"},
+ {q:"Welk niet-metaal is vloeibaar bij kamertemperatuur?",opts:["dibroom","kwik","dijood","silicium"],a:"dibroom"},
+ {q:"Wat is het symbool van kwik?",opts:["Hg","Kw","K","Mg"],a:"Hg"},
+ {q:"Wat is het symbool van tin?",opts:["Sn","Ti","T","Tn"],a:"Sn"},
+ {q:"Hoeveel atomen zijn er in totaal in 5 H<sub>2</sub>SO<sub>4</sub>?",opts:["35","7","12","20"],a:"35",why:"1 molecule = 2 + 1 + 4 = 7 atomen, × 5 = 35."},
+ {q:"Hoeveel atomen bevat 1 molecule (NH<sub>4</sub>)<sub>2</sub>CO<sub>3</sub>?",opts:["14","10","12","9"],a:"14",why:"2 N + 8 H + 1 C + 3 O = 14."},
+ {q:"Wat is de brutoformule van 4 moleculen zuurstofgas?",opts:["4 O<sub>2</sub>","O<sub>4</sub>","2 O<sub>4</sub>","4 O"],a:"4 O<sub>2</sub>"},
+ {q:"Wat is een molecule?",opts:["het kleinste deeltje van een stof dat nog alle eigenschappen van die stof bezit","het kleinste deeltje dat bestaat","een atoom met een lading","een mengsel van atomen"],a:"het kleinste deeltje van een stof dat nog alle eigenschappen van die stof bezit"},
+ {q:"Welke kleur heeft een zuurstofatoom in de afgesproken kleurcode?",opts:["rood","wit","zwart","blauw"],a:"rood"},
+ {q:"Welke kleur heeft een stikstofatoom in de afgesproken kleurcode?",opts:["blauw","geel","groen","rood"],a:"blauw"},
+ {q:"Het nummer van het Antigifcentrum is …",opts:["070 245 245","112","101","100"],a:"070 245 245"},
+ {q:"Je neemt een fles chemicaliën het best vast …",opts:["bij de buik","bij de hals","bij de dop","met twee vingers"],a:"bij de buik"},
+ {q:"Welk materiaal gebruik je om het volume van een vloeistof nauwkeurig te bepalen?",opts:["maatcilinder","maatbeker","erlenmeyer","trechter"],a:"maatcilinder"},
+ {q:"Hoogrendementsglas isoleert beter met krypton dan met argon in de spouw, omdat …",opts:["de warmtegeleiding van Kr lager is dan die van Ar","krypton goedkoper is","krypton een metaal is","argon giftig is"],a:"de warmtegeleiding van Kr lager is dan die van Ar"}
+];
+mcEx("ex-final",{title:"Toets: Stoffen rondom ons",tag:"15 vragen",n:15,questions:FINAL});
+
+(function flash(){
+  const T=[["chemie","Het bestuderen van materie: samenstelling en bouw, omzettingen en de energie-uitwisselingen daarbij."],["materie","De verzamelnaam voor alle stoffen."],["etiket","Op de verpakking: naam, formule, bewaarplaats, gevarenaanduidingen, pictogrammen en veiligheidsaanbevelingen."],["signaalwoord","Woord op het etiket dat waarschuwt of verwijst naar het gevaar, bv. Gevaar."],["voorwerpeigenschap","Eigenschap van het voorwerp: vorm, grootte, massa, volume …"],["stofeigenschap","Eigenschap van de stof waaruit het voorwerp bestaat: kleur, oplosbaarheid …"],["meetbare stofeigenschap","Stofeigenschap die je met een meettoestel bepaalt: kookpunt, smeltpunt, massadichtheid …"],["massadichtheid","De constante verhouding tussen massa en volume van een stof: ρ = m / V."],["mengsel","Bevat meerdere stoffen; elke stof is een bestanddeel of component."],["heterogeen mengsel","Minstens één bestanddeel is te onderscheiden met het blote oog of een vergrootglas."],["homogeen mengsel","De bestanddelen zijn niet te onderscheiden, ook niet met een vergrootglas."],["suspensie","Vaste stofdeeltjes in een vloeistof (heterogeen)."],["emulsie","Vloeistofdruppels in een andere vloeistof (heterogeen)."],["rook","Kleine vaste stofdeeltjes in een gas (heterogeen)."],["oplossing","Een vaste stof, vloeistof of gas opgelost in een vloeistof; volledig doorzichtig."],["zuivere stof","Bestaat uit één soort stof, met specifieke stofeigenschappen."],["fysisch verschijnsel","Proces waarbij geen nieuwe stoffen ontstaan, bv. koken, smelten, scheiden."],["filtraat","Wat door de filter gaat."],["scheidingstechniek","Fysisch proces om een mengsel te scheiden in zuivere stoffen: zeven, filtreren, decanteren, in- of uitdampen."],["residu","Wat bij filtreren op de filter achterblijft."],["chemische reactie","Proces waarbij nieuwe stoffen met andere stofeigenschappen ontstaan."],["enkelvoudige stof","Zuivere stof die je niet verder kunt ontleden."],["samengestelde stof","Zuivere stof die je kunt ontleden door energie toe te voegen."],["analyse","Uit één zuivere stof ontstaan meerdere stoffen (ontleding)."],["synthese","Enkelvoudige stoffen reageren tot samengestelde stoffen."],["edelgassen","Gasvormige stoffen die inert zijn: ze reageren niet."],["molecule","Kleinste deeltje van een stof dat nog alle eigenschappen van die stof bezit."],["atoom","Kleinst mogelijke deeltje waaruit een stof is opgebouwd."],["index","Getal rechts onderaan een symbool: hoe vaak die atoomsoort in één molecule voorkomt."],["coëfficiënt","Getal vóór de brutoformule: het aantal moleculen."],["brutoformule","Symbolen van de aanwezige elementen met hun aantal."],["triviale naam","Naam uit het dagelijkse leven, bv. ozon."]];
+  const box=$("#flash");let order=shuffle(T),i=0,back=false;
+  const card=h("div",{class:"card",tabindex:"0",role:"button","aria-label":"Draai de kaart om"});const cnt=h("span",{class:"mini"});
+  const draw=()=>{const [t,d]=order[i];card.innerHTML=back?`<div class="d">${d}</div>`:`<div class="t">${t}</div>`;cnt.textContent=`kaart ${i+1} van ${order.length}`;};
+  const flip=()=>{back=!back;draw();};card.addEventListener("click",flip);card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
+  box.append(card,h("div",{class:"btnrow",style:"align-items:center"},h("button",{class:"btn",type:"button",onclick:()=>{i=(i-1+order.length)%order.length;back=false;draw();}},"Vorige"),h("button",{class:"btn primary",type:"button",onclick:()=>{i=(i+1)%order.length;back=false;draw();}},"Volgende"),h("button",{class:"btn",type:"button",onclick:()=>{order=shuffle(T);i=0;back=false;draw();}},"Schudden"),cnt));draw();
+})();
+
+/* ===== Start ===== */
+const initial=(location.hash||"").slice(1)||state.tab||"chemie";
+showTab(initial,false);updateDots();
+window.addEventListener("hashchange",()=>showTab(location.hash.slice(1),false));
+
+</script>
+</body>
+</html>
